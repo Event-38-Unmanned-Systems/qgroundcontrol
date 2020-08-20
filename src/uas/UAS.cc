@@ -1024,6 +1024,44 @@ void UAS::setExternalControlSetpoint(float roll, float pitch, float yaw, float t
                                                  this->uasId,
                                                  newPitchCommand, newRollCommand, newThrustCommand, newYawCommand, buttons);
         }
+        else if (joystickMode == Vehicle::JoystickModeGimbalPOS) {
+
+                    // Save the new manual control inputs
+                    manualRollAngle = roll;
+                    manualPitchAngle = pitch;
+                    manualYawAngle = yaw;
+                    manualThrust = thrust;
+                    manualButtons = buttons;
+
+                    // Store scaling values for all 3 axes
+                    const float axesScaling = 1.0 * 1000.0;
+
+                    // Calculate the new commands for roll, pitch, yaw, and thrust
+                    const float newRollCommand = roll * axesScaling;
+                    // negate pitch value because pitch is negative for pitching forward but mavlink message argument is positive for forward
+                    const float newPitchCommand = -pitch * axesScaling;
+                    const float newgimbalYaw = (yaw*500) + 1500;
+                    const float newgimbalPitch = (thrust*1000)+1000;
+
+                    //qDebug() << newRollCommand << newPitchCommand << newYawCommand << newThrustCommand;
+
+                    // Send the MANUAL_COMMAND message
+                    mavlink_msg_manual_control_pack_chan(mavlink->getSystemId(),
+                                                         mavlink->getComponentId(),
+                                                         _vehicle->priorityLink()->mavlinkChannel(),
+                                                         &message,
+                                                         this->uasId,
+                                                         newPitchCommand, newRollCommand, 65535, 65535, buttons);
+
+
+                    _vehicle->sendMessageOnLink(_vehicle->priorityLink(), message);
+
+                    mavlink_msg_rc_channels_override_pack_chan(mavlink->getSystemId(),
+                                                               mavlink->getComponentId(),
+                                                               _vehicle->priorityLink()->mavlinkChannel(),
+                                                               &message,this->uasId,0,65535,65535,65535,65535,65535,65535,newgimbalYaw,newgimbalPitch,65535,65535,65535,65535,65535,65535,65535,65535,65535,65535);
+
+                }
 
         _vehicle->sendMessageOnLink(_vehicle->priorityLink(), message);
     }

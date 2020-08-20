@@ -768,6 +768,7 @@ public:
 
     typedef enum {
         JoystickModeRC,         ///< Joystick emulates an RC Transmitter
+        JoystickModeGimbalPOS,
         JoystickModeAttitude,
         JoystickModePosition,
         JoystickModeForce,
