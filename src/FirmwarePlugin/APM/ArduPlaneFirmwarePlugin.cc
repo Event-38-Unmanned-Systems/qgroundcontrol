@@ -43,24 +43,24 @@ ArduPlaneFirmwarePlugin::ArduPlaneFirmwarePlugin(void)
 {
     QList<APMCustomMode> supportedFlightModes;
     supportedFlightModes << APMPlaneMode(APMPlaneMode::MANUAL          ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::CIRCLE          ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::STABILIZE       ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::TRAINING        ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::ACRO            ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::FLY_BY_WIRE_A   ,true);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::CIRCLE          ,false);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::STABILIZE       ,false);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::TRAINING        ,false);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::ACRO            ,false);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::FLY_BY_WIRE_A   ,false);
     supportedFlightModes << APMPlaneMode(APMPlaneMode::FLY_BY_WIRE_B   ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::CRUISE          ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::AUTOTUNE        ,true);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::CRUISE          ,false);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::AUTOTUNE        ,false);
     supportedFlightModes << APMPlaneMode(APMPlaneMode::AUTO            ,true);
     supportedFlightModes << APMPlaneMode(APMPlaneMode::RTL             ,true);
     supportedFlightModes << APMPlaneMode(APMPlaneMode::LOITER          ,true);
     supportedFlightModes << APMPlaneMode(APMPlaneMode::GUIDED          ,true);
     supportedFlightModes << APMPlaneMode(APMPlaneMode::INITIALIZING    ,false);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::QSTABILIZE      ,true);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::QSTABILIZE      ,false);
     supportedFlightModes << APMPlaneMode(APMPlaneMode::QHOVER          ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::QLOITER         ,true);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::QLOITER         ,false);
     supportedFlightModes << APMPlaneMode(APMPlaneMode::QLAND           ,true);
-    supportedFlightModes << APMPlaneMode(APMPlaneMode::QRTL            ,true);
+    supportedFlightModes << APMPlaneMode(APMPlaneMode::QRTL            ,false);
     setSupportedModes(supportedFlightModes);
 
     if (!_remapParamNameIntialized) {

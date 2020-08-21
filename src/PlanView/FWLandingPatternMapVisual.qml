@@ -36,8 +36,9 @@ Item {
     readonly property int _flightPathIndex:     0
     readonly property int _loiterPointIndex:    1
     readonly property int _loiterRadiusIndex:   2
-    readonly property int _landingAreaIndex:    3
-    readonly property int _landPointIndex:      4
+    readonly property int _transitionPointIndex:   3
+    readonly property int _landingAreaIndex:    4
+    readonly property int _landPointIndex:      5
 
     function hideItemVisuals() {
         for (var i=0; i<_itemVisuals.length; i++) {
@@ -51,15 +52,23 @@ Item {
             var itemVisual = flightPathComponent.createObject(map)
             map.addMapItem(itemVisual)
             _itemVisuals[_flightPathIndex] =itemVisual
+
             itemVisual = loiterPointComponent.createObject(map)
             map.addMapItem(itemVisual)
             _itemVisuals[_loiterPointIndex] = itemVisual
+
             itemVisual = loiterRadiusComponent.createObject(map)
             map.addMapItem(itemVisual)
             _itemVisuals[_loiterRadiusIndex] = itemVisual
-            itemVisual = landingAreaComponent.createObject(map)
+
+            itemVisual = transitionPointComponent.createObject(map)
+            map.addMapItem(itemVisual)
+            _itemVisuals[_transitionPointIndex] = itemVisual
+
+            itemVisual = landingAreaComponent.createObject(map)            
             map.addMapItem(itemVisual)
             _itemVisuals[_landingAreaIndex] = itemVisual
+
             itemVisual = landPointComponent.createObject(map)
             map.addMapItem(itemVisual)
             _itemVisuals[_landPointIndex] = itemVisual
@@ -89,6 +98,7 @@ Item {
 
     function showDragAreas() {
         if (_dragAreas.length === 0) {
+            _dragAreas.push(transitionDragAreaComponent.createObject(map))
             _dragAreas.push(loiterDragAreaComponent.createObject(map))
             _dragAreas.push(landDragAreaComponent.createObject(map))
         }
@@ -184,7 +194,17 @@ Item {
             onItemCoordinateChanged: _missionItem.loiterCoordinate = itemCoordinate
         }
     }
+    Component {
+        id: transitionDragAreaComponent
 
+        MissionItemIndicatorDrag {
+            mapControl:     _root.map
+            itemIndicator:  _itemVisuals[_transitionPointIndex]
+            itemCoordinate: _missionItem.transitionCoordinate
+
+            onItemCoordinateChanged: _missionItem.transitionCoordinate = itemCoordinate
+        }
+    }
     // Control which is used to drag the loiter point
     Component {
         id: landDragAreaComponent
@@ -239,8 +259,28 @@ Item {
             center:         _missionItem.loiterCoordinate
             radius:         _missionItem.loiterRadius.rawValue
             border.width:   2
-            border.color:   "green"
+            border.color:   "red"
             color:          "transparent"
+        }
+    }
+    // Loiter point
+    Component {
+        id: transitionPointComponent
+
+        MapQuickItem {
+            anchorPoint.x:  sourceItem.anchorPointX
+            anchorPoint.y:  sourceItem.anchorPointY
+            z:              QGroundControl.zOrderMapItems
+            coordinate:     _missionItem.transitionCoordinate
+
+            sourceItem:
+                MissionItemIndexLabel {
+                index:      _missionItem.sequenceNumber
+                label:      "transition"
+                checked:    _missionItem.isCurrentItem
+
+                onClicked: _root.clicked(_missionItem.sequenceNumber)
+            }
         }
     }
 

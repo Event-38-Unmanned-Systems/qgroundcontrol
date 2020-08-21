@@ -85,9 +85,29 @@ Rectangle {
         }
 
         SectionHeader {
+            id:     transitionPointSection
+            text:   qsTr("Transition point")
+        }
+        Column {
+            anchors.left:       parent.left
+            anchors.right:      parent.right
+            spacing:            _margin
+            visible:            transitionPointSection.checked
+
+            Item { width: 1; height: _spacer }
+
+            FactTextFieldGrid {
+                anchors.left:   parent.left
+                anchors.right:  parent.right
+                factList:       [ missionItem.transitionAltitude]
+                factLabels:     [ qsTr("Approach Alt")]
+            }
+        }
+        SectionHeader {
             id:     landingPointSection
             text:   qsTr("Landing point")
         }
+
 
         Column {
             anchors.left:       parent.left
@@ -163,34 +183,6 @@ Rectangle {
             checked:        missionItem.altitudesAreRelative
             visible:        QGroundControl.corePlugin.options.showMissionAbsoluteAltitude || !missionItem.altitudesAreRelative
             onClicked:      missionItem.altitudesAreRelative = checked
-        }
-
-        SectionHeader {
-            id:     cameraSection
-            text:   qsTr("Camera")
-        }
-
-        Column {
-            anchors.left:       parent.left
-            anchors.right:      parent.right
-            spacing:            _margin
-            visible:            cameraSection.checked
-
-            Item { width: 1; height: _spacer }
-
-            FactCheckBox {
-                text:       _stopTakingPhotos.shortDescription
-                fact:       _stopTakingPhotos
-
-                property Fact _stopTakingPhotos: missionItem.stopTakingPhotos
-            }
-
-            FactCheckBox {
-                text:       _stopTakingVideo.shortDescription
-                fact:       _stopTakingVideo
-
-                property Fact _stopTakingVideo: missionItem.stopTakingVideo
-            }
         }
     }
 

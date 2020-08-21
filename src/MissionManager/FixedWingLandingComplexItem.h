@@ -27,6 +27,7 @@ public:
     FixedWingLandingComplexItem(Vehicle* vehicle, bool flyView, QObject* parent);
 
     Q_PROPERTY(Fact*            loiterAltitude          READ    loiterAltitude                                          CONSTANT)
+    Q_PROPERTY(Fact*            transitionAltitude      READ    transitionAltitude                                   CONSTANT)
     Q_PROPERTY(Fact*            loiterRadius            READ    loiterRadius                                            CONSTANT)
     Q_PROPERTY(Fact*            landingAltitude         READ    landingAltitude                                         CONSTANT)
     Q_PROPERTY(Fact*            landingHeading          READ    landingHeading                                          CONSTANT)
@@ -39,9 +40,11 @@ public:
     Q_PROPERTY(Fact*            stopTakingVideo         READ    stopTakingVideo                                         CONSTANT)
     Q_PROPERTY(QGeoCoordinate   loiterCoordinate        READ    loiterCoordinate            WRITE setLoiterCoordinate   NOTIFY loiterCoordinateChanged)
     Q_PROPERTY(QGeoCoordinate   loiterTangentCoordinate READ    loiterTangentCoordinate                                 NOTIFY loiterTangentCoordinateChanged)
+    Q_PROPERTY(QGeoCoordinate   transitionCoordinate    READ    transitionCoordinate        WRITE setTransitionCoordinate   NOTIFY transitionCoordinateChanged)
     Q_PROPERTY(QGeoCoordinate   landingCoordinate       READ    landingCoordinate           WRITE setLandingCoordinate  NOTIFY landingCoordinateChanged)
     Q_PROPERTY(bool             landingCoordSet         MEMBER _landingCoordSet                                         NOTIFY landingCoordSetChanged)
 
+    Fact*           transitionAltitude      (void) { return &_transitionAltitudeFact; }
     Fact*           loiterAltitude          (void) { return &_loiterAltitudeFact; }
     Fact*           loiterRadius            (void) { return &_loiterRadiusFact; }
     Fact*           landingAltitude         (void) { return &_landingAltitudeFact; }
@@ -53,9 +56,11 @@ public:
     Fact*           valueSetIsDistance      (void) { return &_valueSetIsDistanceFact; }
     QGeoCoordinate  landingCoordinate       (void) const { return _landingCoordinate; }
     QGeoCoordinate  loiterCoordinate        (void) const { return _loiterCoordinate; }
+    QGeoCoordinate  transitionCoordinate    (void) const { return _transitionCoordinate; }
     QGeoCoordinate  loiterTangentCoordinate (void) const { return _loiterTangentCoordinate; }
 
     void setLandingCoordinate       (const QGeoCoordinate& coordinate);
+    void setTransitionCoordinate       (const QGeoCoordinate& coordinate);
     void setLoiterCoordinate        (const QGeoCoordinate& coordinate);
 
     /// Scans the loaded items for a landing pattern complex item
@@ -63,6 +68,7 @@ public:
 
     static MissionItem* createDoLandStartItem   (int seqNum, QObject* parent);
     static MissionItem* createLoiterToAltItem   (int seqNum, bool altRel, double loiterRaidus, double lat, double lon, double alt, QObject* parent);
+    static MissionItem* createTransitionWpItem (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent);
     static MissionItem* createLandItem          (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent);
 
     // Overrides from ComplexMissionItem
@@ -107,6 +113,7 @@ public:
     static const char* settingsGroup;
     static const char* loiterToLandDistanceName;
     static const char* loiterAltitudeName;
+    static const char* transitionAltitudeName;
     static const char* loiterRadiusName;
     static const char* landingHeadingName;
     static const char* landingAltitudeName;
@@ -118,6 +125,7 @@ public:
 signals:
     void loiterCoordinateChanged        (QGeoCoordinate coordinate);
     void loiterTangentCoordinateChanged (QGeoCoordinate coordinate);
+    void transitionCoordinateChanged (QGeoCoordinate coordinate);
     void landingCoordinateChanged       (QGeoCoordinate coordinate);
     void landingCoordSetChanged         (bool landingCoordSet);
     void loiterClockwiseChanged         (bool loiterClockwise);
@@ -129,6 +137,7 @@ private slots:
     void    _recalcFromCoordinateChange             (void);
     void    _recalcFromRadiusChange                 (void);
     void    _updateLoiterCoodinateAltitudeFromFact  (void);
+    void    _updateTransitionCoordinateAltitudeFromFact  (void);
     void    _updateLandingCoodinateAltitudeFromFact (void);
     double  _mathematicAngleToHeading               (double angle);
     double  _headingToMathematicAngle               (double heading);
@@ -144,6 +153,7 @@ private:
     bool            _dirty;
     QGeoCoordinate  _loiterCoordinate;
     QGeoCoordinate  _loiterTangentCoordinate;
+    QGeoCoordinate  _transitionCoordinate;
     QGeoCoordinate  _landingCoordinate;
     bool            _landingCoordSet;
     bool            _ignoreRecalcSignals;
@@ -152,6 +162,7 @@ private:
 
     Fact            _landingDistanceFact;
     Fact            _loiterAltitudeFact;
+    Fact            _transitionAltitudeFact;
     Fact            _loiterRadiusFact;
     Fact            _landingHeadingFact;
     Fact            _landingAltitudeFact;
@@ -163,6 +174,7 @@ private:
     bool            _loiterClockwise;
     bool            _altitudesAreRelative;
 
+    static const char* _jsonTransitionCoordinateKey;
     static const char* _jsonLoiterCoordinateKey;
     static const char* _jsonLoiterRadiusKey;
     static const char* _jsonLoiterClockwiseKey;
