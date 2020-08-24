@@ -4,7 +4,7 @@
     "shortDescription": "Set the current flight speed",
     "type":             "double",
     "units":            "m/s",
-    "min":              0,
+    "min":              16,
     "decimalPlaces":    1,
     "defaultValue":     0
 }

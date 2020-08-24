@@ -15,7 +15,6 @@
 
 DECLARE_SETTINGGROUP(AirMap, "AirMap")
 {
-    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership); \
     qmlRegisterUncreatableType<AirMapSettings>("QGroundControl.SettingsManager", 1, 0, "AirMapSettings", "Reference only"); \
 }
 

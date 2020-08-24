@@ -56,7 +56,7 @@ const char* MissionController::_jsonMavAutopilotKey =           "MAV_AUTOPILOT";
 
 const int   MissionController::_missionFileVersion =            2;
 
-const QString MissionController::patternFWLandingName      (QT_TRANSLATE_NOOP("MissionController", "Fixed Wing Landing"));
+const QString MissionController::patternFWLandingName      (QT_TRANSLATE_NOOP("MissionController", "Landing Approach"));
 const QString MissionController::patternStructureScanName  (QT_TRANSLATE_NOOP("MissionController", "Structure Scan"));
 const QString MissionController::patternCorridorScanName   (QT_TRANSLATE_NOOP("MissionController", "Corridor Scan"));
 
@@ -1955,13 +1955,13 @@ QStringList MissionController::complexMissionItemNames(void) const
     QStringList complexItems;
 
     complexItems.append(_surveyMissionItemName);
-    complexItems.append(patternCorridorScanName);
-    if (_controllerVehicle->fixedWing()) {
+  //  complexItems.append(patternCorridorScanName);
+   if (_controllerVehicle->fixedWing()) {
         complexItems.append(patternFWLandingName);
     }
-    if (_controllerVehicle->multiRotor() || _controllerVehicle->vtol()) {
+    /*if (_controllerVehicle->multiRotor() || _controllerVehicle->vtol()) {
         complexItems.append(patternStructureScanName);
-    }
+    }*/
 
     return qgcApp()->toolbox()->corePlugin()->complexMissionItemNames(_controllerVehicle, complexItems);
 }

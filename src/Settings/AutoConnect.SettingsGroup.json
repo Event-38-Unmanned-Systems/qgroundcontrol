@@ -4,14 +4,14 @@
     "shortDescription": "Automatically open a connection over UDP",
     "longDescription":  "If this option is enabled GroundControl will automatically connect to a vehicle which is detected on a UDP communication link.",
     "type":             "bool",
-    "defaultValue":     true
+    "defaultValue":     false
 },
 {
     "name":             "autoConnectPixhawk",
     "shortDescription": "Automatically connect to a Pixhawk board",
     "longDescription":  "If this option is enabled GroundControl will automatically connect to a Pixhawk board which is connected via USB.",
     "type":             "bool",
-    "defaultValue":     true
+    "defaultValue":     false
 },
 {
     "name":             "autoConnectSiKRadio",
@@ -25,28 +25,28 @@
     "shortDescription": "Automatically connect to a P4 Flow",
     "longDescription":  "If this option is enabled GroundControl will automatically connect to a PX4 Flow board which is connected via USB.",
     "type":             "bool",
-    "defaultValue":     true
+    "defaultValue":     false
 },
 {
     "name":             "autoConnectRTKGPS",
     "shortDescription": "Automatically connect to an RTK GPS",
     "longDescription":  "If this option is enabled GroundControl will automatically connect to an RTK GPS which is connected via USB.",
     "type":             "bool",
-    "defaultValue":     true
+    "defaultValue":     false
 },
 {
     "name":             "autoConnectLibrePilot",
     "shortDescription": "Automatically connect to a LibrePilot",
     "longDescription":  "If this option is enabled GroundControl will automatically connect to a LibrePilot board which is connected via USB.",
     "type":             "bool",
-    "defaultValue":     true
+    "defaultValue":     false
 },
 {
     "name":             "autoConnectNmeaPort",
     "shortDescription": "NMEA GPS device for GCS position",
     "longDescription":  "NMEA GPS device for GCS position",
     "type":             "string",
-    "defaultValue":     "Disabled"
+    "defaultValue":     false
 },
 {
     "name":             "autoConnectNmeaBaud",

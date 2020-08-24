@@ -20,7 +20,7 @@
     "shortDescription": "Offline editing cruise speed",
     "longDescription":  "This value defines the default cruising speed for forward flight vehicles for use in calculating mission statistics. It does not modify the flight speed for a specific flight plan.",
     "type":             "double",
-    "defaultValue":     15.0,
+    "defaultValue":     16.0,
     "min":              1.0,
     "units":            "m/s",
     "decimalPlaces":    2
@@ -40,7 +40,7 @@
     "shortDescription": "Offline editing ascent speed",
     "longDescription":  "This value defines the ascent speed for multi-rotor vehicles for use in calculating mission duration.",
     "type":             "double",
-    "defaultValue":     3.0,
+    "defaultValue":     1.5,
     "min":              0.1,
     "units":            "m/s",
     "decimalPlaces":    2
@@ -50,7 +50,7 @@
     "shortDescription": "Offline editing descent speed",
     "longDescription":  "This value defines the cruising speed for multi-rotor vehicles for use in calculating mission duration.",
     "type":             "double",
-    "defaultValue":     1.0,
+    "defaultValue":     1.5,
     "min":              0.1,
     "units":            "m/s",
     "decimalPlaces":    2
@@ -70,7 +70,7 @@
     "shortDescription": "Default value for altitude",
     "longDescription":  "This value specifies the default altitude for new items added to a mission.",
     "type":             "double",
-    "defaultValue":     50.0,
+    "defaultValue":     100.0,
     "min":              0.0,
     "units":            "m",
     "decimalPlaces":    1
@@ -87,14 +87,14 @@
     "shortDescription": "Save telemetry log even if vehicle was not armed",
     "longDescription":  "If this option is enabled a telemtry log will be saved even if vehicle was never armed.",
     "type":             "bool",
-    "defaultValue":     false
+    "defaultValue":     true
 },
 {
     "name":             "audioMuted",
     "shortDescription": "Mute audio output",
     "longDescription":  "If this option is enabled all audio output will be muted.",
     "type":             "bool",
-    "defaultValue":     false
+    "defaultValue":     true
 },
 {
     "name":             "virtualJoystick",

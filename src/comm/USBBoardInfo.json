@@ -6,6 +6,7 @@
     "groundStation":    "QGroundControl",
 
     "boardInfo": [
+        { "vendorID": 1659, "productID": 8963,     "boardClass": "SiK Radio",  "name": "SiK Radio",            "comment": "SILabs Radio" },
         { "vendorID": 9900, "productID": 16,        "boardClass": "Pixhawk",    "name": "PX4 FMU V1" },
         { "vendorID": 9900, "productID": 17,        "boardClass": "Pixhawk",    "name": "PX4 FMU V2" },
         { "vendorID": 9900, "productID": 18,        "boardClass": "Pixhawk",    "name": "PX4 FMU V4" },

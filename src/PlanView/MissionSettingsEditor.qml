@@ -27,8 +27,8 @@ Rectangle {
     property bool   _offlineEditing:                _missionVehicle.isOfflineEditingVehicle
     property bool   _showOfflineVehicleCombos:      _multipleFirmware
     property bool   _enableOfflineVehicleCombos:    _offlineEditing && _noMissionItemsAdded
-    property bool   _showCruiseSpeed:               !_missionVehicle.multiRotor
-    property bool   _showHoverSpeed:                _missionVehicle.multiRotor || _missionVehicle.vtol
+    property bool   _showCruiseSpeed:               false
+    property bool   _showHoverSpeed:                false
     property bool   _multipleFirmware:              QGroundControl.supportedFirmwareCount > 2
     property real   _fieldWidth:                    ScreenTools.defaultFontPixelWidth * 16
     property bool   _mobile:                        ScreenTools.isMobile
@@ -107,7 +107,7 @@ Rectangle {
                 visible:                _showCameraSection && cameraSection.checked
             }
 
-            SectionHeader {
+           /* SectionHeader {
                 id:         missionEndHeader
                 text:       qsTr("Mission End")
                 checked:    true
@@ -124,7 +124,7 @@ Rectangle {
                     checked:    missionItem.missionEndRTL
                     onClicked:  missionItem.missionEndRTL = checked
                 }
-            }
+            }*/
 
 
             SectionHeader {

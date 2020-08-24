@@ -165,9 +165,9 @@ bool MissionSettingsItem::addMissionEndAction(QList<MissionItem*>& items, int se
 {
     MissionItem* item = NULL;
 
-    // IMPORTANT NOTE: If anything changes here you must also change MissionSettingsItem::scanForMissionSettings
+    // IMPORTANT NOTE: If anything changes here you must also change MissionSettingsItem::scanForMissionSettings_missionEndRTL
 
-    if (_missionEndRTL) {
+    if (false) {
         qCDebug(MissionSettingsComplexItemLog) << "Appending end action RTL seqNum" << seqNum;
         item = new MissionItem(seqNum,
                                MAV_CMD_NAV_RETURN_TO_LAUNCH,

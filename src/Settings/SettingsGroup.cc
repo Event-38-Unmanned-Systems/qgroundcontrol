@@ -10,6 +10,8 @@
 #include "SettingsGroup.h"
 #include "QGCCorePlugin.h"
 #include "QGCApplication.h"
+#include <QQmlEngine>
+#include <QtQml>
 
 static const char* kJsonFile = ":/json/%1.SettingsGroup.json";
 
@@ -19,6 +21,8 @@ SettingsGroup::SettingsGroup(const QString& name, const QString& settingsGroup, 
     , _name         (name)
     , _settingsGroup(settingsGroup)
 {
+    QQmlEngine::setObjectOwnership(this,QQmlEngine::CppOwnership);
+
     _nameToMetaDataMap = FactMetaData::createMapFromJsonFile(QString(kJsonFile).arg(name), this);
 }
 

@@ -275,11 +275,11 @@ Item {
 
             sourceItem:
                 MissionItemIndexLabel {
-                index:      _missionItem.sequenceNumber
+                index:      _missionItem.sequenceNumber+1;
                 label:      "transition"
                 checked:    _missionItem.isCurrentItem
 
-                onClicked: _root.clicked(_missionItem.sequenceNumber)
+                onClicked: _root.clicked(_missionItem.sequenceNumber+1)
             }
         }
     }
@@ -311,11 +311,11 @@ Item {
             z:              QGroundControl.zOrderMapItems
             border.width:   1
             border.color:   "black"
-            color:          "green"
+            color:          "red"
             opacity:        0.5
 
             readonly property real landingWidth:    15
-            readonly property real landingLength:   100
+            readonly property real landingLength:   15
             readonly property real angleRadians:    Math.atan((landingWidth / 2) / (landingLength / 2))
             readonly property real angleDegrees:    (angleRadians * (180 / Math.PI))
             readonly property real hypotenuse:      (landingWidth / 2) / Math.sin(angleRadians)

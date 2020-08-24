@@ -56,6 +56,7 @@ FixedWingLandingComplexItem::FixedWingLandingComplexItem(Vehicle* vehicle, bool 
     , _metaDataMap              (FactMetaData::createMapFromJsonFile(QStringLiteral(":/json/FWLandingPattern.FactMetaData.json"), this))
     , _landingDistanceFact      (settingsGroup, _metaDataMap[loiterToLandDistanceName])
     , _loiterAltitudeFact       (settingsGroup, _metaDataMap[loiterAltitudeName])
+    , _transitionAltitudeFact   (settingsGroup, _metaDataMap[transitionAltitudeName])
     , _loiterRadiusFact         (settingsGroup, _metaDataMap[loiterRadiusName])
     , _landingHeadingFact       (settingsGroup, _metaDataMap[landingHeadingName])
     , _landingAltitudeFact      (settingsGroup, _metaDataMap[landingAltitudeName])
@@ -116,7 +117,7 @@ FixedWingLandingComplexItem::FixedWingLandingComplexItem(Vehicle* vehicle, bool 
 int FixedWingLandingComplexItem::lastSequenceNumber(void) const
 {
     // Fixed items are:
-    //  land start, loiter, land
+    //  land start, loiter, transition wp, land
     // Optional items are:
     //  stop photos/video
     return _sequenceNumber + 2 + (_stopTakingPhotosFact.rawValue().toBool() ? 2 : 0) + (_stopTakingVideoFact.rawValue().toBool() ? 1 : 0);
@@ -216,7 +217,7 @@ bool FixedWingLandingComplexItem::load(const QJsonObject& complexObject, int seq
         bool loiterAltitudeRelative = complexObject[_jsonLoiterAltitudeRelativeKey].toBool();
         bool landingAltitudeRelative = complexObject[_jsonLandingAltitudeRelativeKey].toBool();
         if (loiterAltitudeRelative != landingAltitudeRelative) {
-            qgcApp()->showMessage(tr("Fixed Wing Landing Pattern: "
+            qgcApp()->showMessage(tr("Approach Pattern: "
                                      "Setting the loiter and landing altitudes with different settings for altitude relative is no longer supported. "
                                      "Both have been set to altitude relative. Be sure to adjust/check your plan prior to flight."));
             _altitudesAreRelative = true;
@@ -484,8 +485,8 @@ bool FixedWingLandingComplexItem::scanForItem(QmlObjectListModel* visualItems, b
     complexItem->_landingCoordinate.setLongitude(missionItemLand.param6());
     complexItem->_landingAltitudeFact.setRawValue(missionItemLand.param7());
 
-    complexItem->_stopTakingPhotosFact.setRawValue(stopTakingPhotos);
-    complexItem->_stopTakingVideoFact.setRawValue(stopTakingVideo);
+    //complexItem->_stopTakingPhotosFact.setRawValue(stopTakingPhotos);
+    //complexItem->_stopTakingVideoFact.setRawValue(stopTakingVideo);
 
     complexItem->_calcGlideSlope();
 

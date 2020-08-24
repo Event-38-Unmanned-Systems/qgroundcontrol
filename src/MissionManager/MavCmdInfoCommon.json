@@ -69,7 +69,7 @@
             "param3": {
                 "label":            "Radius",
                 "units":            "m",
-                "default":          50.0,
+                "default":          100.0,
                 "decimalPlaces":    2
             },
             "param4": {
@@ -96,7 +96,7 @@
             "param3": {
                 "label":            "Radius",
                 "units":            "m",
-                "default":          50.0,
+                "default":          100.0,
                 "decimalPlaces":    2
             },
             "param4": {
@@ -124,7 +124,7 @@
             "param3": {
                 "label":            "Radius",
                 "units":            "m",
-                "default":          50.0,
+                "default":          100.0,
                 "decimalPlaces":    2
             },
             "param4": {
@@ -224,7 +224,7 @@
             "param2": {
                 "label":            "Radius",
                 "units":            "m",
-                "default":          50.0,
+                "default":          100.0,
                 "decimalPlaces":    2
             },
             "param4": {
@@ -287,15 +287,14 @@
             "rawName":              "MAV_CMD_NAV_VTOL_TAKEOFF",
             "friendlyName":         "VTOL takeoff and transition",
             "description":          "Takeoff in VTOL mode, transition to forward flight and fly to the specified location.",
-            "specifiesCoordinate":  true,
+            "specifiesCoordinate":  false,
             "friendlyEdit":         true,
-            "category":             "VTOL",
-            "param4": {
-                "label":            "Heading",
-                "units":            "deg",
-                "nanUnchanged":     true,
-                "default":          null,
-                "decimalPlaces":    2
+            "category":             "Basic",
+            "param7": {
+                "label":            "Altitude",
+                "units":            "m",
+                 "default":          30,
+                 "decimalPlaces":    2
             }
         },
         {
@@ -305,7 +304,7 @@
             "description":          "Transition to VTOL mode and land.",
             "specifiesCoordinate":  true,
             "friendlyEdit":         true,
-            "category":             "VTOL",
+            "category":             "Landing",
             "param4": {
                 "label":            "Heading",
                 "units":            "deg",
@@ -604,7 +603,7 @@
             "friendlyName":         "Land start",
             "description":          "Marker to indicate start of landing sequence.",
             "friendlyEdit":         true,
-            "category":             "Flight control"
+            "category":             "Landing"
         },
         { "id": 190, "rawName": "MAV_CMD_DO_RALLY_LAND", "friendlyName": "Rally land" },
         { "id": 191, "rawName": "MAV_CMD_DO_GO_AROUND", "friendlyName": "Go around" },

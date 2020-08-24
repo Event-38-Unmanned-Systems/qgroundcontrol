@@ -4,7 +4,7 @@
     "shortDescription": "Minimum altitude for guided actions altitude slider.",
     "type":             "double",
     "units":            "m",
-    "defaultValue":     2
+    "defaultValue":     30
 },
 {
     "name":             "guidedMaximumAltitude",

@@ -695,7 +695,7 @@ QList<MAV_CMD> APMFirmwarePlugin::supportedMissionCommands(void)
 
     list << MAV_CMD_NAV_WAYPOINT
          << MAV_CMD_NAV_LOITER_UNLIM << MAV_CMD_NAV_LOITER_TURNS << MAV_CMD_NAV_LOITER_TIME
-         << MAV_CMD_NAV_RETURN_TO_LAUNCH << MAV_CMD_NAV_LAND << MAV_CMD_NAV_TAKEOFF
+         //<< MAV_CMD_NAV_RETURN_TO_LAUNCH << MAV_CMD_NAV_LAND << MAV_CMD_NAV_TAKEOFF
          //<< MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT
          << MAV_CMD_NAV_LOITER_TO_ALT
          //<< MAV_CMD_NAV_SPLINE_WAYPOINT
@@ -991,24 +991,16 @@ void APMFirmwarePlugin::startMission(Vehicle* vehicle)
 
     if (!vehicle->armed()) {
         // First switch to flight mode we can arm from
-        if (!_setFlightModeAndValidate(vehicle, "Guided")) {
+        if (!_setFlightModeAndValidate(vehicle, "Auto")) {
             qgcApp()->showMessage(tr("Unable to start mission: Vehicle failed to change to Guided mode."));
             return;
         }
+        vehicle->setCurrentMissionSequence(1);
 
         if (!_armVehicleAndValidate(vehicle)) {
             qgcApp()->showMessage(tr("Unable to start mission: Vehicle failed to arm."));
             return;
         }
-    }
-
-    if (vehicle->fixedWing()) {
-        if (!_setFlightModeAndValidate(vehicle, "Auto")) {
-            qgcApp()->showMessage(tr("Unable to start mission: Vehicle failed to change to Auto mode."));
-            return;
-        }
-    } else {
-        vehicle->sendMavCommand(vehicle->defaultComponentId(), MAV_CMD_MISSION_START, true /*show error */);
     }
 }
 

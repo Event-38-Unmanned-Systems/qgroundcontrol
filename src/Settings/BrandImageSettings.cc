@@ -14,7 +14,7 @@
 
 DECLARE_SETTINGGROUP(BrandImage, "Branding")
 {
-    QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership); \
+
     qmlRegisterUncreatableType<BrandImageSettings>("QGroundControl.SettingsManager", 1, 0, "BrandImageSettings", "Reference only"); \
 }
 

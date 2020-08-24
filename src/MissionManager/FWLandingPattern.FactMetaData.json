@@ -9,6 +9,15 @@
     "defaultValue":     300.0
 },
 {
+    "name":             "transitionAltitude",
+    "shortDescription": "Altitude to transition at",
+    "type":             "double",
+    "units":            "m",
+    "min":              15,
+    "decimalPlaces":    1,
+    "defaultValue":     30.0
+},
+{
     "name":             "LandingHeading",
     "shortDescription": "Heading from loiter point to land point.",
     "type":             "double",
@@ -24,7 +33,7 @@
     "type":             "double",
     "units":            "m",
     "decimalPlaces":    1,
-    "defaultValue":     40.0
+    "defaultValue":     100.0
 },
 {
     "name":             "LoiterRadius",
@@ -33,7 +42,7 @@
     "decimalPlaces":    1,
     "min":              1,
     "units":            "m",
-    "defaultValue":     75.0
+    "defaultValue":     80.0
 },
 {
     "name":             "LandingAltitude",
@@ -51,7 +60,7 @@
     "min":              0.1,
     "max":              90,
     "decimalPlaces":    1,
-    "defaultValue":     6.0
+    "defaultValue":     15.0
 },
 {
     "name":             "ValueSetIsDistance",
@@ -63,12 +72,12 @@
     "name":             "StopTakingPhotos",
     "shortDescription": "Stop taking photos",
     "type":             "bool",
-    "defaultValue":     true
+    "defaultValue":     false
 },
 {
     "name":             "StopTakingVideo",
     "shortDescription": "Stop taking video",
     "type":             "bool",
-    "defaultValue":     true
+    "defaultValue":     false
 }
 ]

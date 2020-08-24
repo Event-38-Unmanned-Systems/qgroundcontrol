@@ -103,14 +103,6 @@ Rectangle {
                 visible:            !QGroundControl.corePlugin.options.combineSettingsAndSetup
             }
 
-            QGCToolBarButton {
-                id:                 setupButton
-                anchors.top:        parent.top
-                anchors.bottom:     parent.bottom
-                exclusiveGroup:     mainActionGroup
-                source:             "/qmlimages/Gears.svg"
-                onClicked:          toolBar.showSetupView()
-            }
 
             QGCToolBarButton {
                 id:                 planButton
@@ -128,6 +120,14 @@ Rectangle {
                 exclusiveGroup:     mainActionGroup
                 source:             "/qmlimages/PaperPlane.svg"
                 onClicked:          toolBar.showFlyView()
+            }
+            QGCToolBarButton {
+                id:                 setupButton
+                anchors.top:        parent.top
+                anchors.bottom:     parent.bottom
+                exclusiveGroup:     mainActionGroup
+                source:             "/qmlimages/Gears.svg"
+                onClicked:          toolBar.showSetupView()
             }
 
             QGCToolBarButton {

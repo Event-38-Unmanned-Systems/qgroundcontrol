@@ -18,9 +18,9 @@
         {
             "id":                   84,
             "comment":              "MAV_CMD_NAV_VTOL_TAKEOFF",
-            "specifiesCoordinate":  true,
             "friendlyEdit":         true,
-            "category":             "VTOL"
+            "specifiesCoordinate":  false,
+            "category":             "Basic",
         },
         {
             "id":                   85,
@@ -28,7 +28,7 @@
             "description":          "Land using VTOL mode.",
             "specifiesCoordinate":  true,
             "friendlyEdit":         true,
-            "category":             "VTOL"
+            "category":             "Landing"
         },
         {
             "id":           176,
@@ -53,6 +53,7 @@
         {
             "id":           201,
             "comment":      "MAV_CMD_DO_SET_ROI",
+            "category":             "Advanced",
             "paramRemove":  "1,2,3"
         },
         {
