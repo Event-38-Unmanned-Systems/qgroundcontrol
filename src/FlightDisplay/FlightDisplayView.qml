@@ -566,8 +566,8 @@ QGCView {
             z:                  _panel.z + 4
             title:              qsTr("Fly")
             maxHeight:          (_flightVideo.visible ? _flightVideo.y : parent.height) - toolStrip.y
-            buttonVisible:      [ _useChecklist, _guidedController.showTakeoff || !_guidedController.showLand, _guidedController.showLand && !_guidedController.showTakeoff, true, true, true ]
-            buttonEnabled:      [ _useChecklist && _activeVehicle, _guidedController.showTakeoff, _guidedController.showLand, _guidedController.showRTL, _guidedController.showPause, _anyActionAvailable ]
+            buttonVisible:      [ _useChecklist, false,true, false, true, true ]
+            buttonEnabled:      [ _useChecklist && _activeVehicle, false, true, _guidedController.showRTL, _guidedController.showPause, _anyActionAvailable ]
 
             property bool _anyActionAvailable: _guidedController.showStartMission || _guidedController.showResumeMission || _guidedController.showChangeAlt || _guidedController.showLandAbort
             property var _actionModel: [

@@ -126,7 +126,8 @@ public:
 
     /// Command vehicle to return to launch
     virtual void guidedModeRTL(Vehicle* vehicle);
-
+    /// Command vehicle to return to launch
+    virtual void doLandStart(Vehicle* vehicle);
     /// Command vehicle to land at current location
     virtual void guidedModeLand(Vehicle* vehicle);
 

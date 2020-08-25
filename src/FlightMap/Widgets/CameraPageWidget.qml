@@ -60,6 +60,28 @@ Column {
         onClicked:                  _activeVehicle.triggerCamera()
         enabled:                    _activeVehicle
     }
+    //-- Dumb camera trigger if no actual camera interface exists
+    QGCButton {
+        anchors.horizontalCenter:   parent.horizontalCenter
+        text:                       qsTr("Switch Stream")
+        visible:                    true
+        onClicked:                  _activeVehicle.toggleIRColorPIP()
+        enabled:                    _activeVehicle
+    }
+    QGCButton {
+        anchors.horizontalCenter:   parent.horizontalCenter
+        text:                       qsTr("Record Start/Stop")
+        visible:                    true
+        onClicked:                  _activeVehicle.recordOnCamera()
+        enabled:                    _activeVehicle
+    }
+    QGCButton {
+        anchors.horizontalCenter:   parent.horizontalCenter
+        text:                       qsTr("Change Pallet")
+        visible:                    true
+        onClicked:                  _activeVehicle.changeColorPallet()
+        enabled:                    _activeVehicle
+    }
     Item { width: 1; height: ScreenTools.defaultFontPixelHeight; visible: _isCamera; }
     //-- Actual controller
     QGCLabel {

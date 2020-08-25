@@ -2984,6 +2984,11 @@ void Vehicle::guidedModeRTL(void)
     _firmwarePlugin->guidedModeRTL(this);
 }
 
+void Vehicle::doLandStart(void)
+{
+   _firmwarePlugin->doLandStart(this);
+}
+
 void Vehicle::guidedModeLand(void)
 {
     if (!guidedModeSupported()) {
@@ -3487,12 +3492,113 @@ void Vehicle::triggerCamera(void)
     sendMavCommand(_defaultComponentId,
                    MAV_CMD_DO_DIGICAM_CONTROL,
                    true,                            // show errors
-                   0.0, 0.0, 0.0, 0.0,              // param 1-4 unused
-                   1.0,                             // trigger camera
+                   0.0,                             // servo number
+                   0.0,                             // PWM VALUE
+                   0.0,
+                   0.0,
+                   0.0,                             // trigger camera
                    0.0,                             // param 6 unused
-                   1.0);                            // test shot flag
+                   0.0);                            // test shot flag
 }
 
+void Vehicle::toggleIRColorPIP(void)
+{
+
+
+    if (picture_pwm == 1000){
+         picture_pwm =1500;
+        sendMavCommand(_defaultComponentId,
+                   MAV_CMD_DO_SET_SERVO,
+                   true,                            // show errors
+                   9, picture_pwm, 0.0, 0.0,              // param 1-4 unused
+                   0.0,                             // trigger camera
+                   0.0,                             // param 6 unused
+                   0.0);                            // test shot flag
+}
+    else if (picture_pwm == 1500){
+        picture_pwm = 2000;
+        sendMavCommand(_defaultComponentId,
+                   MAV_CMD_DO_SET_SERVO,
+                   true,                            // show errors
+                   9, picture_pwm, 0.0, 0.0,              // param 1-4 unused
+                   0.0,                             // trigger camera
+                   0.0,                             // param 6 unused
+                   0.0);                            // test shot flag
+}
+    else if (picture_pwm == 2000){
+            picture_pwm = 1000;
+        sendMavCommand(_defaultComponentId,
+                   MAV_CMD_DO_SET_SERVO,
+                   true,                            // show errors
+                   9, picture_pwm, 0.0, 0.0,              // param 1-4 unused
+                   0.0,                             // trigger camera
+                   0.0,                             // param 6 unused
+                   0.0);                            // test shot flag
+}
+
+
+    }
+
+void Vehicle::changeColorPallet(void)
+{
+    if (color_pwm == 1000){
+         color_pwm =1500;
+        sendMavCommand(_defaultComponentId,
+                   MAV_CMD_DO_SET_SERVO,
+                   true,                            // show errors
+                   10, color_pwm, 0.0, 0.0,              // param 1-4 unused
+                   0.0,                             // trigger camera
+                   0.0,                             // param 6 unused
+                   0.0);                            // test shot flag
+}
+    else if (color_pwm == 1500){
+        color_pwm = 2000;
+        sendMavCommand(_defaultComponentId,
+                   MAV_CMD_DO_SET_SERVO,
+                   true,                            // show errors
+                   10, color_pwm, 0.0, 0.0,              // param 1-4 unused
+                   0.0,                             // trigger camera
+                   0.0,                             // param 6 unused
+                   0.0);                            // test shot flag
+}
+    else if (color_pwm == 2000){
+            color_pwm = 1000;
+        sendMavCommand(_defaultComponentId,
+                   MAV_CMD_DO_SET_SERVO,
+                   true,                            // show errors
+                   10, color_pwm, 0.0, 0.0,              // param 1-4 unused
+                   0.0,                             // trigger camera
+                   0.0,                             // param 6 unused
+                   0.0);                            // test shot flag
+}
+
+}
+void Vehicle::recordOnCamera(void)
+{
+
+    if (record_pwm == 1000){
+         record_pwm =2000;
+        sendMavCommand(_defaultComponentId,
+                   MAV_CMD_DO_SET_SERVO,
+                   true,                            // show errors
+                   11, record_pwm, 0.0, 0.0,              // param 1-4 unused
+                   0.0,                             // trigger camera
+                   0.0,                             // param 6 unused
+                   0.0);                            // test shot flag
+}
+    else if (record_pwm == 2000){
+        record_pwm = 1000;
+        sendMavCommand(_defaultComponentId,
+                   MAV_CMD_DO_SET_SERVO,
+                   true,                            // show errors
+                   11, record_pwm, 0.0, 0.0,              // param 1-4 unused
+                   0.0,                             // trigger camera
+                   0.0,                             // param 6 unused
+                   0.0);                            // test shot flag
+}
+
+
+}
 void Vehicle::setVtolInFwdFlight(bool vtolInFwdFlight)
 {
     if (_vtolInFwdFlight != vtolInFwdFlight) {

@@ -887,6 +887,22 @@ void APMFirmwarePlugin::guidedModeRTL(Vehicle* vehicle)
     _setFlightModeAndValidate(vehicle, rtlFlightMode());
 }
 
+
+void APMFirmwarePlugin::doLandStart(Vehicle *vehicle){
+
+    vehicle->sendMavCommand(
+        vehicle->defaultComponentId(),                                                                    // Target component
+        MAV_CMD_DO_LAND_START,                                                // Command id
+        0,                                                                      // ShowError
+        0,                                                                          // Reserved (Set to 0)
+        0,   // Duration between two consecutive pictures (in seconds--ignored if single image)
+        0,
+        0,
+        0,
+        0);
+
+}
+
 void APMFirmwarePlugin::guidedModeChangeAltitude(Vehicle* vehicle, double altitudeChange)
 {
     if (qIsNaN(vehicle->altitudeRelative()->rawValue().toDouble())) {

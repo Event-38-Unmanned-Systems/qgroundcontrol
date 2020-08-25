@@ -348,7 +348,7 @@ Item {
             _activeVehicle.guidedModeRTL()
             break
         case actionLand:
-            _activeVehicle.guidedModeLand()
+            _activeVehicle.doLandStart()
             break
         case actionTakeoff:
             _activeVehicle.guidedModeTakeoff(actionAltitudeChange)

@@ -706,6 +706,10 @@ public:
     /// Command vehicle to takeoff from current location
     Q_INVOKABLE void guidedModeTakeoff(double altitudeRelative);
 
+    /// Command vehicle to takeoff from current location
+    Q_INVOKABLE void doLandStart(void);
+
+
     /// @return The minimum takeoff altitude (relative) for guided takeoff.
     Q_INVOKABLE double minimumTakeoffAltitude(void);
 
@@ -744,6 +748,9 @@ public:
     Q_INVOKABLE void clearMessages();
 
     Q_INVOKABLE void triggerCamera(void);
+    Q_INVOKABLE void toggleIRColorPIP(void);
+    Q_INVOKABLE void changeColorPallet(void);
+    Q_INVOKABLE void recordOnCamera(void);
     Q_INVOKABLE void sendPlan(QString planFile);
 
     /// Used to check if running current version is equal or higher than the one being compared.
@@ -933,7 +940,9 @@ public:
     bool            highLatencyLink         () const { return _highLatencyLink; }
     bool            orbitActive             () const { return _orbitActive; }
     QGCMapCircle*   orbitMapCircle          () { return &_orbitMapCircle; }
-
+    int record_pwm = 1000;
+    int picture_pwm = 1000;
+    int color_pwm = 1000;
     /// Get the maximum MAVLink protocol version supported
     /// @return the maximum version
     unsigned        maxProtoVersion         () const { return _maxProtoVersion; }
