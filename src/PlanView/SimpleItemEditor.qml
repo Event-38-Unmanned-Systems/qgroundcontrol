@@ -174,12 +174,32 @@ Rectangle {
                     }
                 }
 
-                AltitudeFactTextField {
-                    id:                 altField
-                    fact:               missionItem.altitude
-                    altitudeMode:       missionItem.altitudeMode
-                    anchors.left:       parent.left
-                    anchors.right:      parent.right
+                RowLayout{
+
+                    anchors.right:  parent.right
+                    anchors.left:   parent.left
+
+                    AltitudeFactTextField {
+                        id:                 altField
+                        fact:               missionItem.altitude
+                        altitudeMode:       missionItem.altitudeMode
+                        Layout.fillWidth:   true
+                    }
+                QGCButton {
+                    Layout.preferredWidth:  height/1.5
+                    text:                   "-"
+                    onClicked: {
+                    missionItem.altitude.rawValue = missionItem.altitude.rawValue - 5;
+                }
+                }
+
+                QGCButton {
+                        Layout.preferredWidth:  height/1.5
+                        text:                   "+"
+                        onClicked: {
+                        missionItem.altitude.rawValue = missionItem.altitude.rawValue + 5;
+                    }
+                }
                 }
 
                 QGCLabel {
@@ -222,7 +242,7 @@ Rectangle {
                 text:       qsTr("Flight Speed")
                 checked:    missionItem.speedSection.specifyFlightSpeed
                 onClicked:  missionItem.speedSection.specifyFlightSpeed = checked
-                visible:    missionItem.speedSection.available
+                visible:    false
             }
 
 
@@ -252,13 +272,13 @@ Rectangle {
                 fact:               missionItem.speedSection.flightSpeed
                 Layout.fillWidth:   true
                 enabled:            flightSpeedCheckbox.checked
-                visible:            missionItem.speedSection.available
+                visible:            false
             }
         }
 
         CameraSection {
             checked:    missionItem.cameraSection.settingsSpecified
-            visible:    missionItem.cameraSection.available
+            visible:    false
         }
     } // Column
 } // Rectangle

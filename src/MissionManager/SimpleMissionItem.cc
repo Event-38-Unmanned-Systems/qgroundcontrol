@@ -778,7 +778,9 @@ void SimpleMissionItem::_setDefaultsForCommand(void)
         // accept radius.
         _missionItem.setParam2(0);
         break;
-
+    case MAV_CMD_NAV_VTOL_TAKEOFF:
+        _altitudeFact.setRawValue(20);
+        break;
     case MAV_CMD_NAV_LAND:
     case MAV_CMD_NAV_VTOL_LAND:
     case MAV_CMD_DO_SET_ROI_LOCATION:

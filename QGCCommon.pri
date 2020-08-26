@@ -21,6 +21,7 @@ linux {
         message("Linux build")
         CONFIG  += LinuxBuild
         DEFINES += __STDC_LIMIT_MACROS
+        DEFINES += MobileBuild
        # DEFINES += QGC_GST_TAISYNC_ENABLED
         linux-clang {
             message("Linux clang")

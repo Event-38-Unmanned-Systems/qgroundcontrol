@@ -20,7 +20,7 @@
             "comment":              "MAV_CMD_NAV_VTOL_TAKEOFF",
             "friendlyEdit":         true,
             "specifiesCoordinate":  false,
-            "category":             "Basic",
+            "category":             "Basic"
         },
         {
             "id":                   85,
