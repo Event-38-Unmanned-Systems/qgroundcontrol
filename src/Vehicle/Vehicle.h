@@ -709,6 +709,7 @@ public:
     /// Command vehicle to takeoff from current location
     Q_INVOKABLE void doLandStart(void);
 
+    Q_INVOKABLE void doSetROI(const QGeoCoordinate& ROICoord);
 
     /// @return The minimum takeoff altitude (relative) for guided takeoff.
     Q_INVOKABLE double minimumTakeoffAltitude(void);

@@ -304,6 +304,18 @@ MissionItem* FixedWingLandingComplexItem::createDoLandStartItem(int seqNum, QObj
                            parent);
 }
 
+
+MissionItem* FixedWingLandingComplexItem::createMountConfigure(int seqNum, QObject* parent)
+{
+    return new MissionItem(seqNum,                              // sequence number
+                           MAV_CMD_DO_MOUNT_CONTROL,               // MAV_CMD
+                           MAV_FRAME_MISSION,                   // MAV_FRAME
+                           0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,   // param 1-7
+                           true,                                // autoContinue
+                           false,                               // isCurrentItem
+                           parent);
+}
+
 MissionItem* FixedWingLandingComplexItem::createLoiterToAltItem(int seqNum, bool altRel, double loiterRadius, double lat, double lon, double alt, QObject* parent)
 {
     return new MissionItem(seqNum,
@@ -365,6 +377,10 @@ void FixedWingLandingComplexItem::appendMissionItems(QList<MissionItem*>& items,
                                   _transitionCoordinate.latitude(), _transitionCoordinate.longitude(), _transitionAltitudeFact.rawValue().toDouble(),
                                   missionItemParent);
     items.append(item);
+
+    item = createMountConfigure(seqNum++, missionItemParent);
+    items.append(item);
+
 
     item = createLandItem(seqNum++,
                           _altitudesAreRelative,

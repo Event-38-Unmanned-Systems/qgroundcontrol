@@ -66,7 +66,8 @@ public:
     /// Scans the loaded items for a landing pattern complex item
     static bool scanForItem(QmlObjectListModel* visualItems, bool flyView, Vehicle* vehicle);
 
-    static MissionItem* createDoLandStartItem   (int seqNum, QObject* parent);
+    static MissionItem* createDoLandStartItem   (int seqNum, QObject* parent);\
+    static MissionItem* createMountConfigure   (int seqNum, QObject* parent);
     static MissionItem* createLoiterToAltItem   (int seqNum, bool altRel, double loiterRaidus, double lat, double lon, double alt, QObject* parent);
     static MissionItem* createTransitionWpItem (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent);
     static MissionItem* createLandItem          (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent);

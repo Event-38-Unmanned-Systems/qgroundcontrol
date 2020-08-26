@@ -342,15 +342,5 @@ Rectangle {
             visible:                _activeVehicle
         }
 
-        QGCButton {
-            anchors.horizontalCenter:   parent.horizontalCenter
-            text:                       _setToVehicleLocationStr
-            visible:                    _activeVehicle
-
-            onClicked: {
-                missionItem.landingCoordinate = _activeVehicle.coordinate
-                missionItem.landingHeading.rawValue = _activeVehicle.heading.rawValue
-            }
-        }
     }
 }

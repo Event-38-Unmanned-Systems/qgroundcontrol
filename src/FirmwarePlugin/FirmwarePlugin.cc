@@ -259,6 +259,14 @@ void FirmwarePlugin::doLandStart(Vehicle* vehicle)
     qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
+void FirmwarePlugin::doSetROI(Vehicle *vehicle,const QGeoCoordinate& ROICoord)
+{
+    // Not supported by generic vehicle
+    Q_UNUSED(vehicle);
+    Q_UNUSED(ROICoord);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
+}
+
 void FirmwarePlugin::guidedModeLand(Vehicle* vehicle)
 {
     // Not supported by generic vehicle

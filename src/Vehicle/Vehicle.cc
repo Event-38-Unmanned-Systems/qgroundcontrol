@@ -2989,6 +2989,12 @@ void Vehicle::doLandStart(void)
    _firmwarePlugin->doLandStart(this);
 }
 
+void Vehicle::doSetROI(const QGeoCoordinate &ROICoord)
+{
+   _firmwarePlugin->doSetROI(this,ROICoord);
+}
+
+
 void Vehicle::guidedModeLand(void)
 {
     if (!guidedModeSupported()) {

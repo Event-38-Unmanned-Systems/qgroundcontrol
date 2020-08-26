@@ -248,12 +248,29 @@ Rectangle {
 
             Repeater {
                 model: missionItem.textFieldFacts
+                RowLayout{
 
-                FactTextField {
-                    showUnits:          true
-                    fact:               object
-                    Layout.fillWidth:   true
-                    enabled:            !object.readOnly
+                    FactTextField {
+                        showUnits:          true
+                        fact:               object
+                        Layout.fillWidth:   true
+                        enabled:            !object.readOnly
+                    }
+                QGCButton {
+                    Layout.preferredWidth:  height/1.5
+                    text:                   "-"
+                    onClicked: {
+                    object.rawValue = object.rawValue - 1;
+                }
+                }
+
+                QGCButton {
+                        Layout.preferredWidth:  height/1.5
+                        text:                   "+"
+                        onClicked: {
+                       object.rawValue = object.rawValue + 1;
+                    }
+                }
                 }
             }
 

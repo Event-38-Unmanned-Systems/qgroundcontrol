@@ -65,13 +65,6 @@
                 "units":            "m",
                 "default":          100.0,
                 "decimalPlaces":    2
-            },
-            "param4": {
-                "label":            "Heading",
-                "units":            "deg",
-                "nanUnchanged":     true,
-                "default":          null,
-                "decimalPlaces":    2
             }
         },
         {

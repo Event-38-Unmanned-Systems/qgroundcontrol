@@ -59,7 +59,6 @@
         {
             "id":           205,
             "comment":      "MAV_CMD_DO_MOUNT_CONTROL",
-            "paramRemove":  "7",
             "param1": {
                 "label":            "Pitch",
                 "default":          0,

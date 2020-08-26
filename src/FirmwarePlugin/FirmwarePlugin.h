@@ -128,6 +128,7 @@ public:
     virtual void guidedModeRTL(Vehicle* vehicle);
     /// Command vehicle to return to launch
     virtual void doLandStart(Vehicle* vehicle);
+    virtual void doSetROI(Vehicle* vehicle,const QGeoCoordinate& ROICoord);
     /// Command vehicle to land at current location
     virtual void guidedModeLand(Vehicle* vehicle);
 

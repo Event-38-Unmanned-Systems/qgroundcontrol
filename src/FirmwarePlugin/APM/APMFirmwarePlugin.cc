@@ -694,16 +694,18 @@ QList<MAV_CMD> APMFirmwarePlugin::supportedMissionCommands(void)
     QList<MAV_CMD> list;
 
     list << MAV_CMD_NAV_WAYPOINT
-         << MAV_CMD_NAV_LOITER_UNLIM << MAV_CMD_NAV_LOITER_TURNS << MAV_CMD_NAV_LOITER_TIME
+         //<< MAV_CMD_NAV_LOITER_UNLIM
+         << MAV_CMD_NAV_LOITER_TURNS << MAV_CMD_NAV_LOITER_TIME
          //<< MAV_CMD_NAV_RETURN_TO_LAUNCH << MAV_CMD_NAV_LAND << MAV_CMD_NAV_TAKEOFF
          //<< MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT
          << MAV_CMD_NAV_LOITER_TO_ALT
+         << MAV_CMD_DO_MOUNT_CONTROL
          //<< MAV_CMD_NAV_SPLINE_WAYPOINT
          //<< MAV_CMD_NAV_GUIDED_ENABLE
          //<< MAV_CMD_NAV_DELAY
          //<< MAV_CMD_CONDITION_DELAY << MAV_CMD_CONDITION_DISTANCE << MAV_CMD_CONDITION_YAW
          //<< MAV_CMD_DO_SET_MODE
-         << MAV_CMD_DO_JUMP
+         //<< MAV_CMD_DO_JUMP
         /* << MAV_CMD_DO_CHANGE_SPEED
          << MAV_CMD_DO_SET_HOME
          << MAV_CMD_DO_SET_RELAY << MAV_CMD_DO_REPEAT_RELAY
@@ -892,7 +894,8 @@ void APMFirmwarePlugin::doLandStart(Vehicle *vehicle){
 
     vehicle->sendMavCommand(
         vehicle->defaultComponentId(),                                                                    // Target component
-        MAV_CMD_DO_LAND_START,                                                // Command id
+        MAV_CMD_DO_LAND_START,
+        false,// Command id
         0,                                                                      // ShowError
         0,                                                                          // Reserved (Set to 0)
         0,   // Duration between two consecutive pictures (in seconds--ignored if single image)
@@ -900,6 +903,22 @@ void APMFirmwarePlugin::doLandStart(Vehicle *vehicle){
         0,
         0,
         0);
+
+}
+
+void APMFirmwarePlugin::doSetROI(Vehicle *vehicle,const QGeoCoordinate& roiCoord){
+
+    vehicle->sendMavCommand(
+        vehicle->defaultComponentId(),                                                                    // Target component
+        MAV_CMD_DO_SET_ROI,
+        false,// Command id
+        0,                                                                      // ShowError
+        0,                                                                          // Reserved (Set to 0)
+        0,   // Duration between two consecutive pictures (in seconds--ignored if single image)
+        0,
+        roiCoord.latitude(),
+        roiCoord.longitude(),
+        0.0);
 
 }
 

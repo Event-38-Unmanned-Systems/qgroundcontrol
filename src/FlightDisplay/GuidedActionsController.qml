@@ -50,6 +50,7 @@ Item {
     readonly property string landAbortTitle:                qsTr("Land Abort")
     readonly property string setWaypointTitle:              qsTr("Set Waypoint")
     readonly property string gotoTitle:                     qsTr("Goto Location")
+    readonly property string setROITitle:                   qsTr("Set ROI")
     readonly property string vtolTransitionTitle:           qsTr("VTOL Transition")
 
     readonly property string armMessage:                        qsTr("Arm the vehicle.")
@@ -70,6 +71,7 @@ Item {
     readonly property string mvPauseMessage:                    qsTr("Pause all vehicles at their current position.")
     readonly property string vtolTransitionFwdMessage:          qsTr("Transition VTOL to fixed wing flight.")
     readonly property string vtolTransitionMRMessage:           qsTr("Transition VTOL to multi-rotor flight.")
+    readonly property string setROIMessage:                     qsTr("Point Camera Here.")
 
     readonly property int actionRTL:                        1
     readonly property int actionLand:                       2
@@ -92,6 +94,8 @@ Item {
     readonly property int actionMVStartMission:             19
     readonly property int actionVtolTransitionToFwdFlight:  20
     readonly property int actionVtolTransitionToMRFlight:   21
+    readonly property int actionSetROI:                     22
+
 
     property bool showEmergenyStop:     _guidedActionsEnabled && !_hideEmergenyStop && _vehicleArmed && _vehicleFlying
     property bool showArm:              _guidedActionsEnabled && !_vehicleArmed
@@ -106,6 +110,8 @@ Item {
     property bool showOrbit:            _guidedActionsEnabled && !_hideOrbit && _vehicleFlying && _activeVehicle.orbitModeSupported && !_missionActive
     property bool showLandAbort:        _guidedActionsEnabled && _vehicleFlying && _fixedWingOnApproach
     property bool showGotoLocation:     _guidedActionsEnabled && _vehicleFlying
+    property bool showSetROI:           _guidedActionsEnabled && _vehicleFlying
+    property bool canSetROI:           false
 
     // Note: The '_missionItemCount - 2' is a hack to not trigger resume mission when a mission ends with an RTL item
     property bool showResumeMission:    _activeVehicle && !_vehicleArmed && _vehicleWasFlying && _missionAvailable && _resumeMissionIndex > 0 && (_resumeMissionIndex < _missionItemCount - 2)
@@ -253,6 +259,17 @@ Item {
             confirmDialog.message = startMissionMessage
             confirmDialog.hideTrigger = Qt.binding(function() { return !showStartMission })
             break;
+        case actionSetROI:
+            if (canSetROI){
+            confirmDialog.title = setROITitle
+            confirmDialog.message = setROIMessage
+            confirmDialog.hideTrigger = false;
+            break; }
+            else{
+                canSetROI = true;
+                confirmDialog.hideTrigger = Qt.binding(function() { return true })
+                showImmediate = false
+                break;}
         case actionMVStartMission:
             confirmDialog.title = mvStartMissionTitle
             confirmDialog.message = startMissionMessage
@@ -382,6 +399,15 @@ Item {
         case actionGoto:
             _activeVehicle.guidedModeGotoLocation(actionData)
             break
+        case actionSetROI:
+            if(canSetROI){
+            _activeVehicle.doSetROI(actionData);
+              canSetROI = false;
+                break;
+            }
+            else{canSetROI = true;
+            break;
+            }
         case actionSetWaypoint:
             _activeVehicle.setCurrentMissionSequence(actionData)
             break

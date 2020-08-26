@@ -297,6 +297,38 @@ FlightMap {
 
     // GoTo Location visuals
     MapQuickItem {
+        id:             roiLocationItem
+        visible:        false
+        z:              QGroundControl.zOrderMapItems
+        anchorPoint.x:  sourceItem.anchorPointX
+        anchorPoint.y:  sourceItem.anchorPointY
+        sourceItem: MissionItemIndexLabel {
+            checked:    true
+            index:      -1
+            label:      qsTr("roi", "point camera here")
+        }
+
+        function show(coord) {
+            roiLocationItem.coordinate = coord
+            roiLocationItem.visible = true
+        }
+
+        function hide() {
+            roiLocationItem.visible = false
+        }
+
+        function actionConfirmed() {
+            // We leave the indicator visible. The handling for onInGuidedModeChanged will hide it.
+        }
+
+        function actionCancelled() {
+            hide()
+        }
+    }
+
+
+    // GoTo Location visuals
+    MapQuickItem {
         id:             gotoLocationItem
         visible:        false
         z:              QGroundControl.zOrderMapItems
@@ -451,9 +483,20 @@ FlightMap {
         }
 
         onClicked: {
+
+            if (guidedActionsController.canSetROI){
+              var clickCoord2 = flightMap.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
+                roiLocationItem.show(clickCoord2);
+                guidedActionsController.confirmAction(guidedActionsController.actionSetROI, clickCoord2);
+            }
+
+            else{
+
             if (guidedActionsController.guidedUIVisible || (!guidedActionsController.showGotoLocation && !guidedActionsController.showOrbit)) {
                 return
             }
+
+            else{
             orbitMapCircle.hide()
             gotoLocationItem.hide()
             var clickCoord = flightMap.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
@@ -467,6 +510,8 @@ FlightMap {
                 orbitMapCircle.show(clickCoord)
                 guidedActionsController.confirmAction(guidedActionsController.actionOrbit, clickCoord)
             }
+            }
+        }
         }
     }
 

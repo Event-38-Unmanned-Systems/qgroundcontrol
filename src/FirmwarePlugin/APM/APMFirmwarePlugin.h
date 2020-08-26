@@ -90,6 +90,7 @@ public:
     void                pauseVehicle                    (Vehicle* vehicle) override;
     void                guidedModeRTL                   (Vehicle* vehicle) override;
     void                doLandStart                     (Vehicle* vehicle) override;
+    void                doSetROI                        (Vehicle* vehicle,const QGeoCoordinate& ROICoord) override;
     void                guidedModeChangeAltitude        (Vehicle* vehicle, double altitudeChange) override;
     bool                adjustIncomingMavlinkMessage    (Vehicle* vehicle, mavlink_message_t* message) override;
     void                adjustOutgoingMavlinkMessage    (Vehicle* vehicle, LinkInterface* outgoingLink, mavlink_message_t* message) override;
