@@ -78,6 +78,7 @@ const char* Vehicle::_hobbsFactName =               "hobbs";
 
 const char* Vehicle::_gpsFactGroupName =                "gps";
 const char* Vehicle::_battery1FactGroupName =           "battery";
+const char* Vehicle::_battery3FactGroupName =           "battery3";
 const char* Vehicle::_battery2FactGroupName =           "battery2";
 const char* Vehicle::_windFactGroupName =               "wind";
 const char* Vehicle::_vibrationFactGroupName =          "vibration";
@@ -1519,13 +1520,13 @@ void Vehicle::_handleSysStatus(mavlink_message_t& message)
         // Current is in Amps, current_battery is 10 * milliamperes (1 = 10 milliampere)
         _battery1FactGroup.current()->setRawValue((float)sysStatus.current_battery / 100.0f);
     }
-    if (sysStatus.voltage_battery == UINT16_MAX) {
+   /* if (sysStatus.voltage_battery == UINT16_MAX) {
         _battery1FactGroup.voltage()->setRawValue(VehicleBatteryFactGroup::_voltageUnavailable);
     } else {
         _battery1FactGroup.voltage()->setRawValue((double)sysStatus.voltage_battery / 1000.0);
         // current_battery is 10 mA and voltage_battery is 1mV. (10/1e3 times 1/1e3 = 1/1e5)
         _battery1FactGroup.instantPower()->setRawValue((float)(sysStatus.current_battery*sysStatus.voltage_battery)/(100000.0));
-    }
+    }*/
     _battery1FactGroup.percentRemaining()->setRawValue(sysStatus.battery_remaining);
 
     if (sysStatus.battery_remaining > 0) {
@@ -1569,7 +1570,7 @@ void Vehicle::_handleBatteryStatus(mavlink_message_t& message)
     mavlink_battery_status_t bat_status;
     mavlink_msg_battery_status_decode(&message, &bat_status);
 
-    VehicleBatteryFactGroup& batteryFactGroup = bat_status.id == 0 ? _battery1FactGroup : _battery2FactGroup;
+    VehicleBatteryFactGroup& batteryFactGroup = bat_status.id == 1 ? _battery1FactGroup : bat_status.id == 2 ? _battery2FactGroup : _battery3FactGroup;
 
     if (bat_status.temperature == INT16_MAX) {
         batteryFactGroup.temperature()->setRawValue(VehicleBatteryFactGroup::_temperatureUnavailable);
@@ -1593,7 +1594,7 @@ void Vehicle::_handleBatteryStatus(mavlink_message_t& message)
     }
 
     batteryFactGroup.cellCount()->setRawValue(cellCount);
-
+    batteryFactGroup.voltage()->setRawValue(bat_status.voltages[0]/1000.0);
     //-- Time remaining in seconds (0 means not supported)
     batteryFactGroup.timeRemaining()->setRawValue(bat_status.time_remaining);
     //-- Battery charge state (0 means not supported)

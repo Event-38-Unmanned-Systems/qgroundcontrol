@@ -967,6 +967,7 @@ public:
 
     FactGroup* gpsFactGroup             (void) { return &_gpsFactGroup; }
     FactGroup* battery1FactGroup        (void) { return &_battery1FactGroup; }
+    FactGroup* battery3FactGroup        (void) { return &_battery3FactGroup; }
     FactGroup* battery2FactGroup        (void) { return &_battery2FactGroup; }
     FactGroup* windFactGroup            (void) { return &_windFactGroup; }
     FactGroup* vibrationFactGroup       (void) { return &_vibrationFactGroup; }
@@ -1499,6 +1500,7 @@ private:
     VehicleGPSFactGroup             _gpsFactGroup;
     VehicleBatteryFactGroup         _battery1FactGroup;
     VehicleBatteryFactGroup         _battery2FactGroup;
+    VehicleBatteryFactGroup         _battery3FactGroup;
     VehicleWindFactGroup            _windFactGroup;
     VehicleVibrationFactGroup       _vibrationFactGroup;
     VehicleTemperatureFactGroup     _temperatureFactGroup;
@@ -1527,6 +1529,7 @@ private:
 
     static const char* _gpsFactGroupName;
     static const char* _battery1FactGroupName;
+    static const char* _battery3FactGroupName;
     static const char* _battery2FactGroupName;
     static const char* _windFactGroupName;
     static const char* _vibrationFactGroupName;
