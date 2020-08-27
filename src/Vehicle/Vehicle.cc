@@ -1570,7 +1570,7 @@ void Vehicle::_handleBatteryStatus(mavlink_message_t& message)
     mavlink_battery_status_t bat_status;
     mavlink_msg_battery_status_decode(&message, &bat_status);
 
-    VehicleBatteryFactGroup& batteryFactGroup = bat_status.id == 1 ? _battery1FactGroup : bat_status.id == 2 ? _battery2FactGroup : _battery3FactGroup;
+    VehicleBatteryFactGroup& batteryFactGroup = bat_status.id == 1 ? _battery1FactGroup : bat_status.id == 0 ? _battery2FactGroup : _battery3FactGroup;
 
     if (bat_status.temperature == INT16_MAX) {
         batteryFactGroup.temperature()->setRawValue(VehicleBatteryFactGroup::_temperatureUnavailable);
@@ -1594,7 +1594,9 @@ void Vehicle::_handleBatteryStatus(mavlink_message_t& message)
     }
 
     batteryFactGroup.cellCount()->setRawValue(cellCount);
+    if (bat_status.voltages[0] != UINT16_MAX){
     batteryFactGroup.voltage()->setRawValue(bat_status.voltages[0]/1000.0);
+    }
     //-- Time remaining in seconds (0 means not supported)
     batteryFactGroup.timeRemaining()->setRawValue(bat_status.time_remaining);
     //-- Battery charge state (0 means not supported)
@@ -3506,6 +3508,10 @@ void Vehicle::triggerCamera(void)
                    0.0,                             // trigger camera
                    0.0,                             // param 6 unused
                    0.0);                            // test shot flag
+}
+void Vehicle::preflightCalibration(void)
+{
+    _uas->startCalibration(UASInterface::StartCalibrationPressure);
 }
 
 void Vehicle::toggleIRColorPIP(void)

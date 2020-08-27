@@ -750,6 +750,7 @@ public:
 
     Q_INVOKABLE void triggerCamera(void);
     Q_INVOKABLE void toggleIRColorPIP(void);
+    Q_INVOKABLE void preflightCalibration(void);
     Q_INVOKABLE void changeColorPallet(void);
     Q_INVOKABLE void recordOnCamera(void);
     Q_INVOKABLE void sendPlan(QString planFile);
