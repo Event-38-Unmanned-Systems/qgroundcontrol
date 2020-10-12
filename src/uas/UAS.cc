@@ -1044,7 +1044,22 @@ void UAS::setExternalControlSetpoint(float roll, float pitch, float yaw, float t
                     const float newgimbalPitch = (thrust*1000)+1000;
 
                     //qDebug() << newRollCommand << newPitchCommand << newYawCommand << newThrustCommand;
-
+                    if (_vehicle->roiSet == true && (newgimbalYaw > 1600 || newgimbalYaw < 1400 || newgimbalPitch > 1600 || newgimbalPitch < 1400)){
+                        //set mount to be controlled by sticks
+                        _vehicle->sendMavCommand(
+                            _vehicle->defaultComponentId(),                                                                    // Target component
+                            MAV_CMD_DO_MOUNT_CONTROL,
+                            false,// Command id
+                            0,                                                                      // ShowError
+                            0,                                                                          // Reserved (Set to 0)
+                            0,   // Duration between two consecutive pictures (in seconds--ignored if single image)
+                            0,
+                            0.0,
+                            0.0,
+                            3);
+                        //set roi to false
+                        _vehicle->roiSet = false;
+                    }
                     // Send the MANUAL_COMMAND message
                     mavlink_msg_manual_control_pack_chan(mavlink->getSystemId(),
                                                          mavlink->getComponentId(),

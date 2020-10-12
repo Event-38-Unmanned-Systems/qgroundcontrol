@@ -630,7 +630,6 @@ public:
     Q_PROPERTY(quint64              mavlinkReceivedCount    READ mavlinkReceivedCount                                   NOTIFY mavlinkStatusChanged)
     Q_PROPERTY(quint64              mavlinkLossCount        READ mavlinkLossCount                                       NOTIFY mavlinkStatusChanged)
     Q_PROPERTY(float                mavlinkLossPercent      READ mavlinkLossPercent                                     NOTIFY mavlinkStatusChanged)
-
     // The following properties relate to Orbit status
     Q_PROPERTY(bool             orbitActive     READ orbitActive        NOTIFY orbitActiveChanged)
     Q_PROPERTY(QGCMapCircle*    orbitMapCircle  READ orbitMapCircle     CONSTANT)
@@ -833,7 +832,7 @@ public:
 
     bool armed(void) { return _armed; }
     void setArmed(bool armed);
-
+    bool roiSet = false;
     bool flightModeSetAvailable(void);
     QStringList flightModes(void);
     QString flightMode(void) const;
@@ -858,7 +857,6 @@ public:
     bool supportsJSButton               (void) const;
     bool supportsMotorInterference      (void) const;
     bool supportsTerrainFrame           (void) const;
-
     void setGuidedMode(bool guidedMode);
 
     QString prearmError(void) const { return _prearmError; }
@@ -1316,6 +1314,7 @@ private:
 
     JoystickMode_t  _joystickMode;
     bool            _joystickEnabled;
+
 
     UAS* _uas;
 

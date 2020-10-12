@@ -383,7 +383,7 @@ bool APMFirmwarePlugin::_handleIncomingStatusText(Vehicle* vehicle, mavlink_mess
 
                 if (supportedMajorNumber != -1) {
                     if (firmwareVersion.majorNumber() < supportedMajorNumber || firmwareVersion.minorNumber() < supportedMinorNumber) {
-                        qgcApp()->showMessage(tr("QGroundControl fully supports Version %1.%2 and above. You are using a version prior to that. This combination is untested, you may run into unpredictable results.").arg(supportedMajorNumber).arg(supportedMinorNumber));
+                        //qgcApp()->showMessage(tr("QGroundControl fully supports Version %1.%2 and above. You are using a version prior to that. This combination is untested, you may run into unpredictable results.").arg(supportedMajorNumber).arg(supportedMinorNumber));
                     }
                 }
             }
@@ -907,7 +907,7 @@ void APMFirmwarePlugin::doLandStart(Vehicle *vehicle){
 }
 
 void APMFirmwarePlugin::doSetROI(Vehicle *vehicle,const QGeoCoordinate& roiCoord){
-
+    vehicle->roiSet = true;
     vehicle->sendMavCommand(
         vehicle->defaultComponentId(),                                                                    // Target component
         MAV_CMD_DO_SET_ROI,
