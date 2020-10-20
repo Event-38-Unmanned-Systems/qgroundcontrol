@@ -261,7 +261,9 @@ private:
     static const char* _buttonActionPreviousStream;
     static const char* _buttonActionNextCamera;
     static const char* _buttonActionPreviousCamera;
-
+    static const char* _buttonToggleStream;
+    static const char* _buttonTogglePallet;
+    static const char* _buttonStartStopRecord;
 private slots:
     void _activeVehicleChanged(Vehicle* activeVehicle);
 };

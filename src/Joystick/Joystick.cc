@@ -48,7 +48,9 @@ const char* Joystick::_buttonActionNextStream =         QT_TR_NOOP("Next Video S
 const char* Joystick::_buttonActionPreviousStream =     QT_TR_NOOP("Previous Video Stream");
 const char* Joystick::_buttonActionNextCamera =         QT_TR_NOOP("Next Camera");
 const char* Joystick::_buttonActionPreviousCamera =     QT_TR_NOOP("Previous Camera");
-
+const char* Joystick::_buttonToggleStream =             QT_TR_NOOP("toggle stream");
+const char* Joystick::_buttonTogglePallet =             QT_TR_NOOP("toggle pallet");
+const char* Joystick::_buttonStartStopRecord =          QT_TR_NOOP("record on camera");
 const char* Joystick::_rgFunctionSettingsKey[Joystick::maxFunction] = {
     "RollAxis",
     "PitchAxis",
@@ -669,6 +671,7 @@ QStringList Joystick::actions(void)
     list << _buttonActionZoomIn << _buttonActionZoomOut;
     list << _buttonActionNextStream << _buttonActionPreviousStream;
     list << _buttonActionNextCamera << _buttonActionPreviousCamera;
+    list << _buttonToggleStream << _buttonTogglePallet << _buttonStartStopRecord;
     return list;
 }
 
@@ -846,7 +849,16 @@ void Joystick::_buttonAction(const QString& action)
         emit stepStream(action == _buttonActionNextStream ? 1 : -1);
     } else if(action == _buttonActionNextCamera || action == _buttonActionPreviousCamera) {
         emit stepCamera(action == _buttonActionNextCamera ? 1 : -1);
-    } else {
+    } else if(action == _buttonToggleStream) {
+        _activeVehicle->toggleIRColorPIP();
+    }
+    else if(action == _buttonTogglePallet) {
+            _activeVehicle->changeColorPallet();
+        }
+    else if(action == _buttonStartStopRecord) {
+            _activeVehicle->recordOnCamera();
+        }
+    else {
         qCDebug(JoystickLog) << "_buttonAction unknown action:" << action;
     }
 }
