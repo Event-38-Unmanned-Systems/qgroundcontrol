@@ -112,7 +112,7 @@ Item {
     property bool showGotoLocation:     _guidedActionsEnabled && _vehicleFlying
     property bool showSetROI:           _guidedActionsEnabled && _vehicleFlying
     property bool canSetROI:           false
-
+    property bool coordinateSet:       false
     // Note: The '_missionItemCount - 2' is a hack to not trigger resume mission when a mission ends with an RTL item
     property bool showResumeMission:    _activeVehicle && !_vehicleArmed && _vehicleWasFlying && _missionAvailable && _resumeMissionIndex > 0 && (_resumeMissionIndex < _missionItemCount - 2)
 
@@ -260,13 +260,15 @@ Item {
             confirmDialog.hideTrigger = Qt.binding(function() { return !showStartMission })
             break;
         case actionSetROI:
-            if (canSetROI){
+            if (coordinateSet){
             confirmDialog.title = setROITitle
             confirmDialog.message = setROIMessage
             confirmDialog.hideTrigger = false;
+            coordinateSet = false;
             break; }
             else{
                 canSetROI = true;
+                coordinateSet = false;
                 confirmDialog.hideTrigger = Qt.binding(function() { return true })
                 showImmediate = false
                 break;}
@@ -401,11 +403,13 @@ Item {
             break
         case actionSetROI:
             if(canSetROI){
+             coordinateSet = false;
             _activeVehicle.doSetROI(actionData);
               canSetROI = false;
                 break;
             }
             else{canSetROI = true;
+                 coordinateSet = false;
             break;
             }
         case actionSetWaypoint:
