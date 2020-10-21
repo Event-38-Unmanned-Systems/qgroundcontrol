@@ -191,7 +191,7 @@ Rectangle {
                         }
                         QGCLabel {
                             width:              _valueWidth
-                            text:               _activeVehicle ? _activeVehicle.mavlinkSentCount : qsTr("Not Connected")
+                            text:               _activeVehicle ? _activeVehicle.mamavlinkSentCount : qsTr("Not Connected")
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }

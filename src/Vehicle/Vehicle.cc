@@ -3539,7 +3539,7 @@ void Vehicle::toggleIRColorPIP(void)
                    0.0);                            // test shot flag
 }
     else if (picture_pwm == 2000){
-            picture_pwm = 1000;
+            picture_pwm = 1500;
         sendMavCommand(_defaultComponentId,
                    MAV_CMD_DO_SET_SERVO,
                    true,                            // show errors

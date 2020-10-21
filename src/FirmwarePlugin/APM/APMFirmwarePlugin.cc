@@ -908,6 +908,7 @@ void APMFirmwarePlugin::doLandStart(Vehicle *vehicle){
 
 void APMFirmwarePlugin::doSetROI(Vehicle *vehicle,const QGeoCoordinate& roiCoord){
     vehicle->roiSet = true;
+    if (roiCoord.isValid()){
     vehicle->sendMavCommand(
         vehicle->defaultComponentId(),                                                                    // Target component
         MAV_CMD_DO_SET_ROI,
@@ -919,7 +920,7 @@ void APMFirmwarePlugin::doSetROI(Vehicle *vehicle,const QGeoCoordinate& roiCoord
         roiCoord.latitude(),
         roiCoord.longitude(),
         0.0);
-
+}
 }
 
 void APMFirmwarePlugin::guidedModeChangeAltitude(Vehicle* vehicle, double altitudeChange)

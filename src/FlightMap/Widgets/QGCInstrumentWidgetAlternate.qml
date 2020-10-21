@@ -19,9 +19,9 @@ import QGroundControl.Palette       1.0
 
 Rectangle {
     id:             root
-    width:          getPreferredInstrumentWidth()
-    height:         _outerRadius * 2
-    radius:         _outerRadius
+    width:          0
+    height:        0
+    radius:         0
     color:          qgcPal.window
     border.width:   1
     border.color:   _isSatellite ? qgcPal.mapWidgetBorderLight : qgcPal.mapWidgetBorderDark
@@ -47,6 +47,7 @@ Rectangle {
     QGCPalette { id: qgcPal }
 
     QGCAttitudeWidget {
+        visible: false
         id:                 attitude
         anchors.leftMargin: _topBottomMargin
         anchors.left:       parent.left
@@ -56,6 +57,7 @@ Rectangle {
     }
 
     QGCCompassWidget {
+        visible: false
         id:                 compass
         anchors.leftMargin: _spacing
         anchors.left:       attitude.right
@@ -67,8 +69,9 @@ Rectangle {
     Item {
         id:                 _valuesItem
         anchors.topMargin:  ScreenTools.defaultFontPixelHeight / 4
-        anchors.top:        parent.bottom
-        width:              parent.width
+        //anchors.top:        parent.bottom
+        anchors.right: parent.left
+        width:             getPreferredInstrumentWidth()
         height:             _valuesWidget.height
         visible:            widgetRoot.showValues
 

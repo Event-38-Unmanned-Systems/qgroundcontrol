@@ -260,7 +260,7 @@ Item {
             confirmDialog.hideTrigger = Qt.binding(function() { return !showStartMission })
             break;
         case actionSetROI:
-            if (canSetROI){
+            if (roiSet){
             confirmDialog.title = setROITitle
             confirmDialog.message = setROIMessage
             confirmDialog.hideTrigger = false;

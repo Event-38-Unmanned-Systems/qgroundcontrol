@@ -27,7 +27,7 @@ Item {
     visible:        _activeVehicle ? _activeVehicle.supportsRadio : true
 
     property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
-    property bool   _rcRSSIAvailable:   _activeVehicle ? _activeVehicle.rcRSSI > 0 && _activeVehicle.rcRSSI <= 100 : false
+    property bool   _rcRSSIAvailable:  true
 
     Component {
         id: rcRSSIInfo
@@ -48,21 +48,21 @@ Item {
 
                 QGCLabel {
                     id:             rssiLabel
-                    text:           _activeVehicle ? (_activeVehicle.rcRSSI != 255 ? qsTr("RC RSSI Status") : qsTr("RC RSSI Data Unavailable")) : qsTr("N/A", "No data available")
+                    text:           _activeVehicle ? (_activeVehicle.rcRSSI != 255 ? qsTr("Telemetry Status") : qsTr("RC RSSI Data Unavailable")) : qsTr("N/A", "No data available")
                     font.family:    ScreenTools.demiboldFontFamily
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
 
                 GridLayout {
                     id:                 rcrssiGrid
-                    visible:            _rcRSSIAvailable
+                    visible:            true
                     anchors.margins:    ScreenTools.defaultFontPixelHeight
                     columnSpacing:      ScreenTools.defaultFontPixelWidth
                     columns:            2
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     QGCLabel { text: qsTr("RSSI:") }
-                    QGCLabel { text: _activeVehicle ? (_activeVehicle.rcRSSI + "%") : 0 }
+                    QGCLabel { text: _activeVehicle ? ((100 - _activeVehicle.mavlinkLossPercent.toFixed(0)) + "%") : 0 }
                 }
             }
 
@@ -94,7 +94,7 @@ Item {
         SignalStrength {
             anchors.verticalCenter: parent.verticalCenter
             size:                   parent.height * 0.5
-            percent:                _rcRSSIAvailable ? _activeVehicle.rcRSSI : 0
+            percent:                _rcRSSIAvailable ? (100 - _activeVehicle.mavlinkLossPercent.toFixed(0)) : 0
         }
     }
 
