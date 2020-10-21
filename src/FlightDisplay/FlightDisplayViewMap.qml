@@ -485,10 +485,10 @@ FlightMap {
         onClicked: {
 
             if (guidedActionsController.canSetROI){
-              var clickCoord2 = flightMap.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
+                guidedActionsController.roiSet = true;
+                var clickCoord2 = flightMap.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
                 roiLocationItem.show(clickCoord2);
                 guidedActionsController.confirmAction(guidedActionsController.actionSetROI, clickCoord2);
-                guidedActionsController.coordinateSet = true;
             }
 
             else{

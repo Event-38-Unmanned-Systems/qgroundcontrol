@@ -112,7 +112,7 @@ Item {
     property bool showGotoLocation:     _guidedActionsEnabled && _vehicleFlying
     property bool showSetROI:           _guidedActionsEnabled && _vehicleFlying
     property bool canSetROI:           false
-    property bool coordinateSet:       false
+    property bool roiSet:              false
     // Note: The '_missionItemCount - 2' is a hack to not trigger resume mission when a mission ends with an RTL item
     property bool showResumeMission:    _activeVehicle && !_vehicleArmed && _vehicleWasFlying && _missionAvailable && _resumeMissionIndex > 0 && (_resumeMissionIndex < _missionItemCount - 2)
 
@@ -260,18 +260,15 @@ Item {
             confirmDialog.hideTrigger = Qt.binding(function() { return !showStartMission })
             break;
         case actionSetROI:
-            if (coordinateSet){
+            if (canSetROI){
             confirmDialog.title = setROITitle
             confirmDialog.message = setROIMessage
             confirmDialog.hideTrigger = false;
-            coordinateSet = false;
             break; }
             else{
                 canSetROI = true;
-                coordinateSet = false;
-                confirmDialog.hideTrigger = Qt.binding(function() { return true })
-                showImmediate = false
-                break;}
+                return;
+            }
         case actionMVStartMission:
             confirmDialog.title = mvStartMissionTitle
             confirmDialog.message = startMissionMessage
@@ -402,14 +399,13 @@ Item {
             _activeVehicle.guidedModeGotoLocation(actionData)
             break
         case actionSetROI:
-            if(canSetROI){
-             coordinateSet = false;
+            if(roiSet){
             _activeVehicle.doSetROI(actionData);
               canSetROI = false;
+              roiSet = false;
                 break;
             }
-            else{canSetROI = true;
-                 coordinateSet = false;
+            else{
             break;
             }
         case actionSetWaypoint:
