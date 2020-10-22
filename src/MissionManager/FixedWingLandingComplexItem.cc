@@ -646,9 +646,9 @@ void FixedWingLandingComplexItem::_recalcFromHeadingAndDistanceChange(void)
         // Calculate loiter tangent coordinate
 
         _transitionCoordinate = _landingCoordinate.atDistanceAndAzimuth(100, heading + 180);
-        _loiterTangentCoordinate = _transitionCoordinate.atDistanceAndAzimuth(landToTangentDistance-100, heading + 180);
+        _loiterTangentCoordinate = _transitionCoordinate.atDistanceAndAzimuth(landToTangentDistance, heading + 180);
         // Calculate the distance and angle to the loiter coordinate
-        QGeoCoordinate tangent = _transitionCoordinate.atDistanceAndAzimuth(landToTangentDistance-100, 0);
+        QGeoCoordinate tangent = _transitionCoordinate.atDistanceAndAzimuth(landToTangentDistance, 0);
         QGeoCoordinate loiter = tangent.atDistanceAndAzimuth(radius, 90);
         double loiterDistance = _transitionCoordinate.distanceTo(loiter);
         double loiterAzimuth = _transitionCoordinate.azimuthTo(loiter) * (_loiterClockwise ? -1 : 1);
@@ -755,7 +755,7 @@ void FixedWingLandingComplexItem::applyNewAltitude(double newAltitude)
 void FixedWingLandingComplexItem::_glideSlopeChanged(void)
 {
     if (!_ignoreRecalcSignals) {
-        double landingAltDifference = _loiterAltitudeFact.rawValue().toDouble() - _landingAltitudeFact.rawValue().toDouble();
+        double landingAltDifference = _loiterAltitudeFact.rawValue().toDouble() - _transitionAltitudeFact.rawValue().toDouble();
         double glideSlope = _glideSlopeFact.rawValue().toDouble();
         _landingDistanceFact.setRawValue(landingAltDifference / qTan(qDegreesToRadians(glideSlope)));
     }
@@ -763,7 +763,7 @@ void FixedWingLandingComplexItem::_glideSlopeChanged(void)
 
 void FixedWingLandingComplexItem::_calcGlideSlope(void)
 {
-    double landingAltDifference = _loiterAltitudeFact.rawValue().toDouble() - _landingAltitudeFact.rawValue().toDouble();
+    double landingAltDifference = _loiterAltitudeFact.rawValue().toDouble() - _transitionAltitudeFact.rawValue().toDouble();
     double landingDistance = _landingDistanceFact.rawValue().toDouble();
 
     _glideSlopeFact.setRawValue(qRadiansToDegrees(qAtan(landingAltDifference / landingDistance)));

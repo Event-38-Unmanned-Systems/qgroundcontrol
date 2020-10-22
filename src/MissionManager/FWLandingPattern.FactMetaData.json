@@ -6,7 +6,7 @@
     "units":            "m",
     "min":              10,
     "decimalPlaces":    1,
-    "defaultValue":     300.0
+    "defaultValue":     500.0
 },
 {
     "name":             "transitionAltitude",
@@ -33,7 +33,7 @@
     "type":             "double",
     "units":            "m",
     "decimalPlaces":    1,
-    "defaultValue":     100.0
+    "defaultValue":     80.0
 },
 {
     "name":             "LoiterRadius",
@@ -42,7 +42,7 @@
     "decimalPlaces":    1,
     "min":              1,
     "units":            "m",
-    "defaultValue":     80.0
+    "defaultValue":     100.0
 },
 {
     "name":             "LandingAltitude",
@@ -57,10 +57,10 @@
     "shortDescription": "The glide slope between the loiter and landing point.",
     "type":             "double",
     "units":            "deg",
-    "min":              0.1,
-    "max":              90,
+    "min":              5,
+    "max":              12,
     "decimalPlaces":    1,
-    "defaultValue":     15.0
+    "defaultValue":     7.2
 },
 {
     "name":             "ValueSetIsDistance",
