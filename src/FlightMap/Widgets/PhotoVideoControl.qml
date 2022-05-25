@@ -101,10 +101,12 @@ Rectangle {
 
     function toggleShooting() {
         console.log("toggleShooting", _anyVideoStreamAvailable)
-        if (_mavlinkCamera && _mavlinkCamera.capturesVideo) {
+        if (_mavlinkCamera) {
+            if (_mavlinkCamera.capturesVideo){
             if(_mavlinkCameraInVideoMode) {
                 _mavlinkCamera.toggleVideo()
-            } else {
+            }}
+            if (_mavlinkCamera.capturesPhotos){
                 if(_mavlinkCameraInPhotoMode && !_mavlinkCameraPhotoCaptureIsIdle && _mavlinkCameraElapsedMode) {
                     _mavlinkCamera.stopTakePhoto()
                 } else {
