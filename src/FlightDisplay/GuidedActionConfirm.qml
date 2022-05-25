@@ -20,8 +20,9 @@ Rectangle {
     id:                     _root
     Layout.minimumWidth:    mainLayout.width + (_margins * 2)
     Layout.preferredHeight: mainLayout.height + (_margins * 2)
-    radius:                 ScreenTools.defaultFontPixelWidth / 2
-    color:                  qgcPal.windowShadeLight
+    radius:                 10
+    color:                  qgcPal.window
+    opacity:                .8
     visible:                false
 
     property var    guidedController
@@ -124,7 +125,7 @@ Rectangle {
                 height: slider.height * 0.75
                 width:  height
                 radius: height / 2
-                color:  qgcPal.primaryButton
+                color:  qgcPal.colorRed
 
                 QGCColoredImage {
                     anchors.margins:    parent.height / 4

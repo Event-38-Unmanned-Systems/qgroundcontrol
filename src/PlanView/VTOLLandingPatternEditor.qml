@@ -113,11 +113,48 @@ Rectangle {
         }
 
         SectionHeader {
+            id:             transitionPointSection
+            anchors.left:   parent.left
+            anchors.right:  parent.right
+            text:           qsTr("Transition point")
+        }
+        Column {
+            anchors.left:       parent.left
+            anchors.right:      parent.right
+            spacing:            _margin
+            visible:            landingPointSection.checked
+
+            Item { width: 1; height: _spacer }
+
+            GridLayout {
+                anchors.left:    parent.left
+                anchors.right:   parent.right
+                columns:         2
+
+                QGCLabel { text: qsTr("Altitude") }
+
+                AltitudeFactTextField {
+                    Layout.fillWidth:   true
+                    fact:               missionItem.transitionAlt
+                    altitudeMode:       _altitudeMode
+                }
+
+                QGCLabel { text: qsTr("Distance") }
+
+                FactTextField {
+                    Layout.fillWidth:   true
+                    fact:               missionItem.transitionDistance
+                }
+            }
+        }
+
+        SectionHeader {
             id:             landingPointSection
             anchors.left:   parent.left
             anchors.right:  parent.right
             text:           qsTr("Landing point")
         }
+
 
         Column {
             anchors.left:       parent.left

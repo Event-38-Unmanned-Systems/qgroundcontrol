@@ -32,6 +32,8 @@ const char* FixedWingLandingComplexItem::_jsonValueSetIsDistanceKey         = "v
 FixedWingLandingComplexItem::FixedWingLandingComplexItem(PlanMasterController* masterController, bool flyView)
     : LandingComplexItem        (masterController, flyView)
     , _metaDataMap              (FactMetaData::createMapFromJsonFile(QStringLiteral(":/json/FWLandingPattern.FactMetaData.json"), this))
+    , _transitionAltFact(settingsGroup, _metaDataMap[transitionAltName])
+    , _transitionDistanceFact(settingsGroup, _metaDataMap[transitionDistanceName])
     , _landingDistanceFact      (settingsGroup, _metaDataMap[finalApproachToLandDistanceName])
     , _finalApproachAltitudeFact(settingsGroup, _metaDataMap[finalApproachAltitudeName])
     , _loiterRadiusFact         (settingsGroup, _metaDataMap[loiterRadiusName])

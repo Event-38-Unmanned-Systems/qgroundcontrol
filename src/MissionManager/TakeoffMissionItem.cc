@@ -83,7 +83,7 @@ void TakeoffMissionItem::_init(bool forLoad)
     //  - Launch position is missing - requires prompt to user to click to set launch
     //  - Fixed wing - warn about climb out position adjustment
     if (!homePosition.isValid() || _controllerVehicle->fixedWing()) {
-        _wizardMode = true;
+        _wizardMode = false;
     }
 
     setDirty(false);

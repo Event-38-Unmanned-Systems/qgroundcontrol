@@ -63,6 +63,8 @@ private:
     static bool                 _isValidLandItem(const MissionItem& missionItem);
 
     // Overrides from LandingComplexItem
+    const Fact*     _transitionDistance     (void) const final { return &_transitionDistanceFact; }
+    const Fact*     _transitionAlt          (void) const final { return &_transitionAltFact; }
     const Fact*     _finalApproachAltitude  (void) const final { return &_finalApproachAltitudeFact; }
     const Fact*     _loiterRadius           (void) const final { return &_loiterRadiusFact; }
     const Fact*     _loiterClockwise        (void) const final { return &_loiterClockwiseFact; }
@@ -76,7 +78,9 @@ private:
     MissionItem*    _createLandItem         (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent) final;
 
     QMap<QString, FactMetaData*> _metaDataMap;
-
+    Fact            _transitionAltFact;
+    Fact            _transitionDistanceFact;
+    Fact            _loiterAltitudeFact;
     Fact            _landingDistanceFact;
     Fact            _finalApproachAltitudeFact;
     Fact            _loiterRadiusFact;

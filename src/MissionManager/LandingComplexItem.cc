@@ -19,7 +19,8 @@
 #include <QPolygonF>
 
 QGC_LOGGING_CATEGORY(LandingComplexItemLog, "LandingComplexItemLog")
-
+const char* LandingComplexItem::transitionDistanceName          = "transitionDistance";
+const char* LandingComplexItem::transitionAltName               = "transitionAlt";
 const char* LandingComplexItem::_jsonFinalApproachCoordinateKey = "landingApproachCoordinate";
 const char* LandingComplexItem::_jsonLoiterRadiusKey            = "loiterRadius";
 const char* LandingComplexItem::_jsonLoiterClockwiseKey         = "loiterClockwise";
@@ -28,7 +29,6 @@ const char* LandingComplexItem::_jsonAltitudesAreRelativeKey    = "altitudesAreR
 const char* LandingComplexItem::_jsonUseLoiterToAltKey          = "useLoiterToAlt";
 const char* LandingComplexItem::_jsonStopTakingPhotosKey        = "stopTakingPhotos";
 const char* LandingComplexItem::_jsonStopTakingVideoKey         = "stopVideoPhotos";
-
 const char* LandingComplexItem::finalApproachToLandDistanceName = "LandingDistance";
 const char* LandingComplexItem::landingHeadingName              = "LandingHeading";
 const char* LandingComplexItem::finalApproachAltitudeName       = "FinalApproachAltitude";
@@ -77,7 +77,6 @@ void LandingComplexItem::_init(void)
     connect(this,                       &LandingComplexItem::finalApproachCoordinateChanged,this, &LandingComplexItem::_recalcFromCoordinateChange);
     connect(this,                       &LandingComplexItem::landingCoordinateChanged,      this, &LandingComplexItem::_recalcFromCoordinateChange);
     connect(useLoiterToAlt(),           &Fact::rawValueChanged,                             this, &LandingComplexItem::_recalcFromCoordinateChange);
-
     connect(finalApproachAltitude(),    &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(landingAltitude(),          &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
     connect(landingDistance(),          &Fact::valueChanged,                                this, &LandingComplexItem::_setDirty);
@@ -194,6 +193,10 @@ void LandingComplexItem::_recalcFromHeadingAndDistanceChange(void)
         // Heading is from loiter to land, hence +180
         _loiterTangentCoordinate = _landingCoordinate.atDistanceAndAzimuth(landToTangentDistance, heading + 180);
 
+        // transition coord mwrightE38
+        _transitionCoordinate = _landingCoordinate.atDistanceAndAzimuth(transitionDistance()->rawValue().toDouble(), heading + 180);
+        _transitionCoordinate.setAltitude(transitionAlt()->rawValue().toDouble());
+
         // Loiter coord is 90 degrees counter clockwise from tangent coord
         _finalApproachCoordinate = _loiterTangentCoordinate.atDistanceAndAzimuth(radius, heading - 180 + (_loiterClockwise()->rawValue().toBool() ? -90 : 90));
         _finalApproachCoordinate.setAltitude(finalApproachAltitude()->rawValue().toDouble());
@@ -239,6 +242,11 @@ void LandingComplexItem::_recalcFromRadiusChange(void)
             double landToLoiterDistance = qSqrt(qPow(radius, 2) + qPow(landToTangentDistance, 2));
             double angleLoiterToTangent = qRadiansToDegrees(qAsin(radius/landToLoiterDistance)) * (_loiterClockwise()->rawValue().toBool() ? -1 : 1);
 
+
+            // transition coord mwrightE38
+            _transitionCoordinate = _landingCoordinate.atDistanceAndAzimuth(transitionDistance()->rawValue().toDouble(), heading + 180 + angleLoiterToTangent);
+            _transitionCoordinate.setAltitude(transitionAlt()->rawValue().toDouble());
+
             _finalApproachCoordinate = _landingCoordinate.atDistanceAndAzimuth(landToLoiterDistance, heading + 180 + angleLoiterToTangent);
             _finalApproachCoordinate.setAltitude(finalApproachAltitude()->rawValue().toDouble());
 
@@ -278,6 +286,7 @@ void LandingComplexItem::_recalcFromCoordinateChange(void)
             landToTangentDistance = qSqrt(qPow(landToLoiterDistance, 2) - qPow(radius, 2));
 
             _loiterTangentCoordinate = _landingCoordinate.atDistanceAndAzimuth(landToTangentDistance, landToLoiterHeading + loiterToTangentAngle);
+            _transitionCoordinate = _landingCoordinate.atDistanceAndAzimuth(transitionDistance()->rawValue().toDouble(), landToLoiterHeading + loiterToTangentAngle);
 
         }
 
@@ -298,7 +307,7 @@ int LandingComplexItem::lastSequenceNumber(void) const
     //  land start, loiter, land
     // Optional items are:
     //  stop photos/video
-    return _sequenceNumber + 2 + (stopTakingPhotos()->rawValue().toBool() ? 2 : 0) + (stopTakingVideo()->rawValue().toBool() ? 1 : 0);
+    return _sequenceNumber + 3 + (stopTakingPhotos()->rawValue().toBool() ? 2 : 0) + (stopTakingVideo()->rawValue().toBool() ? 1 : 0);
 }
 
 void LandingComplexItem::appendMissionItems(QList<MissionItem*>& items, QObject* missionItemParent)
@@ -318,8 +327,12 @@ void LandingComplexItem::appendMissionItems(QList<MissionItem*>& items, QObject*
     if (stopTakingVideo()->rawValue().toBool()) {
         CameraSection::appendStopTakingVideo(items, seqNum, missionItemParent);
     }
-
+    //create loiter item
     item = _createFinalApproachItem(seqNum++, missionItemParent);
+    items.append(item);
+
+    //create final approach point mwright
+    item = _createTransitionItem(seqNum++, missionItemParent);
     items.append(item);
 
     item = _createLandItem(seqNum++,
@@ -339,7 +352,23 @@ MissionItem* LandingComplexItem::_createDoLandStartItem(int seqNum, QObject* par
                            false,                               // isCurrentItem
                            parent);
 }
+MissionItem* LandingComplexItem::_createTransitionItem(int seqNum, QObject* parent)
+{
+        return new MissionItem(seqNum,
+                               MAV_CMD_NAV_WAYPOINT,
+                               _altitudesAreRelative ? MAV_FRAME_GLOBAL_RELATIVE_ALT : MAV_FRAME_GLOBAL,
+                               0,               // No hold time
+                               0,               // Use default acceptance radius
+                               0,               // Pass through waypoint
+                               qQNaN(),         // Yaw not specified
+                               _transitionCoordinate.latitude(),
+                               _transitionCoordinate.longitude(),
+                               _transitionAlt()->rawValue().toFloat(),
+                               true,            // autoContinue
+                               false,           // isCurrentItem
+                               parent);
 
+}
 MissionItem* LandingComplexItem::_createFinalApproachItem(int seqNum, QObject* parent)
 {
     if (useLoiterToAlt()->rawValue().toBool()) {

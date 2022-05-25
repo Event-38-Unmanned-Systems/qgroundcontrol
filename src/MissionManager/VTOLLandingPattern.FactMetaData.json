@@ -8,9 +8,30 @@
     "shortDesc":        "Distance between landing and approach points.",
     "type":             "double",
     "units":            "m",
+    "min":              200,
+    "decimalPlaces":    1,
+    "default":          400.0,
+    "max":              800.0
+},
+{
+    "name":             "transitionDistance",
+    "shortDesc":        "Distance between transition and landing points.",
+    "type":             "double",
+    "units":            "m",
+    "min":              80,
+    "decimalPlaces":    1,
+    "default":          100.0,
+    "max":              120.0
+},
+{
+    "name":             "transitionAlt",
+    "shortDesc":        "Distance between transition and landing points.",
+    "type":             "double",
+    "units":            "m",
     "min":              10,
     "decimalPlaces":    1,
-    "default":          300.0
+    "default":          30.0,
+    "max":              100
 },
 {
     "name":             "LandingHeading",
@@ -28,7 +49,10 @@
     "type":             "double",
     "units":            "m",
     "decimalPlaces":    1,
-    "default":          30.0
+    "min":              40.0,
+    "default":          60.0,
+    "max":              120.0
+
 },
 {
     "name":             "LoiterRadius",
@@ -37,7 +61,7 @@
     "decimalPlaces":    1,
     "min":              1,
     "units":            "m",
-    "default":          75.0
+    "default":          100.0
 },
 {
     "name":         "LoiterClockwise",

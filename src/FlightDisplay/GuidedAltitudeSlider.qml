@@ -20,7 +20,6 @@ Rectangle {
 
     readonly property real _maxAlt: 121.92  // 400 feet
     readonly property real _minAlt: 3
-
     property var  _activeVehicle:       QGroundControl.multiVehicleManager.activeVehicle
     property var  _flyViewSettings:     QGroundControl.settingsManager.flyViewSettings
     property real _vehicleAltitude:     _activeVehicle ? _activeVehicle.altitudeRelative.rawValue : 0

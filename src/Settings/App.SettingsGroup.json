@@ -24,7 +24,7 @@
     "shortDesc": "Offline editing cruise speed",
     "longDesc":  "This value defines the default speed for calculating mission statistics for vehicles which do not support hover or VTOL vehicles in fixed wing mode. It does not modify the flight speed for a specific flight plan.",
     "type":             "double",
-    "default":     15.0,
+    "default":     16.0,
     "min":              1.0,
     "units":            "m/s",
     "decimalPlaces":    2
@@ -44,7 +44,7 @@
     "shortDesc": "Offline editing ascent speed",
     "longDesc":  "This value defines the ascent speed for multi-rotor vehicles for use in calculating mission duration.",
     "type":             "double",
-    "default":     3.0,
+    "default":     2.0,
     "min":              0.1,
     "units":            "m/s",
     "decimalPlaces":    2
@@ -54,7 +54,7 @@
     "shortDesc": "Offline editing descent speed",
     "longDesc":  "This value defines the cruising speed for multi-rotor vehicles for use in calculating mission duration.",
     "type":             "double",
-    "default":     1.0,
+    "default":     1.5,
     "min":              0.1,
     "units":            "m/s",
     "decimalPlaces":    2
@@ -74,7 +74,7 @@
     "shortDesc": "Default value for altitude",
     "longDesc":  "This value specifies the default altitude for new items added to a mission.",
     "type":             "double",
-    "default":     50.0,
+    "default":     100.0,
     "min":              0.0,
     "units":            "m",
     "decimalPlaces":    1
@@ -136,14 +136,14 @@
     "shortDesc": "Use preflight checklist",
     "longDesc":  "If this option is enabled the preflight checklist will be used.",
     "type":             "bool",
-    "default":     false
+    "default":     true
 },
 {
     "name":             "enforceChecklist",
     "shortDesc": "Preflight checklist must pass before arming",
     "longDesc":  "If this option is enabled the preflight checklist must pass before arming.",
     "type":             "bool",
-    "default":     false
+    "default":     true
 },
 {
     "name":                 "appFontPointSize",
@@ -162,7 +162,7 @@
     "type":             "uint32",
     "enumStrings":      "Indoor,Outdoor",
     "enumValues":       "1,0",
-    "default":     0
+    "default":     1
 },
 {
     "name":             "showLargeCompass",

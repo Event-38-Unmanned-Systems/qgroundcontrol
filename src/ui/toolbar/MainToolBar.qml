@@ -47,7 +47,6 @@ Rectangle {
 
     Rectangle {
         anchors.fill:   viewButtonRow
-        visible:        currentToolbar === flyViewToolbar
 
         gradient: Gradient {
             orientation: Gradient.Horizontal
@@ -65,11 +64,51 @@ Rectangle {
         spacing:                ScreenTools.defaultFontPixelWidth / 2
 
         QGCToolBarButton {
+            anchors.top:        parent.top
+            anchors.bottom:     parent.bottom
             id:                     currentButton
             Layout.preferredHeight: viewButtonRow.height
-            icon.source:            "/res/QGCLogoFull"
+            icon.source:            "/custom/img/CustomAppIcon.png"
             logo:                   true
             onClicked:              mainWindow.showToolSelectDialog()
+        }
+
+
+        QGCColoredImage {
+            anchors.top:        parent.top
+            anchors.bottom:     parent.bottom
+            id:         flyIcon
+            width:      ScreenTools.largeFontPointSize * 4
+            height:     ScreenTools.largeFontPointSize * 4
+            fillMode:   Image.PreserveAspectFit
+            mipmap:     true
+            color:      qgcPal.text
+            source:     "/qmlimages/PaperPlane.svg"
+            visible:    true
+            QGCMouseArea {
+                anchors.fill:   parent
+                onClicked:      mainWindow.showFlyView();
+            }
+        }
+        Item {
+            Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * ScreenTools.largeFontPointRatio * 1.5
+            height:                 1
+        }
+        QGCColoredImage {
+            anchors.top:        parent.top
+            anchors.bottom:     parent.bottom
+            id:         planIcon
+            width:      ScreenTools.largeFontPointSize * 2.5
+            height:     ScreenTools.largeFontPointSize * 2.5
+            fillMode:   Image.PreserveAspectFit
+            mipmap:     true
+            color:      qgcPal.text
+            source:     "/qmlimages/Plan.svg"
+            visible:    true
+            QGCMouseArea {
+                anchors.fill:   parent
+                onClicked:      mainWindow.showPlanView();
+            }
         }
 
         MainStatusIndicator {

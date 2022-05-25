@@ -62,7 +62,7 @@ APMSensorsComponentController::APMSensorsComponentController(void)
     connect(&_compassCal, &APMCompassCal::vehicleTextMessage, this, &APMSensorsComponentController::_handleUASTextMessage);
 
     APMAutoPilotPlugin * apmPlugin = qobject_cast<APMAutoPilotPlugin*>(_vehicle->autopilotPlugin());
-
+    /*mwrightE38*/
     // Find the sensors component
     foreach (const QVariant& varVehicleComponent, apmPlugin->vehicleComponents()) {
         _sensorsComponent = qobject_cast<APMSensorsComponent*>(varVehicleComponent.value<VehicleComponent*>());

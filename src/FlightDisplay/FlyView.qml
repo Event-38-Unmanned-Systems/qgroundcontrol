@@ -129,9 +129,9 @@ Item {
         anchors.top:        parent.top
         anchors.bottom:     parent.bottom
         z:                  QGroundControl.zOrderTopMost
-        radius:             ScreenTools.defaultFontPixelWidth / 2
+        radius:             10
         width:              ScreenTools.defaultFontPixelWidth * 10
-        color:              qgcPal.window
+        color:      "#cc212529"
         visible:            false
     }
 

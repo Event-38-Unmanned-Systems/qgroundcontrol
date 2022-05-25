@@ -881,24 +881,17 @@ void APMFirmwarePlugin::startMission(Vehicle* vehicle)
 
     if (!vehicle->armed()) {
         // First switch to flight mode we can arm from
-        if (!_setFlightModeAndValidate(vehicle, "Guided")) {
+        if (!_setFlightModeAndValidate(vehicle, "Auto")) {
             qgcApp()->showAppMessage(tr("Unable to start mission: Vehicle failed to change to Guided mode."));
             return;
         }
+
+        vehicle->setCurrentMissionSequence(1);
 
         if (!_armVehicleAndValidate(vehicle)) {
             qgcApp()->showAppMessage(tr("Unable to start mission: Vehicle failed to arm."));
             return;
         }
-    }
-
-    if (vehicle->fixedWing()) {
-        if (!_setFlightModeAndValidate(vehicle, "Auto")) {
-            qgcApp()->showAppMessage(tr("Unable to start mission: Vehicle failed to change to Auto mode."));
-            return;
-        }
-    } else {
-        vehicle->sendMavCommand(vehicle->defaultComponentId(), MAV_CMD_MISSION_START, true /*show error */);
     }
 }
 
@@ -914,8 +907,10 @@ QString APMFirmwarePlugin::_getLatestVersionFileUrl(Vehicle* vehicle)
         return baseUrl.arg("Sub");
     } else if (qobject_cast<ArduCopterFirmwarePlugin*>(vehicle->firmwarePlugin())) {
         return baseUrl.arg("Copter");
-    } else {
+    }
+    else {
         qWarning() << "APMFirmwarePlugin::_getLatestVersionFileUrl Unknown vehicle firmware type" << vehicle->vehicleType();
+        return baseUrl.arg("Plane");
         return QString();
     }
 }

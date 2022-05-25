@@ -27,6 +27,10 @@ RowLayout {
     property real   _margins:           ScreenTools.defaultFontPixelWidth
     property real   _spacing:           ScreenTools.defaultFontPixelWidth / 2
 
+    Item {
+        Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * ScreenTools.largeFontPointRatio * 1.5
+        height:                 1
+    }
     QGCLabel {
         id:             mainStatusLabel
         text:           mainStatusText()
@@ -96,7 +100,6 @@ RowLayout {
         Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * ScreenTools.largeFontPointRatio * 1.5
         height:                 1
     }
-
     QGCColoredImage {
         id:         flightModeIcon
         width:      ScreenTools.defaultFontPixelWidth * 2
@@ -106,6 +109,10 @@ RowLayout {
         color:      qgcPal.text
         source:     "/qmlimages/FlightModesComponentIcon.png"
         visible:    flightModeMenu.visible
+    }
+    Item {
+        Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * ScreenTools.largeFontPointRatio * 1.5
+        height:                 1
     }
 
     Item {
@@ -121,26 +128,6 @@ RowLayout {
         font.pointSize:         _vehicleInAir ?  ScreenTools.largeFontPointSize : ScreenTools.defaultFontPointSize
         mouseAreaLeftMargin:    -(flightModeMenu.x - flightModeIcon.x)
         visible:                _activeVehicle
-    }
-
-    Item {
-        Layout.preferredWidth:  ScreenTools.defaultFontPixelWidth * ScreenTools.largeFontPointRatio * 1.5
-        height:                 1
-        visible:                vtolModeLabel.visible
-    }
-
-    QGCLabel {
-        id:                     vtolModeLabel
-        Layout.preferredHeight: _root.height
-        verticalAlignment:      Text.AlignVCenter
-        text:                   _vtolInFWDFlight ? qsTr("FW(vtol)") : qsTr("MR(vtol)")
-        font.pointSize:         ScreenTools.largeFontPointSize
-        visible:                _activeVehicle ? _activeVehicle.vtol && _vehicleInAir : false
-
-        QGCMouseArea {
-            anchors.fill:   parent
-            onClicked:      mainWindow.showIndicatorPopup(vtolModeLabel, vtolTransitionComponent)
-        }
     }
 
     Component {

@@ -24,8 +24,8 @@ MapQuickItem {
         width:      _radius * 2
         height:     _radius * 2
         radius:     _radius
-        color:      "black"
-        opacity:    0.4
+        color:      "#00ec01"
+        opacity:    0.7
 
         readonly property real _radius: ScreenTools.defaultFontPixelHeight * 0.6
 

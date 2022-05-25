@@ -26,7 +26,8 @@ class LandingComplexItem : public ComplexMissionItem
 
 public:
     LandingComplexItem(PlanMasterController* masterController, bool flyView);
-
+    Q_PROPERTY(Fact*            transitionAlt           READ    transitionAlt                                                   CONSTANT)
+    Q_PROPERTY(Fact*            transitionDistance      READ    transitionDistance                                              CONSTANT)
     Q_PROPERTY(Fact*            finalApproachAltitude   READ    finalApproachAltitude                                           CONSTANT)
     Q_PROPERTY(Fact*            loiterRadius            READ    loiterRadius                                                    CONSTANT)
     Q_PROPERTY(Fact*            landingAltitude         READ    landingAltitude                                                 CONSTANT)
@@ -43,7 +44,8 @@ public:
     Q_PROPERTY(bool             landingCoordSet         READ    landingCoordSet                                                 NOTIFY landingCoordSetChanged)
 
     Q_INVOKABLE void setLandingHeadingToTakeoffHeading();
-
+    const Fact* transitionDistance           (void) const { return _transitionDistance(); }
+    const Fact* transitionAlt           (void) const { return _transitionAlt(); }
     const Fact* finalApproachAltitude   (void) const { return _finalApproachAltitude(); }
     const Fact* loiterRadius            (void) const { return _loiterRadius(); }
     const Fact* loiterClockwise         (void) const { return _loiterClockwise(); }
@@ -54,6 +56,8 @@ public:
     const Fact* stopTakingPhotos        (void) const { return _stopTakingPhotos(); }
     const Fact* stopTakingVideo         (void) const { return _stopTakingVideo(); }
 
+    Fact* transitionDistance         (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_transitionDistance()); };
+    Fact* transitionAlt         (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_transitionAlt()); };
     Fact* finalApproachAltitude (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_finalApproachAltitude()); };
     Fact* loiterRadius          (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_loiterRadius()); };
     Fact* loiterClockwise       (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_loiterClockwise()); };
@@ -66,6 +70,7 @@ public:
 
     bool            altitudesAreRelative    (void) const { return _altitudesAreRelative; }
     bool            landingCoordSet         (void) const { return _landingCoordSet; }
+    QGeoCoordinate  transitionCoordinate       (void) const { return _transitionCoordinate; }
     QGeoCoordinate  landingCoordinate       (void) const { return _landingCoordinate; }
     QGeoCoordinate  finalApproachCoordinate (void) const { return _finalApproachCoordinate; }
     QGeoCoordinate  loiterTangentCoordinate (void) const { return _loiterTangentCoordinate; }
@@ -107,6 +112,8 @@ public:
     double              minAMSLAltitude             (void) const final { return amslExitAlt(); }
     double              maxAMSLAltitude             (void) const final { return amslEntryAlt(); }
 
+    static const char* transitionDistanceName;
+    static const char* transitionAltName;
     static const char* finalApproachToLandDistanceName;
     static const char* finalApproachAltitudeName;
     static const char* loiterRadiusName;
@@ -118,6 +125,7 @@ public:
     static const char* stopTakingVideoName;
 
 signals:
+    void transitionCoordinateChanged (QGeoCoordinate coordinate);
     void finalApproachCoordinateChanged (QGeoCoordinate coordinate);
     void loiterTangentCoordinateChanged (QGeoCoordinate coordinate);
     void landingCoordinateChanged       (QGeoCoordinate coordinate);
@@ -133,6 +141,8 @@ protected slots:
     void _setDirty                                  (void);
 
 protected:
+    virtual const Fact*     _transitionDistance         (void) const = 0;
+    virtual const Fact*     _transitionAlt          (void) const = 0;
     virtual const Fact*     _finalApproachAltitude  (void) const = 0;
     virtual const Fact*     _loiterRadius           (void) const = 0;
     virtual const Fact*     _loiterClockwise        (void) const = 0;
@@ -149,6 +159,7 @@ protected:
     QPointF         _rotatePoint            (const QPointF& point, const QPointF& origin, double angle);
     MissionItem*    _createDoLandStartItem  (int seqNum, QObject* parent);
     MissionItem*    _createFinalApproachItem(int seqNum, QObject* parent);
+    MissionItem*    _createTransitionItem(int seqNum, QObject* parent);
     QJsonObject     _save                   (void);
     bool            _load                   (const QJsonObject& complexObject, int sequenceNumber, const QString& jsonComplexItemTypeValue, bool useDeprecatedRelAltKeys, QString& errorString);
 
@@ -159,6 +170,7 @@ protected:
 
     int             _sequenceNumber             = 0;
     bool            _dirty                      = false;
+    QGeoCoordinate  _transitionCoordinate;
     QGeoCoordinate  _finalApproachCoordinate;
     QGeoCoordinate  _loiterTangentCoordinate;
     QGeoCoordinate  _landingCoordinate;

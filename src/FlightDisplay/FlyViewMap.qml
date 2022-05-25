@@ -163,7 +163,7 @@ FlightMap {
         // We let FlightMap handle first vehicle position
         if (!_keepMapCenteredOnVehicle && firstVehiclePositionReceived && _activeVehicleCoordinate.isValid && !_disableVehicleTracking) {
             if (_keepVehicleCentered) {
-                _root.center = _activeVehicleCoordinate
+              animatedMapRecenter(_root.center, _activeVehicleCoordinate)
             } else {
                 if (firstVehiclePositionReceived && recenterNeeded()) {
                     // Move the map such that the vehicle is centered within the inset area
@@ -173,7 +173,7 @@ FlightMap {
                     var centerOffset = Qt.point((_root.width / 2) - centerInsetPoint.x, (_root.height / 2) - centerInsetPoint.y)
                     var vehicleOffsetPoint = Qt.point(vehiclePoint.x + centerOffset.x, vehiclePoint.y + centerOffset.y)
                     var vehicleOffsetCoord = _root.toCoordinate(vehicleOffsetPoint, false /* clipToViewport */)
-                    animatedMapRecenter(_root.center, vehicleOffsetCoord)
+                    animatedMapRecenter(_root.center, _activeVehicleCoordinate)
                 }
             }
         }
@@ -231,7 +231,7 @@ FlightMap {
     // Add trajectory lines to the map
     MapPolyline {
         id:         trajectoryPolyline
-        line.width: 3
+        line.width: 1.5
         line.color: "red"
         z:          QGroundControl.zOrderTrajectoryLines
         visible:    !pipMode

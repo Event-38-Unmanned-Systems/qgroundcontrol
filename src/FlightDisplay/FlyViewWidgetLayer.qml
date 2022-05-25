@@ -123,7 +123,7 @@ Item {
         id:                     photoVideoControl
         anchors.margins:        _toolsMargin
         anchors.right:          parent.right
-        width:                  _rightPanelWidth
+        width:                  _rightPanelWidth * .8
         state:                  _verticalCenter ? "verticalCenter" : "topAnchor"
         states: [
             State {

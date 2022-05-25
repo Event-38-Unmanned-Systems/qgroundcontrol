@@ -28,6 +28,8 @@ const char* VTOLLandingComplexItem::jsonComplexItemTypeValue = "vtolLandingPatte
 VTOLLandingComplexItem::VTOLLandingComplexItem(PlanMasterController* masterController, bool flyView)
     : LandingComplexItem        (masterController, flyView)
     , _metaDataMap              (FactMetaData::createMapFromJsonFile(QStringLiteral(":/json/VTOLLandingPattern.FactMetaData.json"), this))
+    , _transitionAltFact        (settingsGroup, _metaDataMap[transitionAltName])
+    , _transitionDistanceFact   (settingsGroup, _metaDataMap[transitionDistanceName])
     , _landingDistanceFact      (settingsGroup, _metaDataMap[finalApproachToLandDistanceName])
     , _finalApproachAltitudeFact(settingsGroup, _metaDataMap[finalApproachAltitudeName])
     , _loiterRadiusFact         (settingsGroup, _metaDataMap[loiterRadiusName])
@@ -42,15 +44,6 @@ VTOLLandingComplexItem::VTOLLandingComplexItem(PlanMasterController* masterContr
     _isIncomplete   = false;
 
     _init();
-
-    // We adjust landing distance meta data to Plan View settings unless there was a custom build override
-    if (QGC::fuzzyCompare(_landingDistanceFact.rawValue().toDouble(), _landingDistanceFact.rawDefaultValue().toDouble())) {
-        Fact* vtolTransitionDistanceFact = qgcApp()->toolbox()->settingsManager()->planViewSettings()->vtolTransitionDistance();
-        double vtolTransitionDistance = vtolTransitionDistanceFact->rawValue().toDouble();
-        _landingDistanceFact.metaData()->setRawDefaultValue(vtolTransitionDistance);
-        _landingDistanceFact.setRawValue(vtolTransitionDistance);
-        _landingDistanceFact.metaData()->setRawMin(vtolTransitionDistanceFact->metaData()->rawMin());
-    }
 
     _recalcFromHeadingAndDistanceChange();
 

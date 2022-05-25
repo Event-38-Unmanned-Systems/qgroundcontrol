@@ -93,9 +93,9 @@ void MissionController::_resetMissionFlightStatus(void)
     _missionFlightStatus.cruiseTime =           0.0;
     _missionFlightStatus.hoverDistance =        0.0;
     _missionFlightStatus.cruiseDistance =       0.0;
-    _missionFlightStatus.cruiseSpeed =          _controllerVehicle->defaultCruiseSpeed();
-    _missionFlightStatus.hoverSpeed =           _controllerVehicle->defaultHoverSpeed();
-    _missionFlightStatus.vehicleSpeed =         _controllerVehicle->multiRotor() || _managerVehicle->vtol() ? _missionFlightStatus.hoverSpeed : _missionFlightStatus.cruiseSpeed;
+    _missionFlightStatus.cruiseSpeed =          16;
+    _missionFlightStatus.hoverSpeed =           5;
+    _missionFlightStatus.vehicleSpeed =         16;
     _missionFlightStatus.vehicleYaw =           qQNaN();
     _missionFlightStatus.gimbalYaw =            qQNaN();
     _missionFlightStatus.gimbalPitch =          qQNaN();
@@ -373,8 +373,11 @@ VisualMissionItem* MissionController::insertTakeoffItem(QGeoCoordinate /*coordin
             _takeoffMissionItem->setAltitudeMode(static_cast<QGroundControlQmlGlobal::AltMode>(prevAltMode));
         }
     }
+    //mwrightE38 vtol takeoff altitude here make a fact
+    _takeoffMissionItem->altitude()->setRawValue(30);
     if (visualItemIndex == -1) {
         _visualItems->append(_takeoffMissionItem);
+
     } else {
         _visualItems->insert(visualItemIndex, _takeoffMissionItem);
     }
@@ -392,15 +395,19 @@ VisualMissionItem* MissionController::insertTakeoffItem(QGeoCoordinate /*coordin
 
 VisualMissionItem* MissionController::insertLandItem(QGeoCoordinate coordinate, int visualItemIndex, bool makeCurrentItem)
 {
-    if (_controllerVehicle->fixedWing()) {
+    VTOLLandingComplexItem* vtolLanding = qobject_cast<VTOLLandingComplexItem*>(insertComplexMissionItem(VTOLLandingComplexItem::name, coordinate, visualItemIndex, makeCurrentItem));
+    return vtolLanding;
+   //remove all other landing types for now
+   /* if (_controllerVehicle->fixedWing()) {
         FixedWingLandingComplexItem* fwLanding = qobject_cast<FixedWingLandingComplexItem*>(insertComplexMissionItem(FixedWingLandingComplexItem::name, coordinate, visualItemIndex, makeCurrentItem));
         return fwLanding;
-    } else if (_controllerVehicle->vtol()) {
+    } else if (_controllerVehicle->fixedWing()) {
         VTOLLandingComplexItem* vtolLanding = qobject_cast<VTOLLandingComplexItem*>(insertComplexMissionItem(VTOLLandingComplexItem::name, coordinate, visualItemIndex, makeCurrentItem));
         return vtolLanding;
     } else {
         return _insertSimpleMissionItemWorker(coordinate, _controllerVehicle->vtol() ? MAV_CMD_NAV_VTOL_LAND : MAV_CMD_NAV_RETURN_TO_LAUNCH, visualItemIndex, makeCurrentItem);
-    }
+    }*/
+
 }
 
 VisualMissionItem* MissionController::insertROIMissionItem(QGeoCoordinate coordinate, int visualItemIndex, bool makeCurrentItem)

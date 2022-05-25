@@ -57,6 +57,7 @@
     "shortDesc": "Air Speed",
     "type":             "double",
     "decimalPlaces":    1,
+        "default":    16,
     "units":            "m/s"
 },
 {

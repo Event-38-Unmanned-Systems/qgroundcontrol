@@ -17,7 +17,7 @@
     "name":             "FlyAlternateTransects",
     "shortDesc": "Fly every other transect in each pass.",
     "type":             "bool",
-    "default":     false
+    "default":     true
 },
 {
     "name":             "SplitConcavePolygons",

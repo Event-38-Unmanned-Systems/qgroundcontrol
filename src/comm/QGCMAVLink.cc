@@ -87,7 +87,7 @@ bool QGCMAVLink::isAirship(MAV_TYPE mavType)
 
 bool QGCMAVLink::isFixedWing(MAV_TYPE mavType)
 {
-    return vehicleClass(mavType) == VehicleClassFixedWing;
+    return vehicleClass(mavType) == VehicleClassVTOL;
 }
 
 bool QGCMAVLink::isRoverBoat(MAV_TYPE mavType)
@@ -134,7 +134,7 @@ QGCMAVLink::VehicleClass_t QGCMAVLink::vehicleClass(MAV_TYPE mavType)
     case MAV_TYPE_VTOL_RESERVED5:
         return VehicleClassVTOL;
     case MAV_TYPE_FIXED_WING:
-        return VehicleClassFixedWing;
+        return VehicleClassVTOL;
     case MAV_TYPE_AIRSHIP:
         return VehicleClassAirship;
     default:
@@ -148,7 +148,7 @@ QString QGCMAVLink::vehicleClassToString(VehicleClass_t vehicleClass)
     case VehicleClassAirship:
         return QT_TRANSLATE_NOOP("Vehicle Class", "Airship");
     case VehicleClassFixedWing:
-        return QT_TRANSLATE_NOOP("Vehicle Class", "Fixed Wing");
+        return QT_TRANSLATE_NOOP("Vehicle Class", "VTOL");
     case VehicleClassRoverBoat:
         return QT_TRANSLATE_NOOP("Vehicle Class", "Rover-Boat");
     case VehicleClassSub:
