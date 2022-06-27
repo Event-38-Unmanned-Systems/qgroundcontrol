@@ -815,10 +815,11 @@ Item {
                         text:       qsTr("Fence")
                         enabled:    _geoFenceController.supported
                     }
-                    QGCTabButton {
+              /*      QGCTabButton {
                         text:       qsTr("Rally")
                         enabled:    _rallyPointController.supported
                     }
+                    */
                 }
             }
             //-------------------------------------------------------
