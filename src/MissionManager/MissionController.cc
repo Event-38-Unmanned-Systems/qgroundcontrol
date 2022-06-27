@@ -2267,7 +2267,7 @@ QStringList MissionController::complexMissionItemNames(void) const
     complexItems.append(SurveyComplexItem::name);
     complexItems.append(CorridorScanComplexItem::name);
     if (_controllerVehicle->multiRotor() || _controllerVehicle->vtol()) {
-        complexItems.append(StructureScanComplexItem::name);
+        //complexItems.append(StructureScanComplexItem::name);
     }
 
     // Note: The landing pattern items are not added here since they have there own button which adds them

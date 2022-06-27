@@ -74,9 +74,9 @@ Item {
         interactive:        polygonInteractive && _missionItem.isCurrentItem && _root.interactive
         borderWidth:        1
         borderColor:        "black"
-        interiorColor:      QGroundControl.globalPalette.surveyPolygonInterior
+        interiorColor:      (_currentItem) ? QGroundControl.globalPalette.surveyPolygonInterior : "white"
         altColor:           QGroundControl.globalPalette.surveyPolygonTerrainCollision
-        interiorOpacity:    0.5 * _root.opacity
+        interiorOpacity:    0.3 * _root.opacity
     }
 
     // Full set of transects lines. Shown when item is selected.
