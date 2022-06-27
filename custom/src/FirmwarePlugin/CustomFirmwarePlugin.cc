@@ -119,7 +119,7 @@ QList<MAV_CMD> CustomFirmwarePlugin::supportedMissionCommands(QGCMAVLink::Vehicl
 {
     QList<MAV_CMD> supportedCommands = {
         MAV_CMD_NAV_WAYPOINT,
-        MAV_CMD_NAV_LOITER_UNLIM, MAV_CMD_NAV_LOITER_TURNS, MAV_CMD_NAV_LOITER_TIME,
+        MAV_CMD_NAV_LOITER_TURNS, MAV_CMD_NAV_LOITER_TIME,
         MAV_CMD_NAV_RETURN_TO_LAUNCH,
         MAV_CMD_NAV_LOITER_TO_ALT,
         MAV_CMD_DO_JUMP,
