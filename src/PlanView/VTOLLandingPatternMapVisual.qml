@@ -35,19 +35,35 @@ Item {
     property var    _flightPath
     property var    _loiterPointObject
     property var    _landingPointObject
+    property var    _transitionPointObject
     property bool   _useLoiterToAlt:            _missionItem.useLoiterToAlt.rawValue
-    property real   _landingAreaBearing:            _missionItem.landingCoordinate.azimuthTo(_useLoiterToAlt ? _missionItem.loiterTangentCoordinate : _missionItem.finalApproachCoordinate)
+    property real   _landingAreaBearing:        _missionItem.landingCoordinate.azimuthTo(_useLoiterToAlt ? _missionItem.loiterTangentCoordinate : _missionItem.finalApproachCoordinate)
+    property real   _midSlopeAltitudeMeters
 
     function hideItemVisuals() {
         objMgr.destroyObjects()
+    }
+
+    function _calcGlideSlopeHeights() {
+        var adjacent
+        if (_useLoiterToAlt) {
+            adjacent = _missionItem.transitionCoordinate.distanceTo(_missionItem.loiterTangentCoordinate)
+        } else {
+            adjacent = _missionItem.transitionCoordinate.distanceTo(_missionItem.finalApproachCoordinate)
+        }
+        var opposite = _missionItem.finalApproachAltitude.rawValue - _missionItem.transitionAlt.rawValue
+        var angleRadians = Math.atan(opposite / adjacent)
+        var glideSlopeDistance = adjacent
+
+        _midSlopeAltitudeMeters = Math.tan(angleRadians) * (glideSlopeDistance / 2) + _missionItem.transitionAlt.rawValue
     }
 
     function showItemVisuals() {
         if (objMgr.rgDynamicObjects.length === 0) {
             _loiterPointObject = objMgr.createObject(finalApproachPointComponent, map, true /* parentObjectIsMap */)
             _landingPointObject = objMgr.createObject(landingPointComponent, map, true /* parentObjectIsMap */)
-
-            var rgComponents = [ flightPathComponent, loiterRadiusComponent ]
+            _transitionPointObject = objMgr.createObject(transitionPointComponent, map, true /* parentObjectIsMap */)
+            var rgComponents = [ flightPathComponent, loiterRadiusComponent,midGlideSlopeHeightComponent]
             objMgr.createObjects(rgComponents, map, true /* parentObjectIsMap */)
         }
     }
@@ -145,10 +161,60 @@ Item {
                 showMouseArea()
             }
         }
+        onTransitionCoordinateChanged:{
+            _calcGlideSlopeHeights()
+            _setFlightPath()
+        }
+        onLandingCoordinateChanged:{
+            _calcGlideSlopeHeights()
+            _setFlightPath()
+        }
+        onLoiterTangentCoordinateChanged:{
+            _calcGlideSlopeHeights()
+            _setFlightPath()
+        }
+        onFinalApproachCoordinateChanged:{
+            _calcGlideSlopeHeights()
+            _setFlightPath()
+        }
+    }
+    Component {
+        id: midGlideSlopeHeightComponent
 
-        onLandingCoordinateChanged:         _setFlightPath()
-        onLoiterTangentCoordinateChanged:   _setFlightPath()
-        onFinalApproachCoordinateChanged:   _setFlightPath()
+        MapQuickItem {
+            anchorPoint.x:  sourceItem.width / 2
+            anchorPoint.y:  0
+            z:              QGroundControl.zOrderMapItems
+            visible:        _missionItem.isCurrentItem
+
+            sourceItem: HeightIndicator {
+                map:        _root.map
+                heightText: Math.floor(QGroundControl.unitsConversion.metersToAppSettingsHorizontalDistanceUnits(_midSlopeAltitudeMeters)) +
+                            QGroundControl.unitsConversion.appSettingsHorizontalDistanceUnitsString + "<sup>*</sup>"
+            }
+
+            function recalc() {
+                var halfDistance = _missionItem.transitionCoordinate.distanceTo(_useLoiterToAlt ? _missionItem.loiterTangentCoordinate : _missionItem.finalApproachCoordinate) / 2
+                var centeredCoordinate = _missionItem.transitionCoordinate.atDistanceAndAzimuth(halfDistance, _landingAreaBearing)
+                var angleIncrement = _landingAreaBearing > 180 ? -90 : 90
+                coordinate = centeredCoordinate.atDistanceAndAzimuth(_landingWidthMeters / 2, _landingAreaBearing + angleIncrement)
+            }
+
+            Component.onCompleted: recalc()
+
+            Connections {
+                target:                             _missionItem
+                onTransitionCoordinateChanged:      recalc()
+                onLandingCoordinateChanged:         recalc()
+                onLoiterTangentCoordinateChanged:   recalc()
+                onFinalApproachCoordinateChanged:   recalc()
+            }
+
+            Connections {
+                target:             _missionItem.useLoiterToAlt
+                onRawValueChanged:  recalc()
+            }
+        }
     }
 
     // Mouse area to capture landing point coordindate
@@ -184,15 +250,37 @@ Item {
             property bool _preventReentrancy: false
 
             onItemCoordinateChanged: {
-                if (!_preventReentrancy) {
-                    if (Drag.active) {
-                        _preventReentrancy = true
-                        var angle = _missionItem.landingCoordinate.azimuthTo(itemCoordinate)
-                        var distance = _missionItem.landingCoordinate.distanceTo(_missionItem.finalApproachCoordinate)
-                        _missionItem.finalApproachCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(distance, angle)
-                        _preventReentrancy = false
+                var angle = _missionItem.landingCoordinate.azimuthTo(itemCoordinate)
+                var tangentangle = _missionItem.landingCoordinate.azimuthTo(_useLoiterToAlt ? _missionItem.loiterTangentCoordinate : _missionItem.finalApproachCoordinate)
+                var distance = _missionItem.landingCoordinate.distanceTo(itemCoordinate)
+
+                if (distance < 300 ){
+                    if (!_preventReentrancy) {
+                        if (Drag.active) {
+                            _preventReentrancy = true
+                            _missionItem.finalApproachCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(300, angle)
+                            _preventReentrancy = false
+                        }
                     }
                 }
+                else if (distance > 1000){
+                    if (!_preventReentrancy) {
+                        if (Drag.active) {
+                            _preventReentrancy = true
+                            _missionItem.finalApproachCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(1000, angle)
+                            _preventReentrancy = false
+                        }
+                    }
+                }
+                else { if (!_preventReentrancy) {
+                        if (Drag.active) {
+                            _preventReentrancy = true
+                           // _missionItem.transitionCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(100,tangentangle);
+                            _missionItem.finalApproachCoordinate = itemCoordinate
+                            _preventReentrancy = false
+                        }
+                    }
+                   }
             }
         }
     }
@@ -205,7 +293,6 @@ Item {
             mapControl:     _root.map
             itemIndicator:  _landingPointObject
             itemCoordinate: _missionItem.landingCoordinate
-
             onItemCoordinateChanged: _missionItem.landingCoordinate = itemCoordinate
         }
     }
@@ -243,6 +330,25 @@ Item {
         }
     }
 
+    // Final transition point
+    Component {
+        id: transitionPointComponent
+
+        MapQuickItem {
+            anchorPoint.x:  sourceItem.anchorPointX
+            anchorPoint.y:  sourceItem.anchorPointY
+            z:              QGroundControl.zOrderMapItems
+            coordinate:     _missionItem.transitionCoordinate
+
+            sourceItem:
+                MissionItemIndexLabel {
+                index:      _missionItem.sequenceNumber + 1
+                label:      qsTr("DeTransition")
+                checked:    _missionItem.isCurrentItem
+            }
+        }
+    }
+
     // Landing point
     Component {
         id: landingPointComponent
@@ -255,7 +361,7 @@ Item {
 
             sourceItem:
                 MissionItemIndexLabel {
-                index:      _missionItem.lastSequenceNumber
+                index:      _missionItem.sequenceNumber + 2
                 label:      qsTr("Land")
                 checked:    _missionItem.isCurrentItem
 

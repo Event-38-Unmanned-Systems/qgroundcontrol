@@ -85,15 +85,24 @@ Rectangle {
                     altitudeMode:       _altitudeMode
                 }
 
+                QGCLabel { text: qsTr("GlideSlope") }
+
+                FactTextField {
+                    fact:               missionItem.glideSlope
+                    visible:    missionItem.glideSlope.rawValue
+
+                    Layout.fillWidth:   true
+                }
+
                 QGCLabel {
                     text:       qsTr("Radius")
-                    visible:    missionItem.useLoiterToAlt.rawValue
+                    visible:    false
                 }
 
                 FactTextField {
                     Layout.fillWidth:   true
                     fact:               missionItem.loiterRadius
-                    visible:            missionItem.useLoiterToAlt.rawValue
+                    visible:            false
                 }
             }
 
@@ -116,13 +125,13 @@ Rectangle {
             id:             transitionPointSection
             anchors.left:   parent.left
             anchors.right:  parent.right
-            text:           qsTr("Transition point")
+            text:           qsTr("DeTransition point")
         }
         Column {
             anchors.left:       parent.left
             anchors.right:      parent.right
             spacing:            _margin
-            visible:            landingPointSection.checked
+            visible:            transitionPointSection.checked
 
             Item { width: 1; height: _spacer }
 
@@ -139,10 +148,14 @@ Rectangle {
                     altitudeMode:       _altitudeMode
                 }
 
-                QGCLabel { text: qsTr("Distance") }
+                QGCLabel { text: qsTr("Distance")
+                    visible:            false
+                }
 
                 FactTextField {
                     Layout.fillWidth:   true
+                    visible:            false
+
                     fact:               missionItem.transitionDistance
                 }
             }
@@ -169,11 +182,14 @@ Rectangle {
                 anchors.right:   parent.right
                 columns:         2
 
-                QGCLabel { text: qsTr("Heading") }
+                QGCLabel { text: qsTr("Heading")
+                    visible:            false
+                }
 
                 FactTextField {
                     Layout.fillWidth:   true
                     fact:               missionItem.landingHeading
+                    visible:            false
                 }
 
                 QGCLabel { text: qsTr("Altitude") }
