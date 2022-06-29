@@ -25,7 +25,8 @@
     "longDesc":  "This value defines the default speed for calculating mission statistics for vehicles which do not support hover or VTOL vehicles in fixed wing mode. It does not modify the flight speed for a specific flight plan.",
     "type":             "double",
     "default":     16.0,
-    "min":              1.0,
+    "max":              20.0,
+    "min":              16.0,
     "units":            "m/s",
     "decimalPlaces":    2
 },

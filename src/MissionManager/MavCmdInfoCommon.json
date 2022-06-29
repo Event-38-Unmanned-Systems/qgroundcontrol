@@ -76,8 +76,7 @@
             "param4": {
                 "label":            "Yaw",
                 "units":            "deg",
-                "nanUnchanged":     true,
-                "default":          null,
+                "default":          0,
                 "decimalPlaces":    2
             }
         },
@@ -306,22 +305,7 @@
             "specifiesCoordinate":  false,
             "isTakeoffCommand":     true,
             "friendlyEdit":         true,
-            "category":             "Basic",
-            "param2": {
-                "label":            "Transition Heading",
-                "units":            "m",
-                "enumStrings":      "Default,Next waypoint,Takeoff,Specified,Any",
-                "enumValues":       "0,1,2,3,4",
-                "default":          0,
-                "decimalPlaces":    0
-            },
-            "param4": {
-                "label":            "Yaw",
-                "units":            "deg",
-                "nanUnchanged":     true,
-                "default":          null,
-                "decimalPlaces":    2
-            }
+            "category":             "Basic"
         },
         {
             "id":                   85,
