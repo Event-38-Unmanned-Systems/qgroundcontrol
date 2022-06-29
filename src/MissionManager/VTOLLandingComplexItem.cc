@@ -24,6 +24,7 @@ const QString VTOLLandingComplexItem::name(VTOLLandingComplexItem::tr("VTOL Land
 
 const char* VTOLLandingComplexItem::settingsGroup =            "VTOLLanding";
 const char* VTOLLandingComplexItem::jsonComplexItemTypeValue = "vtolLandingPattern";
+const char* VTOLLandingComplexItem::glideSlopeName      = "GlideSlope";
 
 VTOLLandingComplexItem::VTOLLandingComplexItem(PlanMasterController* masterController, bool flyView)
     : LandingComplexItem        (masterController, flyView)
@@ -39,11 +40,15 @@ VTOLLandingComplexItem::VTOLLandingComplexItem(PlanMasterController* masterContr
     , _useLoiterToAltFact       (settingsGroup, _metaDataMap[useLoiterToAltName])
     , _stopTakingPhotosFact     (settingsGroup, _metaDataMap[stopTakingPhotosName])
     , _stopTakingVideoFact      (settingsGroup, _metaDataMap[stopTakingVideoName])
+    , _glideSlopeFact           (settingsGroup, _metaDataMap[glideSlopeName])
+
 {
     _editorQml      = "qrc:/qml/VTOLLandingPatternEditor.qml";
     _isIncomplete   = false;
 
     _init();
+
+    connect(&_glideSlopeFact,           &Fact::valueChanged, this, &VTOLLandingComplexItem::_glideSlopeChanged);
 
     _recalcFromHeadingAndDistanceChange();
 
@@ -94,9 +99,36 @@ MissionItem* VTOLLandingComplexItem::_createLandItem(int seqNum, bool altRel, do
 
 }
 
+void VTOLLandingComplexItem::_glideSlopeChanged(void)
+{
+    if (!_ignoreRecalcSignals) {
+        double landingAltDifference = _finalApproachAltitudeFact.rawValue().toDouble() - _transitionAltFact.rawValue().toDouble();
+        double glideSlope = _glideSlopeFact.rawValue().toDouble();
+        _landingDistanceFact.setRawValue(landingAltDifference / qTan(qDegreesToRadians(glideSlope)) + _transitionDistanceFact.rawValue().toDouble());
+    }
+}
+
 void VTOLLandingComplexItem::_calcGlideSlope(void)
 {
-    // No glide slope calc for VTOL
+    double landingAltDifference = _finalApproachAltitudeFact.rawValue().toDouble() - _transitionAltFact.rawValue().toDouble();
+    double landingDistance = _landingDistanceFact.rawValue().toDouble() - _transitionDistanceFact.rawValue().toDouble();
+    double slope = qRadiansToDegrees(qAtan(landingAltDifference / landingDistance));
+
+    if (slope <= _glideSlopeFact.rawMin().toDouble()){
+        _ignoreRecalcSignals = false;
+       slope = _glideSlopeFact.rawMin().toDouble()+.01;
+       _glideSlopeFact.setRawValue(slope);
+       _ignoreRecalcSignals = true;
+    }
+    else if(slope >= _glideSlopeFact.rawMax().toDouble()){
+        _ignoreRecalcSignals = false;
+        slope = _glideSlopeFact.rawMax().toDouble()-.01;
+        _glideSlopeFact.setRawValue(slope);
+        _ignoreRecalcSignals = true;
+     }
+    else{
+    _glideSlopeFact.setRawValue(slope);
+    }
 }
 
 bool VTOLLandingComplexItem::_isValidLandItem(const MissionItem& missionItem)
@@ -131,6 +163,9 @@ void VTOLLandingComplexItem::_updateFlightPathSegmentsDontCallDirectly(void)
     } else {
         _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), landingCoordinate(),        amslEntryAlt());
     }
+
+    _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, transitionCoordinate(), amslEntryAlt(), transitionCoordinate(), amslExitAlt());
+
     _appendFlightPathSegment(FlightPathSegment::SegmentTypeLand, landingCoordinate(), amslEntryAlt(), landingCoordinate(), amslExitAlt());
     _flightPathSegments.endReset();
 

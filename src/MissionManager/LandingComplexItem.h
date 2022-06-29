@@ -38,6 +38,7 @@ public:
     Q_PROPERTY(Fact*            stopTakingPhotos        READ    stopTakingPhotos                                                CONSTANT)
     Q_PROPERTY(Fact*            stopTakingVideo         READ    stopTakingVideo                                                 CONSTANT)
     Q_PROPERTY(QGeoCoordinate   finalApproachCoordinate READ    finalApproachCoordinate     WRITE setFinalApproachCoordinate    NOTIFY finalApproachCoordinateChanged)
+    Q_PROPERTY(QGeoCoordinate   transitionCoordinate    READ    transitionCoordinate        WRITE setTransitionCoordinate       NOTIFY transitionCoordinateChanged)
     Q_PROPERTY(QGeoCoordinate   loiterTangentCoordinate READ    loiterTangentCoordinate                                         NOTIFY loiterTangentCoordinateChanged)
     Q_PROPERTY(QGeoCoordinate   landingCoordinate       READ    landingCoordinate           WRITE setLandingCoordinate          NOTIFY landingCoordinateChanged)
     Q_PROPERTY(bool             altitudesAreRelative    READ    altitudesAreRelative        WRITE setAltitudesAreRelative       NOTIFY altitudesAreRelativeChanged)
@@ -75,7 +76,8 @@ public:
     QGeoCoordinate  finalApproachCoordinate (void) const { return _finalApproachCoordinate; }
     QGeoCoordinate  loiterTangentCoordinate (void) const { return _loiterTangentCoordinate; }
 
-    void setLandingCoordinate       (const QGeoCoordinate& coordinate);
+    void setLandingCoordinate       (const QGeoCoordinate& coordinate);    
+    void setTransitionCoordinate    (const QGeoCoordinate& coordinate);
     void setFinalApproachCoordinate (const QGeoCoordinate& coordinate);
     void setAltitudesAreRelative    (bool altitudesAreRelative);
 

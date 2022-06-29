@@ -24,8 +24,8 @@ Rectangle {
     property var    _missionController:             _masterControler.missionController
     property var    _controllerVehicle:             _masterControler.controllerVehicle
     property bool   _vehicleHasHomePosition:        _controllerVehicle.homePosition.isValid
-    property bool   _showCruiseSpeed:               !_controllerVehicle.multiRotor
-    property bool   _showHoverSpeed:                _controllerVehicle.multiRotor || _controllerVehicle.vtol
+    property bool   _showCruiseSpeed:               false
+    property bool   _showHoverSpeed:                false
     property bool   _multipleFirmware:              !QGroundControl.singleFirmwareSupport
     property bool   _multipleVehicleTypes:          !QGroundControl.singleVehicleSupport
     property real   _fieldWidth:                    ScreenTools.defaultFontPixelWidth * 16
@@ -117,7 +117,7 @@ Rectangle {
             QGCCheckBox {
                 id:         flightSpeedCheckBox
                 text:       qsTr("Flight speed")
-                visible:    _showFlightSpeed
+                visible:    false
                 checked:    missionItem.speedSection.specifyFlightSpeed
                 onClicked:   missionItem.speedSection.specifyFlightSpeed = checked
             }
@@ -179,7 +179,7 @@ Rectangle {
                     visible:                _multipleFirmware && _allowFWVehicleTypeSelection
                 }
                 QGCLabel {
-                    text:       _controllerVehicle.firmwareTypeString
+                    text:       "E400-4.0.9"
                     visible:    _multipleFirmware && !_allowFWVehicleTypeSelection
                 }
 

@@ -8,10 +8,10 @@
     "shortDesc":        "Distance between landing and approach points.",
     "type":             "double",
     "units":            "m",
-    "min":              200,
+    "min":              300.0,
     "decimalPlaces":    1,
     "default":          400.0,
-    "max":              800.0
+    "max":              1000.0
 },
 {
     "name":             "transitionDistance",
@@ -94,6 +94,16 @@
     "shortDesc":    "Stop taking video",
     "type":         "bool",
     "default":      true
+},
+{
+"name":             "GlideSlope",
+"shortDesc":        "The glide slope between the loiter and landing point.",
+"type":             "double",
+"units":            "deg",
+"min":              1.8,
+"max":              6.6,
+"decimalPlaces":    1,
+"default":          3.0
 }
 ]
 }

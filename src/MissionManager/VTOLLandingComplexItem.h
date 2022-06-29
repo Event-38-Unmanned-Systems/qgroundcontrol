@@ -28,6 +28,8 @@ public:
 
     /// Scans the loaded items for a landing pattern complex item
     static bool scanForItem(QmlObjectListModel* visualItems, bool flyView, PlanMasterController* masterController);
+    Q_PROPERTY(Fact*            glideSlope              READ    glideSlope                                                  CONSTANT)
+    Fact*           glideSlope              (void) { return &_glideSlopeFact; }
 
     // Overrides from ComplexMissionItem
     QString patternName         (void) const final { return name; }
@@ -42,10 +44,12 @@ public:
     static const char* jsonComplexItemTypeValue;
 
     static const char* settingsGroup;
+    static const char* glideSlopeName;
+
 
 private slots:
     void _updateFlightPathSegmentsDontCallDirectly(void) override;
-
+    void _glideSlopeChanged                         (void);
 private:
     static LandingComplexItem*  _createItem     (PlanMasterController* masterController, bool flyView) { return new VTOLLandingComplexItem(masterController, flyView); }
     static bool                 _isValidLandItem(const MissionItem& missionItem);
@@ -78,6 +82,7 @@ private:
     Fact            _useLoiterToAltFact;
     Fact            _stopTakingPhotosFact;
     Fact            _stopTakingVideoFact;
+    Fact            _glideSlopeFact;
 
     friend VTOLLandingPatternTest;
 };
