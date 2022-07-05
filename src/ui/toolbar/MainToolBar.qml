@@ -64,8 +64,6 @@ Rectangle {
         spacing:                ScreenTools.defaultFontPixelWidth / 2
 
         QGCToolBarButton {
-            anchors.top:        parent.top
-            anchors.bottom:     parent.bottom
             id:                     currentButton
             Layout.preferredHeight: viewButtonRow.height
             icon.source:            "/custom/img/CustomAppIcon.png"
@@ -75,8 +73,6 @@ Rectangle {
 
 
         QGCColoredImage {
-            anchors.top:        parent.top
-            anchors.bottom:     parent.bottom
             id:         flyIcon
             width:      ScreenTools.largeFontPointSize * 4
             height:     ScreenTools.largeFontPointSize * 4
@@ -95,8 +91,6 @@ Rectangle {
             height:                 1
         }
         QGCColoredImage {
-            anchors.top:        parent.top
-            anchors.bottom:     parent.bottom
             id:         planIcon
             width:      ScreenTools.largeFontPointSize * 2.5
             height:     ScreenTools.largeFontPointSize * 2.5

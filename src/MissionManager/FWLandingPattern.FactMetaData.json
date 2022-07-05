@@ -73,7 +73,7 @@
     "name":         "UseLoiterToAlt",
     "shortDesc":    "Use a loiter to altitude item for final appoach. Otherwise use a regular waypoint.",
     "type":         "bool",
-    "default":      true
+    "default":      false
 },
 {
     "name":         "StopTakingPhotos",

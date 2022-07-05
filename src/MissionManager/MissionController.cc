@@ -18,6 +18,7 @@
 #include "SurveyComplexItem.h"
 #include "FixedWingLandingComplexItem.h"
 #include "VTOLLandingComplexItem.h"
+#include "VTOLTakeoffComplexItem.h"
 #include "StructureScanComplexItem.h"
 #include "CorridorScanComplexItem.h"
 #include "JsonHelper.h"
@@ -393,9 +394,17 @@ VisualMissionItem* MissionController::insertTakeoffItem(QGeoCoordinate /*coordin
     return _takeoffMissionItem;
 }
 
+VisualMissionItem* MissionController::insertComplexTakeoffItem(QGeoCoordinate coordinate, int visualItemIndex, bool makeCurrentItem)
+{
+    VTOLTakeoffComplexItem* vtolTakeoff = qobject_cast<VTOLTakeoffComplexItem*>(insertComplexMissionItem(VTOLTakeoffComplexItem::name, coordinate, visualItemIndex, makeCurrentItem));
+    return vtolTakeoff;
+}
+
+
 VisualMissionItem* MissionController::insertLandItem(QGeoCoordinate coordinate, int visualItemIndex, bool makeCurrentItem)
 {
-    VTOLLandingComplexItem* vtolLanding = qobject_cast<VTOLLandingComplexItem*>(insertComplexMissionItem(VTOLLandingComplexItem::name, coordinate, visualItemIndex, makeCurrentItem));
+   VTOLLandingComplexItem* vtolLanding = qobject_cast<VTOLLandingComplexItem*>(insertComplexMissionItem(VTOLLandingComplexItem::name, coordinate, visualItemIndex, makeCurrentItem));
+
     return vtolLanding;
    //remove all other landing types for now
    /* if (_controllerVehicle->fixedWing()) {
@@ -454,7 +463,11 @@ VisualMissionItem* MissionController::insertComplexMissionItem(QString itemName,
         newItem = new FixedWingLandingComplexItem(_masterController, _flyView);
     } else if (itemName == VTOLLandingComplexItem::name) {
         newItem = new VTOLLandingComplexItem(_masterController, _flyView);
-    } else if (itemName == StructureScanComplexItem::name) {
+    }
+    else if (itemName == VTOLTakeoffComplexItem::name) {
+        newItem = new VTOLTakeoffComplexItem(_masterController, _flyView);
+    }
+    else if (itemName == StructureScanComplexItem::name) {
         newItem = new StructureScanComplexItem(_masterController, _flyView, QString() /* kmlFile */);
     } else if (itemName == CorridorScanComplexItem::name) {
         newItem = new CorridorScanComplexItem(_masterController, _flyView, QString() /* kmlFile */);
@@ -2405,7 +2418,7 @@ void MissionController::setCurrentPlanViewSeqNum(int sequenceNumber, bool force)
                 }
             }
 
-            if (qobject_cast<TakeoffMissionItem*>(pVI)) {
+            if (qobject_cast<TakeoffComplexItem*>(pVI)) {
                 takeoffSeqNum = currentSeqNumber;
                 _isInsertTakeoffValid = false;
             }

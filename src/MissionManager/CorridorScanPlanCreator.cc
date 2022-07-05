@@ -21,8 +21,9 @@ CorridorScanPlanCreator::CorridorScanPlanCreator(PlanMasterController* planMaste
 void CorridorScanPlanCreator::createPlan(const QGeoCoordinate& mapCenterCoord)
 {
     _planMasterController->removeAll();
-    VisualMissionItem* takeoffItem = _missionController->insertTakeoffItem(mapCenterCoord, -1);
-    _missionController->insertComplexMissionItem(CorridorScanComplexItem::name, mapCenterCoord, -1);
+   // VisualMissionItem* takeoffItem = _missionController->insertTakeoffItem(mapCenterCoord, -1);
+     VisualMissionItem* takeoffItem = _missionController->insertComplexTakeoffItem(mapCenterCoord, -1);
+     _missionController->insertComplexMissionItem(CorridorScanComplexItem::name, mapCenterCoord, -1);
     _missionController->insertLandItem(mapCenterCoord, -1);
     _missionController->setCurrentPlanViewSeqNum(takeoffItem->sequenceNumber(), true);
 }

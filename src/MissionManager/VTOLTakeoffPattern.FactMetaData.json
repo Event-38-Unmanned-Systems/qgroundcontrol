@@ -1,0 +1,69 @@
+{
+    "version":      1,
+    "fileType":  "FactMetaData",
+    "QGC.MetaData.Facts":
+[
+{
+    "name":             "takeoffDist",
+    "shortDesc":        "Distance between VTOL Takeoff and Climbout Waypoint.",
+    "type":             "double",
+    "units":            "m",
+    "min":              300,
+    "decimalPlaces":    1,
+    "default":          400.0,
+    "max":              1000.0
+},
+{
+    "name":             "vtolAlt",
+    "shortDesc":        "Vertical takeoff Altitude.",
+    "type":             "double",
+    "units":            "m",
+    "min":              10,
+    "decimalPlaces":    1,
+    "default":          30.0,
+    "max":              100
+},
+{
+    "name":             "climboutAlt",
+    "shortDesc":        "Vertical takeoff Altitude.",
+    "type":             "double",
+    "units":            "m",
+    "min":              60,
+    "decimalPlaces":    1,
+    "default":          100.0,
+    "max":              200
+},
+{
+    "name":             "takeoffHeading",
+    "shortDesc":        "Heading from Takeoff to First waypoint.",
+    "type":             "double",
+    "units":            "deg",
+    "min":              0.0,
+    "max":              360.0,
+    "decimalPlaces":    0,
+    "default":          180.0
+},
+{
+    "name":         "loiterClockwise",
+    "shortDesc":    "Loiter clockwise around the final approach point.",
+    "type":         "bool",
+    "default":      true
+},
+{
+    "name":         "useLoiterToAlt",
+    "shortDesc":    "Use a loiter to altitude item for final appoach. Otherwise use a regular waypoint.",
+    "type":         "bool",
+    "default":      true
+},
+{
+"name":             "gradient",
+"shortDesc":        "The gradient between the vtol takeoff and Climbout Waypoint point.",
+"type":             "double",
+"units":            "deg",
+"min":              1.8,
+"max":              6.6,
+"decimalPlaces":    1,
+"default":          3.0
+}
+]
+}

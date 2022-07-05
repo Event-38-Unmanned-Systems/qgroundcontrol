@@ -333,7 +333,7 @@ Item {
 
     function insertTakeItemAfterCurrent() {
         var nextIndex = _missionController.currentPlanViewVIIndex + 1
-        _missionController.insertTakeoffItem(mapCenter(), nextIndex, true /* makeCurrentItem */)
+        _missionController.insertComplexTakeoffItem(mapCenter(), nextIndex, true /* makeCurrentItem */)
     }
 
     function insertLandItemAfterCurrent() {

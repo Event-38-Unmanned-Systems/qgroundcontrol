@@ -124,8 +124,7 @@ Item {
             coordinate:     _missionItem.launchCoordinate
             anchorPoint.x:  sourceItem.anchorPointX
             anchorPoint.y:  sourceItem.anchorPointY
-            visible:        !_missionItem.launchTakeoffAtSameLocation && _root.interactive
-
+            visible:        false
             sourceItem:
                 MissionItemIndexLabel {
                     checked:            _missionItem.isCurrentItem
