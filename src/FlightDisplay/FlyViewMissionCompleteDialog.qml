@@ -85,7 +85,7 @@ Item {
                     QGCButton {
                         Layout.fillWidth:   true
                         text:               qsTr("Remove plan from vehicle")
-                        visible:            !_activeVehicle.communicationLost// && !_activeVehicle.apmFirmware  // ArduPilot has a bug somewhere with mission clear
+                        visible:            !_activeVehicle.communicationLost && !_activeVehicle.apmFirmware  // ArduPilot has a bug somewhere with mission clear
                         onClicked: {
                             _planController.removeAllFromVehicle()
                             hideDialog()
@@ -96,6 +96,7 @@ Item {
                         Layout.fillWidth:   true
                         Layout.alignment:   Qt.AlignHCenter
                         text:               qsTr("Leave plan on vehicle")
+                        visible:            !_activeVehicle.communicationLost && !_activeVehicle.apmFirmware  // ArduPilot has a bug somewhere with mission clear
                         onClicked:          hideDialog()
                     }
 
