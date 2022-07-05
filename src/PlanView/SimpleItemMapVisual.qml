@@ -126,12 +126,13 @@ Item {
 
         MissionItemIndicator {
             coordinate:     _missionItem.coordinate
-            visible:        _missionItem.specifiesCoordinate
+            visible:        _missionItem.specifiesCoordinate && !(_missionItem.abbreviation === "Launch")
             z:              QGroundControl.zOrderMapItems
             missionItem:    _missionItem
             sequenceNumber: _missionItem.sequenceNumber
             onClicked:      if(_root.interactive)  _root.clicked(_missionItem.sequenceNumber)
             opacity:        _root.opacity
+
         }
     }
 
