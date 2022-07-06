@@ -313,7 +313,7 @@ Item {
 
         MapPolyline {
             z:          QGroundControl.zOrderMapItems - 1   // Under item indicators
-            line.color: "#20cc02"
+            line.color: (_missionItem.isCurrentItem) ? "#20cc02" : "#be781c"
             line.width: 2
             path:       _flightPath
         }
@@ -325,7 +325,7 @@ Item {
 
         MapPolyline {
             z:          QGroundControl.zOrderMapItems - 1  // Under item indicators
-            line.color: "#fff133"
+            line.color: (_missionItem.isCurrentItem) ? "#fff133" : "#be781c"
             line.width: 2
             path:       _transitionBeginPath
         }
@@ -336,7 +336,7 @@ Item {
 
         MapPolyline {
             z:          QGroundControl.zOrderMapItems - 1   // Under item indicators
-            line.color: "#a7ff33"
+            line.color: (_missionItem.isCurrentItem) ? "#a7ff33" : "#be781c"
             line.width: 2
             path:       _transitionFinishPath
         }
