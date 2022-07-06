@@ -102,16 +102,6 @@ Rectangle {
                 anchors.right:   parent.right
                 columns:         2
 
-                QGCLabel { text: qsTr("Heading")
-                    visible:            false
-                }
-
-                FactTextField {
-                    Layout.fillWidth:   true
-                    fact:               missionItem.takeoffHeading
-                    visible:            false
-                }
-
                 QGCLabel { text: qsTr("Altitude") }
 
                 AltitudeFactTextField {
@@ -131,13 +121,10 @@ Rectangle {
         }
 
         Item { width: 1; height: _spacer }
-
+ Column {
         FactCheckBox {
-            anchors.right:  parent.right
             text:       qsTr("Use loiter to altitude")
             fact:       missionItem.useLoiterToAlt
-            visible:    missionItem.useLoiterToAlt.visible
-
         }
 
         QGCCheckBox {
@@ -146,6 +133,7 @@ Rectangle {
             checked:        missionItem.altitudesAreRelative
             visible:        QGroundControl.corePlugin.options.showMissionAbsoluteAltitude || !missionItem.altitudesAreRelative
             onClicked:      missionItem.altitudesAreRelative = checked
+        }
         }
 
         }
@@ -199,6 +187,7 @@ Rectangle {
                 onClicked: {
                     missionItem.wizardMode = false
                     missionItem.landingDragAngleOnly = false
+                    missionItem.useLoiterToAlt.rawValue = false
                 }
             }
         }

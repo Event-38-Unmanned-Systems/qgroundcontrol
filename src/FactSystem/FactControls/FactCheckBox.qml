@@ -15,8 +15,8 @@ QGCCheckBox {
     Binding on checkedState {
         value: fact ?
                    (fact.typeIsBool ?
-                        (fact.value === false ? Qt.Unchecked : Qt.Checked) :
-                        (fact.value === 0 ? Qt.Unchecked : Qt.Checked)) :
+                        (fact.value == false ? Qt.Unchecked : Qt.Checked) :
+                        (fact.value == 0 ? Qt.Unchecked : Qt.Checked)) :
                    Qt.Unchecked
     }
 

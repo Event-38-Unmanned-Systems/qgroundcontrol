@@ -67,7 +67,7 @@ void TakeoffComplexItem::_init(void)
 
     connect(takeoffHeading(),           &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromRadiusChange);
     connect(loiterClockwise(),          &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromRadiusChange);
-    connect(useLoiterToAlt(),           &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromRadiusChange);
+    connect(useLoiterToAlt(),           &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromHeadingAndDistanceChange);
     connect(gradient(),                 &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromRadiusChange);
 
     connect(this,                       &TakeoffComplexItem::vtolTakeoffCoordinateChanged,  this, &TakeoffComplexItem::_recalcFromCoordinateChange);
@@ -180,6 +180,12 @@ void TakeoffComplexItem::_recalcFromHeadingAndDistanceChange(void)
         // These are our known values
         double takeoffdistance = takeoffDist()->rawValue().toDouble();
         double heading = takeoffHeading()->rawValue().toDouble();
+
+        if (useLoiterToAlt()->rawValue().toBool()){
+
+            takeoffdistance = takeoffdistance + 100;
+        }
+
        if(!_vtolTakeoffCoordSet){
         _vtolTakeoffCoordinate = _climboutCoordinate.atDistanceAndAzimuth(takeoffdistance, heading);
         }
