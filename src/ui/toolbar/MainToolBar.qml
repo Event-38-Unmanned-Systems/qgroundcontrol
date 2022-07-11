@@ -64,6 +64,8 @@ Rectangle {
         spacing:                ScreenTools.defaultFontPixelWidth / 2
 
         QGCToolBarButton {
+            anchors.top:        parent.top
+            anchors.bottom:     parent.bottom
             id:                     currentButton
             Layout.preferredHeight: viewButtonRow.height
             icon.source:            "/custom/img/CustomAppIcon.png"
@@ -73,6 +75,8 @@ Rectangle {
 
 
         QGCColoredImage {
+            anchors.top:        parent.top
+            anchors.bottom:     parent.bottom
             id:         flyIcon
             width:      ScreenTools.largeFontPointSize * 4
             height:     ScreenTools.largeFontPointSize * 4
@@ -91,6 +95,8 @@ Rectangle {
             height:                 1
         }
         QGCColoredImage {
+            anchors.top:        parent.top
+            anchors.bottom:     parent.bottom
             id:         planIcon
             width:      ScreenTools.largeFontPointSize * 2.5
             height:     ScreenTools.largeFontPointSize * 2.5
@@ -147,7 +153,7 @@ Rectangle {
         anchors.top:            parent.top
         anchors.bottom:         parent.bottom
         anchors.margins:        ScreenTools.defaultFontPixelHeight * 0.66
-        visible:                currentToolbar !== planViewToolbar && _activeVehicle && !_communicationLost && x > (toolsFlickable.x + toolsFlickable.contentWidth + ScreenTools.defaultFontPixelWidth)
+        visible:                false
         fillMode:               Image.PreserveAspectFit
         source:                 _outdoorPalette ? _brandImageOutdoor : _brandImageIndoor
         mipmap:                 true
