@@ -22,6 +22,7 @@ Grid {
     QGCLabel { text: qsTr("Photo Interval") }
     QGCLabel { text: missionItem.timeBetweenShots.toFixed(1) + " " + qsTr("secs") }
 
-    QGCLabel { text: qsTr("Trigger Distance") }
-    QGCLabel { text: missionItem.cameraCalc.adjustedFootprintFrontal.valueString + " " + missionItem.cameraCalc.adjustedFootprintFrontal.units }
-}
+    QGCLabel { text: qsTr("Ground Resolution") }
+    QGCLabel { text: missionItem.cameraCalc.imageDensity.valueString + " " + missionItem.cameraCalc.imageDensity.units }
+
+    }

@@ -87,6 +87,17 @@ Rectangle {
                 spacing:            _margin
                 visible:            tabBar.currentIndex === 0
 
+                SectionHeader {
+                    id:                 statsHeader
+                    Layout.fillWidth:   true
+                    text:               qsTr("Stats")
+                }
+
+                TransectStyleComplexItemStats {
+                    Layout.fillWidth:   true
+                    visible:            statsHeader.checked
+                }
+
                 QGCLabel {
                     Layout.fillWidth:   true
                     text:               qsTr("WARNING: Photo interval is below minimum interval (%1 secs) supported by camera.").arg(_cameraMinTriggerInterval.toFixed(1))
@@ -95,7 +106,14 @@ Rectangle {
                     visible:            _missionItem.cameraShots > 0 && _cameraMinTriggerInterval !== 0 && _cameraMinTriggerInterval > _missionItem.timeBetweenShots
                 }
 
+                SectionHeader {
+                    id:                 cameraHeader
+                    Layout.fillWidth:   true
+                    text:               "overlap and altitude"
+                }
+
                 CameraCalcGrid {
+                    visible:                        cameraHeader.checked
                     Layout.fillWidth:               true
                     cameraCalc:                     _missionItem.cameraCalc
                     vehicleFlightIsFrontal:         true
@@ -107,7 +125,7 @@ Rectangle {
                 SectionHeader {
                     id:                 transectValuesHeader
                     Layout.fillWidth:   true
-                    text:               transectValuesHeaderName
+                    text:               "flight path"
                 }
 
                 Loader {
@@ -125,16 +143,6 @@ Rectangle {
                     visible:            transectValuesHeader.checked
                 }
 
-                SectionHeader {
-                    id:                 statsHeader
-                    Layout.fillWidth:   true
-                    text:               qsTr("Statistics")
-                }
-
-                TransectStyleComplexItemStats {
-                    Layout.fillWidth:   true
-                    visible:            statsHeader.checked
-                }
             } // Grid Column
 
             // Camera Tab
@@ -153,92 +161,7 @@ Rectangle {
             }
 
             // Presets Tab
-            ColumnLayout {
-                Layout.fillWidth:   true
-                spacing:            _margin
-                visible:            tabBar.currentIndex === 3
 
-                QGCLabel {
-                    Layout.fillWidth:   true
-                    text:               qsTr("Presets")
-                    wrapMode:           Text.WordWrap
-                }
-
-                QGCComboBox {
-                    id:                 presetCombo
-                    Layout.fillWidth:   true
-                    model:              _missionItem.presetNames
-                }
-
-                RowLayout {
-                    Layout.fillWidth:   true
-
-                    QGCButton {
-                        Layout.fillWidth:   true
-                        text:               qsTr("Apply Preset")
-                        enabled:            _missionItem.presetNames.length != 0
-                        onClicked:          _missionItem.loadPreset(presetCombo.textAt(presetCombo.currentIndex))
-                    }
-
-                    QGCButton {
-                        Layout.fillWidth:   true
-                        text:               qsTr("Delete Preset")
-                        enabled:            _missionItem.presetNames.length != 0
-                        onClicked:          mainWindow.showPopupDialogFromComponent(deletePresetDialog, { presetName: presetCombo.textAt(presetCombo.currentIndex) })
-
-                        Component {
-                            id: deletePresetDialog
-
-                            QGCPopupDialog {
-                                title:      qsTr("Delete Preset")
-                                buttons:    StandardButton.Yes | StandardButton.No
-
-                                QGCLabel { text: qsTr("Are you sure you want to delete '%1' preset?").arg(dialogProperties.presetName) }
-
-                                function accept() {
-                                    _missionItem.deletePreset(dialogProperties.presetName)
-                                    hideDialog()
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Item { height: ScreenTools.defaultFontPixelHeight; width: 1 }
-
-                QGCButton {
-                    Layout.alignment:   Qt.AlignCenter
-                    Layout.fillWidth:   true
-                    text:               qsTr("Save Settings As New Preset")
-                    onClicked:          mainWindow.showPopupDialogFromComponent(savePresetDialog)
-                }
-
-                SectionHeader {
-                    id:                 presectsTransectValuesHeader
-                    Layout.fillWidth:   true
-                    text:               transectValuesHeaderName
-                    visible:            !!presetsTransectValuesComponent
-                }
-
-                Loader {
-                    Layout.fillWidth:   true
-                    visible:            presectsTransectValuesHeader.checked && !!presetsTransectValuesComponent
-                    sourceComponent:    presetsTransectValuesComponent
-
-                    property bool forPresets: true
-                }
-
-                SectionHeader {
-                    id:                 presetsStatsHeader
-                    Layout.fillWidth:   true
-                    text:               qsTr("Statistics")
-                }
-
-                TransectStyleComplexItemStats {
-                    Layout.fillWidth:   true
-                    visible:            presetsStatsHeader.checked
-                }
-            } // Main editing column
         } // Top level  Column
 
         Component {

@@ -19,10 +19,10 @@
     "name":             "DistanceToSurface",
     "shortDesc":        "Distance vehicle is away from surface.",
     "type":             "double",
-    "min":              0.1,
+    "min":              60,
     "units":            "m",
     "decimalPlaces":    2,
-    "default":          50.0
+    "default":          100
 },
 {
     "name":             "ImageDensity",

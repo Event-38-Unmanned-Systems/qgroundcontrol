@@ -1042,7 +1042,7 @@ Item {
             }
 
             GridLayout {
-                columns:            2
+                columns:            3
                 columnSpacing:      _margin
                 rowSpacing:         _margin
                 Layout.fillWidth:   true
