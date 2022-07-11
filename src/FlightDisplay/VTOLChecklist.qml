@@ -18,11 +18,12 @@ import QGroundControl.FlightDisplay 1.0
 import QGroundControl.Vehicle       1.0
 
 Item {
+    property var _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
     property var model: listModel
     PreFlightCheckModel {
         id:     listModel
         PreFlightCheckGroup {
-            name: qsTr("VTOL Initial Checks")
+            name: qsTr("Hardware Checks")
 
             PreFlightCheckButton {
                 name:           qsTr("Hardware")
@@ -30,7 +31,7 @@ Item {
             }
 
             PreFlightBatteryCheck {
-                failurePercent:                 40
+                failurePercent:                 80
                 allowFailurePercentOverride:    false
             }
 
@@ -47,16 +48,10 @@ Item {
         }
 
         PreFlightCheckGroup {
-            name: qsTr("Please arm the vehicle here")
-
+            name: qsTr("Pre-launch Checks")
             PreFlightCheckButton {
                 name:            qsTr("Actuators")
                 manualText:      qsTr("Move all control surfaces. Did they work properly?")
-            }
-
-            PreFlightCheckButton {
-                name:            qsTr("Motors")
-                manualText:      qsTr("Propellers free? Then throttle up gently. Working properly?")
             }
 
             PreFlightCheckButton {
@@ -71,15 +66,20 @@ Item {
         PreFlightCheckGroup {
             name: qsTr("Last preparations before launch")
 
+            PreFlightCheckButton {
+                name:        qsTr("Calibrate Airspeed")
+                manualText:  qsTr("Start calibration")
+                onPressed: _activeVehicle.preflightCalibration()
+            }
             // Check list item group 2 - Final checks before launch
             PreFlightCheckButton {
                 name:        qsTr("Payload")
-                manualText:  qsTr("Configured and started? Payload lid closed?")
+                manualText:  qsTr("Captures Images?")
             }
 
             PreFlightCheckButton {
                 name:        "Wind & weather"
-                manualText:  qsTr("OK for your platform? Lauching into the wind?")
+                manualText:  qsTr("Wind within limits? Lauching into the wind?")
             }
 
             PreFlightCheckButton {

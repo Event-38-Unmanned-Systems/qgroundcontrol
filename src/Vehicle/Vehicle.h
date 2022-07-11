@@ -389,6 +389,8 @@ public:
     /// Reboot vehicle
     Q_INVOKABLE void rebootVehicle();
 
+    Q_INVOKABLE void preflightCalibration(void);
+
     /// Clear Messages
     Q_INVOKABLE void clearMessages();
 

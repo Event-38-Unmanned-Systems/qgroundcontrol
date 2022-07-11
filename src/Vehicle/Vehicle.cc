@@ -3249,6 +3249,11 @@ void Vehicle::rebootVehicle()
     sendMavCommandWithHandler(_rebootCommandResultHandler, this, _defaultComponentId, MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN, 1);
 }
 
+void Vehicle::preflightCalibration(void)
+{
+    startCalibration(Vehicle::CalibrationAPMPressureAirspeed);
+}
+
 void Vehicle::startCalibration(Vehicle::CalibrationType calType)
 {
     SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
