@@ -126,14 +126,14 @@ Rectangle {
             text:       qsTr("Use loiter to altitude")
             fact:       missionItem.useLoiterToAlt
         }
-
+        Item { width: 1; height: _spacer }
         QGCCheckBox {
             anchors.right:  parent.right
             text:           qsTr("Altitudes relative to launch")
             checked:        missionItem.altitudesAreRelative
             visible:        QGroundControl.corePlugin.options.showMissionAbsoluteAltitude || !missionItem.altitudesAreRelative
             onClicked:      missionItem.altitudesAreRelative = checked
-        }
+        }        
         }
 
         }

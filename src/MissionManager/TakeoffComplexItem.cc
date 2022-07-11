@@ -292,7 +292,7 @@ MissionItem* TakeoffComplexItem::_createVtolTakeoffItem(int seqNum, QObject* par
 {
     return new MissionItem(seqNum,                              // sequence number
                            MAV_CMD_NAV_VTOL_TAKEOFF,               // MAV_CMD
-                           MAV_FRAME_MISSION,                   // MAV_FRAME
+                           _altitudesAreRelative ? MAV_FRAME_GLOBAL_RELATIVE_ALT : MAV_FRAME_GLOBAL,
                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                            vtolAlt()->rawValue().toDouble(),   // param 1-7
                            true,                                // autoContinue
