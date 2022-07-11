@@ -621,7 +621,17 @@
             "friendlyName":         "Land start",
             "description":          "Marker to indicate start of landing sequence.",
             "friendlyEdit":         true,
-            "category":             "Flight control"
+            "category":             "Flight control",
+            "param5": {
+                "label":            "Latitude",
+                "default":          37.803784,
+                "decimalPlaces":    7
+            },
+            "param6": {
+                "label":            "Longitude",
+                "default":          -122.462276,
+                "decimalPlaces":    7
+            }
         },
         { "id": 190, "rawName": "MAV_CMD_DO_RALLY_LAND", "friendlyName": "Rally land" },
         { "id": 191, "rawName": "MAV_CMD_DO_GO_AROUND", "friendlyName": "Go around" },

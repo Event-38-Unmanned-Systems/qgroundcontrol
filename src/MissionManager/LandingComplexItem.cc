@@ -432,8 +432,11 @@ MissionItem* LandingComplexItem::_createDoLandStartItem(int seqNum, QObject* par
 {
     return new MissionItem(seqNum,                              // sequence number
                            MAV_CMD_DO_LAND_START,               // MAV_CMD
-                           MAV_FRAME_MISSION,                   // MAV_FRAME
-                           0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,   // param 1-7
+                           _altitudesAreRelative ? MAV_FRAME_GLOBAL_RELATIVE_ALT : MAV_FRAME_GLOBAL,
+                           0.0, 0.0, 0.0, 0.0,
+                           _finalApproachCoordinate.latitude(),
+                           _finalApproachCoordinate.longitude(),
+                           0.0,   // param 1-7
                            true,                                // autoContinue
                            false,                               // isCurrentItem
                            parent);
