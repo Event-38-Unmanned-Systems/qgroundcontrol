@@ -40,27 +40,6 @@ ColumnLayout {
     }
 
     QGCButton {
-        text:               qsTr("All items")
-        Layout.fillWidth:   true
-        visible:            showAllItems
-
-        onClicked: {
-            dropPanel.hide()
-            fitFunctions.fitMapViewportToAllItems()
-        }
-    }
-
-    QGCButton {
-        text:               qsTr("Launch")
-        Layout.fillWidth:   true
-
-        onClicked: {
-            dropPanel.hide()
-            map.center = fitFunctions.fitHomePosition()
-        }
-    }
-
-    QGCButton {
         text:               qsTr("Vehicle")
         Layout.fillWidth:   true
         enabled:            globals.activeVehicle && globals.activeVehicle.coordinate.isValid
@@ -81,7 +60,6 @@ ColumnLayout {
             map.center = map.gcsPosition
         }
     }
-
     QGCButton {
         text:               qsTr("Specified Location")
         Layout.fillWidth:   true
