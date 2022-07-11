@@ -350,7 +350,7 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     3456,                       // imageHeight
                     4.9,                        // focalLength
                     true,                       // landscape
-                    false,                      // fixedOrientation
+                    true,                      // fixedOrientation
                     1,                          // minTriggerInterval
                     tr("Parrot Sequioa RGB"),   // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
                     this);
@@ -366,7 +366,7 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     960,                                // imageHeight
                     4.0,                                // focalLength
                     true,                               // landscape
-                    false,                              // fixedOrientation
+                    true,                              // fixedOrientation
                     0.8,                                // minTriggerInterval
                     tr("Parrot Sequioa Monochrome"),    // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
                     this);
@@ -382,8 +382,8 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     960,            // imageHeight
                     5.5,            // focalLength
                     true,           // landscape
-                    false,          // fixedOrientation
-                    0,              // minTriggerInterval
+                    true,          // fixedOrientation
+                    1.0,              // minTriggerInterval
                     tr("RedEdge"),  // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
                     this);
         _cameraList.append(QVariant::fromValue(metaData));
@@ -398,8 +398,8 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     4000,               // imageHeight
                     20,                 // focalLength
                     true,               // true: landscape orientation
-                    false,              // true: camera is fixed orientation
-                    1.0,                // minimum trigger interval
+                    true,              // true: camera is fixed orientation
+                    1.4,                // minimum trigger interval
                     "",
                     this);              // parent
         _cameraList.append(QVariant::fromValue(metaData));
@@ -414,7 +414,7 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     5304,               // imageHeight
                     35,                 // focalLength
                     true,               // true: landscape orientation
-                    false,              // true: camera is fixed orientation
+                    true,              // true: camera is fixed orientation
                     1.0,                // minimum trigger interval
                     "",
                     this);              // parent
@@ -430,8 +430,8 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     1080,               // imageHeight
                     1.9,                // focalLength
                     true,               // true: landscape orientation
-                    false,              // true: camera is fixed orientation
-                    0,                  // minimum trigger interval
+                    true,              // true: camera is fixed orientation
+                    1.0,                  // minimum trigger interval
                     tr("Flir Duo R"),   // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
                     this);              // parent
         _cameraList.append(QVariant::fromValue(metaData));
@@ -446,7 +446,7 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     512,               // imageHeight
                     19,                // focalLength
                     true,               // true: landscape orientation
-                    false,              // true: camera is fixed orientation
+                    true,              // true: camera is fixed orientation
                     1.0,                  // minimum trigger interval
                     "",   // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
                     this);              // parent
