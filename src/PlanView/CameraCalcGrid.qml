@@ -43,11 +43,11 @@ Column {
             rowSpacing:         _margin
             columns:            2
 
-        QGCLabel { text: qsTr("Front Lap") }
+        QGCLabel { text: qsTr("Overlap") }
         FactTextField {
             fact:                   cameraCalc.frontalOverlap
         }
-        QGCLabel { text: qsTr("Side Lap") }
+        QGCLabel { text: qsTr("Sidelap") }
         FactTextField {
             fact:                   cameraCalc.sideOverlap
         }
