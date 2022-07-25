@@ -165,14 +165,14 @@ Item {
                                     property var battery: object
                                 }
 
-                                QGCLabel { text: qsTr("Battery %1").arg(object.id.rawValue) }
-                                QGCLabel { text: qsTr("Charge State");                          visible: batteryValuesAvailable.chargeStateAvailable }
-                                QGCLabel { text: qsTr("Remaining");                             visible: batteryValuesAvailable.timeRemainingAvailable }
-                                QGCLabel { text: qsTr("Remaining") }
+                               // QGCLabel { text: qsTr("Battery %1").arg(object.id.rawValue);    visible: false }
+                                //QGCLabel { text: qsTr("Charge State");                          visible: batteryValuesAvailable.chargeStateAvailable }
+                               // QGCLabel { text: qsTr("Remaining");                             visible: batteryValuesAvailable.timeRemainingAvailable }
+                               // QGCLabel { text: qsTr("Remaining") }
                                 QGCLabel { text: qsTr("Voltage") }
                                 QGCLabel { text: qsTr("Consumed");                              visible: batteryValuesAvailable.mahConsumedAvailable }
-                                QGCLabel { text: qsTr("Temperature");                           visible: batteryValuesAvailable.temperatureAvailable }
-                                QGCLabel { text: qsTr("Function");                              visible: batteryValuesAvailable.functionAvailable }
+                               // QGCLabel { text: qsTr("Temperature");                           visible: batteryValuesAvailable.temperatureAvailable }
+                                //QGCLabel { text: qsTr("Function");                              visible: batteryValuesAvailable.functionAvailable }
                             }
                         }
                     }
@@ -193,14 +193,14 @@ Item {
                                     property var battery: object
                                 }
 
-                                QGCLabel { text: "" }
-                                QGCLabel { text: object.chargeState.enumStringValue;                                        visible: batteryValuesAvailable.chargeStateAvailable }
-                                QGCLabel { text: object.timeRemainingStr.value;                                             visible: batteryValuesAvailable.timeRemainingAvailable }
-                                QGCLabel { text: object.percentRemaining.valueString + " " + object.percentRemaining.units }
+                                //QGCLabel { text: "" }
+                                //QGCLabel { text: object.chargeState.enumStringValue;                                        visible: batteryValuesAvailable.chargeStateAvailable }
+                                //QGCLabel { text: object.timeRemainingStr.value;                                             visible: batteryValuesAvailable.timeRemainingAvailable }
+                               // QGCLabel { text: object.percentRemaining.valueString + " " + object.percentRemaining.units }
                                 QGCLabel { text: object.voltage.valueString + " " + object.voltage.units }
                                 QGCLabel { text: object.mahConsumed.valueString + " " + object.mahConsumed.units;           visible: batteryValuesAvailable.mahConsumedAvailable }
-                                QGCLabel { text: object.temperature.valueString + " " + object.temperature.units;           visible: batteryValuesAvailable.temperatureAvailable }
-                                QGCLabel { text: object.function.enumStringValue;                                           visible: batteryValuesAvailable.functionAvailable }
+                                //QGCLabel { text: object.temperature.valueString + " " + object.temperature.units;           visible: batteryValuesAvailable.temperatureAvailable }
+                                //QGCLabel { text: object.function.enumStringValue;                                           visible: batteryValuesAvailable.functionAvailable }
                             }
                         }
                     }
