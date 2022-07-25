@@ -887,6 +887,7 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
     }
 
     bool skipSpoken = false;
+    bool skipOutput = false;
     bool ardupilotPrearm = messageText.startsWith(QStringLiteral("PreArm"));
     bool px4Prearm = messageText.startsWith(QStringLiteral("preflight"), Qt::CaseInsensitive) && severity >= MAV_SEVERITY_CRITICAL;
     if (ardupilotPrearm || px4Prearm) {
@@ -909,6 +910,20 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
     }
     else if (severity <= MAV_SEVERITY_NOTICE) {
         readAloud = true;
+
+        if (messageText == "Resetting previous waypoint"){
+           readAloud = false;
+           skipOutput = true;
+        }
+    }
+
+    if (messageText == "Airspeed calibration started"){
+       readAloud = true;
+    }
+
+    if (messageText == "Airspeed 1 calibrated"){
+       readAloud = true;
+       messageText = "Airspeed Calibrated";
     }
 
     if (readAloud) {
@@ -916,7 +931,9 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
             qgcApp()->toolbox()->audioOutput()->say(messageText);
         }
     }
+    if (!skipOutput){
     emit textMessageReceived(id(), compId, severity, messageText);
+    }
 }
 
 void Vehicle::_handleStatusText(mavlink_message_t& message)
@@ -3253,6 +3270,15 @@ void Vehicle::preflightCalibration(void)
 {
     startCalibration(Vehicle::CalibrationAPMPressureAirspeed);
 }
+
+void Vehicle::preflightServoTest(void)
+{
+        if (!_armed){
+        sendJoystickDataThreadSafe(1,-1,0,0,0);
+        }
+}
+
+
 
 void Vehicle::startCalibration(Vehicle::CalibrationType calType)
 {

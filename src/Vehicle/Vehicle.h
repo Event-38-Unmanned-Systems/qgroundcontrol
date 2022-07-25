@@ -391,6 +391,8 @@ public:
 
     Q_INVOKABLE void preflightCalibration(void);
 
+    Q_INVOKABLE void preflightServoTest(void);
+
     /// Clear Messages
     Q_INVOKABLE void clearMessages();
 

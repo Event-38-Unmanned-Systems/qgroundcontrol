@@ -42,23 +42,23 @@ Item {
                 failureSatCount:        9
                 allowOverrideSatCount:  true
             }
-
-            PreFlightRCCheck {
-            }
         }
 
         PreFlightCheckGroup {
             name: qsTr("Pre-launch Checks")
             PreFlightCheckButton {
-                name:            qsTr("Actuators")
-                manualText:      qsTr("Move all control surfaces. Did they work properly?")
+                name:            qsTr("Heading")
+                manualText:      qsTr("Icon heading matches actual heading?")
             }
-
             PreFlightCheckButton {
                 name:        qsTr("Mission")
                 manualText:  qsTr("Please confirm mission is valid (waypoints valid, no terrain collision).")
             }
-
+            PreFlightCheckButton {
+                name:            qsTr("Actuators")
+                manualText:      qsTr("Press to move control surfaces. Did they work properly?")
+                onPressed: _activeVehicle.preflightServoTest();
+            }
             PreFlightSoundCheck {
             }
         }
@@ -74,7 +74,8 @@ Item {
             // Check list item group 2 - Final checks before launch
             PreFlightCheckButton {
                 name:        qsTr("Payload")
-                manualText:  qsTr("Captures Images?")
+                manualText:  qsTr("Press to capture image. Image captured?")
+                onPressed:   _activeVehicle.triggerSimpleCamera()
             }
 
             PreFlightCheckButton {
