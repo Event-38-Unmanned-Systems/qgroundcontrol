@@ -202,7 +202,7 @@ Rectangle {
             QGCMenu {
                 id: hamburgerMenu
 
-                QGCMenuItem {
+                /*QGCMenuItem {
                     text:           qsTr("Move to vehicle position")
                     visible:        missionItem.specifiesCoordinate
                     enabled:        _activeVehicle
@@ -221,7 +221,7 @@ Rectangle {
                     text:           qsTr("Edit position...")
                     visible:        missionItem.specifiesCoordinate
                     onTriggered:    mainWindow.showComponentDialog(editPositionDialog, qsTr("Edit Position"), mainWindow.showDialogDefaultWidth, StandardButton.Close)
-                }
+                }*/
 
                 QGCMenuSeparator {
                     visible: missionItem.isSimpleItem && !_waypointsOnlyMode

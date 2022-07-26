@@ -228,7 +228,7 @@ void CameraSection::appendStopTakingPhotos(QList<MissionItem*>& items, int& seqN
                            false,                           // isCurrentItem
                            missionItemParent);
     items.append(item);
-    item = new MissionItem(seqNum++,
+    /*item = new MissionItem(seqNum++,
                            MAV_CMD_IMAGE_STOP_CAPTURE,
                            MAV_FRAME_MISSION,
                            0,                                                       // Reserved (Set to 0)
@@ -236,7 +236,7 @@ void CameraSection::appendStopTakingPhotos(QList<MissionItem*>& items, int& seqN
                            true,                                                    // autoContinue
                            false,                                                   // isCurrentItem
                            missionItemParent);
-    items.append(item);
+    items.append(item);*/
 }
 
 void CameraSection::appendStopTakingVideo(QList<MissionItem*>& items, int& seqNum, QObject* missionItemParent)

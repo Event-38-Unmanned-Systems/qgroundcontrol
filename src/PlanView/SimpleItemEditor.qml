@@ -208,8 +208,8 @@ Rectangle {
                 anchors.right:  parent.right
                 flow:           GridLayout.TopToBottom
                 rows:           missionItem.textFieldFacts.count +
-                                missionItem.nanFacts.count +
-                                (missionItem.speedSection.available ? 1 : 0)
+                                missionItem.nanFacts.count //+
+                                //(missionItem.speedSection.available ? 1 : 0)
                 columns:        2
 
                 Repeater {
@@ -233,7 +233,7 @@ Rectangle {
                     text:       qsTr("Flight Speed")
                     checked:    missionItem.speedSection.specifyFlightSpeed
                     onClicked:  missionItem.speedSection.specifyFlightSpeed = checked
-                    visible:    missionItem.speedSection.available
+                    visible:    false //missionItem.speedSection.available
                 }
 
 
@@ -263,13 +263,13 @@ Rectangle {
                     fact:               missionItem.speedSection.flightSpeed
                     Layout.fillWidth:   true
                     enabled:            flightSpeedCheckbox.checked
-                    visible:            missionItem.speedSection.available
+                    visible:           false //missionItem.speedSection.available
                 }
             }
 
             CameraSection {
                 checked:    missionItem.cameraSection.settingsSpecified
-                visible:    missionItem.cameraSection.available
+                visible:    false //missionItem.cameraSection.available
             }
         }
     }

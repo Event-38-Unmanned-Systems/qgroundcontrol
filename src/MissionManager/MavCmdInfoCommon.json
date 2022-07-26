@@ -94,13 +94,6 @@
                 "default":          1,
                 "decimalPlaces":    0
             },
-            "param2": {
-                "label":            "Leave Loiter",
-                "enumStrings":      "Direction of next waypoint,Any direction",
-                "enumValues":       "1,0",
-                "default":          1,
-                "decimalPlaces":    0
-            },
             "param3": {
                 "label":            "Radius",
                 "units":            "m",
@@ -128,13 +121,6 @@
                 "label":            "Loiter Time",
                 "units":            "secs",
                 "default":          30,
-                "decimalPlaces":    0
-            },
-            "param2": {
-                "label":            "Leave Loiter",
-                "enumStrings":      "Direction of next waypoint,Current direction",
-                "enumValues":       "1,0",
-                "default":          1,
                 "decimalPlaces":    0
             },
             "param3": {
@@ -229,13 +215,6 @@
             "isLoiterCommand":      true,
             "friendlyEdit":         true,
             "category":             "Loiter",
-            "param1": {
-                "label":            "Leave Loiter",
-                "enumStrings":      "Direction of next waypoint,Any direction",
-                "enumValues":       "1,0",
-                "default":          1,
-                "decimalPlaces":    0
-            },
             "param2": {
                 "label":            "Radius",
                 "units":            "m",
