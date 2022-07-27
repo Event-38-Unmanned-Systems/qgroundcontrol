@@ -20,7 +20,7 @@
 
 QGC_LOGGING_CATEGORY(VTOLLandingComplexItemLog, "VTOLLandingComplexItemLog")
 
-const QString VTOLLandingComplexItem::name(VTOLLandingComplexItem::tr("VTOL Landing"));
+const QString VTOLLandingComplexItem::name(VTOLLandingComplexItem::tr("Landing Pattern"));
 
 const char* VTOLLandingComplexItem::settingsGroup =            "VTOLLanding";
 const char* VTOLLandingComplexItem::jsonComplexItemTypeValue = "vtolLandingPattern";
@@ -159,14 +159,14 @@ void VTOLLandingComplexItem::_updateFlightPathSegmentsDontCallDirectly(void)
     _flightPathSegments.clearAndDeleteContents();
     if (useLoiterToAlt()->rawValue().toBool()) {
         _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), loiterTangentCoordinate(),  amslEntryAlt()); // Best we can do to simulate loiter circle terrain profile
-        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, loiterTangentCoordinate(), amslEntryAlt(), landingCoordinate(),        amslEntryAlt());
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, loiterTangentCoordinate(), amslEntryAlt(), transitionCoordinate(),        amslTransitionAlt());
     } else {
-        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), landingCoordinate(),        amslEntryAlt());
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), transitionCoordinate(),        amslTransitionAlt());
     }
 
-    _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, transitionCoordinate(), amslEntryAlt(), transitionCoordinate(), amslExitAlt());
+    _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, transitionCoordinate(), amslTransitionAlt(), landingCoordinate(), amslTransitionAlt());
 
-    _appendFlightPathSegment(FlightPathSegment::SegmentTypeLand, landingCoordinate(), amslEntryAlt(), landingCoordinate(), amslExitAlt());
+    _appendFlightPathSegment(FlightPathSegment::SegmentTypeLand, landingCoordinate(), amslTransitionAlt(), landingCoordinate(), amslExitAlt());
     _flightPathSegments.endReset();
 
     if (_cTerrainCollisionSegments != 0) {

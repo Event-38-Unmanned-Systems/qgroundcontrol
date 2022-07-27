@@ -45,7 +45,7 @@ public:
     Q_PROPERTY(bool             landingCoordSet         READ    landingCoordSet                                                 NOTIFY landingCoordSetChanged)
 
     Q_INVOKABLE void setLandingHeadingToTakeoffHeading();
-    const Fact* transitionDistance           (void) const { return _transitionDistance(); }
+    const Fact* transitionDistance      (void) const { return _transitionDistance(); }
     const Fact* transitionAlt           (void) const { return _transitionAlt(); }
     const Fact* finalApproachAltitude   (void) const { return _finalApproachAltitude(); }
     const Fact* loiterRadius            (void) const { return _loiterRadius(); }
@@ -156,6 +156,7 @@ protected:
     virtual const Fact*     _stopTakingVideo        (void) const = 0;
     virtual void            _calcGlideSlope         (void) = 0;
     virtual MissionItem*    _createLandItem         (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent) = 0;
+    double amslTransitionAlt           (void);
 
     void            _init                   (void);
     QPointF         _rotatePoint            (const QPointF& point, const QPointF& origin, double angle);

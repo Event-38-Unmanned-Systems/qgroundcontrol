@@ -66,11 +66,6 @@ Rectangle {
 
             Item { width: 1; height: _spacer }
 
-            FactCheckBox {
-                text:       qsTr("Use loiter to altitude")
-                fact:       missionItem.useLoiterToAlt
-            }
-
             GridLayout {
                 anchors.left:    parent.left
                 anchors.right:   parent.right
@@ -82,15 +77,6 @@ Rectangle {
                     Layout.fillWidth:   true
                     fact:               missionItem.finalApproachAltitude
                     altitudeMode:       _altitudeMode
-                }
-
-                QGCLabel { text: qsTr("GlideSlope") }
-
-                FactTextField {
-                    fact:               missionItem.glideSlope
-                    visible:    missionItem.glideSlope.rawValue
-
-                    Layout.fillWidth:   true
                 }
 
                 QGCLabel {
@@ -106,7 +92,12 @@ Rectangle {
             }
 
             Item { width: 1; height: _spacer }
+            FactCheckBox {
+                text:       qsTr("Use loiter to altitude")
+                fact:       missionItem.useLoiterToAlt
+            }
 
+            Item { width: 1; height: _spacer }
             FactCheckBox {
                 text:       qsTr("Loiter clockwise")
                 fact:       missionItem.loiterClockwise
@@ -220,8 +211,8 @@ Rectangle {
         QGCCheckBox {
             anchors.right:  parent.right
             text:           qsTr("Altitudes relative to launch")
-            checked:        missionItem.altitudesAreRelative
-            visible:        QGroundControl.corePlugin.options.showMissionAbsoluteAltitude || !missionItem.altitudesAreRelative
+            checked:        true
+            visible:        false
             onClicked:      missionItem.altitudesAreRelative = checked
         }
 
@@ -277,15 +268,6 @@ Rectangle {
                 color:                  qgcPal.warningText
                 font.pointSize:         ScreenTools.smallFontPointSize
                 text:                   qsTr("* Avoid tailwind on approach to land.")
-            }
-
-            QGCLabel {
-                anchors.left:           parent.left
-                anchors.right:          parent.right
-                wrapMode:               Text.WordWrap
-                color:                  qgcPal.warningText
-                font.pointSize:         ScreenTools.smallFontPointSize
-                text:                   qsTr("* Ensure landing distance is enough to complete transition.")
             }
         }
     }

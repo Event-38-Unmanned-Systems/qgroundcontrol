@@ -115,6 +115,7 @@ void LandingComplexItem::_init(void)
     connect(this,                       &LandingComplexItem::loiterTangentCoordinateChanged,this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(this,                       &LandingComplexItem::finalApproachCoordinateChanged,this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(this,                       &LandingComplexItem::landingCoordinateChanged,      this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
+    connect(transitionAlt(),            &Fact::valueChanged,                                this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(finalApproachAltitude(),    &Fact::valueChanged,                                this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(landingAltitude(),          &Fact::valueChanged,                                this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
     connect(this,                       &LandingComplexItem::altitudesAreRelativeChanged,   this, &LandingComplexItem::_updateFlightPathSegmentsSignal);
@@ -390,10 +391,9 @@ void LandingComplexItem::_recalcFromCoordinateChange(void)
 int LandingComplexItem::lastSequenceNumber(void) const
 {
     // Fixed items are:
-    //  land start, loiter, land
-    // Optional items are:
-    //  stop photos/video
-    return _sequenceNumber + 3 + (stopTakingPhotos()->rawValue().toBool() ? 2 : 0) + (stopTakingVideo()->rawValue().toBool() ? 1 : 0);
+    //  land start, loiter, land, transition, camera off
+
+    return _sequenceNumber + 4 ;
 }
 
 void LandingComplexItem::appendMissionItems(QList<MissionItem*>& items, QObject* missionItemParent)
@@ -406,9 +406,9 @@ void LandingComplexItem::appendMissionItems(QList<MissionItem*>& items, QObject*
     items.append(item);
 
 
-    if (stopTakingPhotos()->rawValue().toBool()) {
+
         CameraSection::appendStopTakingPhotos(items, seqNum, missionItemParent);
-    }
+
 
     if (stopTakingVideo()->rawValue().toBool()) {
         CameraSection::appendStopTakingVideo(items, seqNum, missionItemParent);
@@ -661,6 +661,12 @@ void LandingComplexItem::setSequenceNumber(int sequenceNumber)
 double LandingComplexItem::amslEntryAlt(void) const
 {
     return finalApproachAltitude()->rawValue().toDouble() + (_altitudesAreRelative ? _missionController->plannedHomePosition().altitude() : 0);
+}
+
+double LandingComplexItem::amslTransitionAlt(void)
+{
+    return transitionAlt()->rawValue().toDouble() + (_altitudesAreRelative ? _missionController->plannedHomePosition().altitude() : 0);
+
 }
 
 double LandingComplexItem::amslExitAlt(void) const

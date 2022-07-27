@@ -12,7 +12,7 @@ import QtQuick.Controls 1.2
 import QtLocation       5.3
 import QtPositioning    5.3
 import QtQuick.Layouts  1.11
-
+import QtQuick.Shapes   1.12
 import QGroundControl               1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.Palette       1.0
@@ -63,7 +63,7 @@ Item {
             _loiterPointObject = objMgr.createObject(finalApproachPointComponent, map, true /* parentObjectIsMap */)
             _landingPointObject = objMgr.createObject(landingPointComponent, map, true /* parentObjectIsMap */)
             _transitionPointObject = objMgr.createObject(transitionPointComponent, map, true /* parentObjectIsMap */)
-            var rgComponents = [ flightPathComponent, loiterRadiusComponent,midGlideSlopeHeightComponent]
+            var rgComponents = [ flightPathComponent, loiterRadiusComponent,rotationIndicatorComponentTop,rotationIndicatorComponentBottom,midGlideSlopeHeightComponent]
             objMgr.createObjects(rgComponents, map, true /* parentObjectIsMap */)
         }
     }
@@ -178,6 +178,7 @@ Item {
             _setFlightPath()
         }
     }
+
     Component {
         id: midGlideSlopeHeightComponent
 
@@ -275,7 +276,6 @@ Item {
                 else { if (!_preventReentrancy) {
                         if (Drag.active) {
                             _preventReentrancy = true
-                           // _missionItem.transitionCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(100,tangentangle);
                             _missionItem.finalApproachCoordinate = itemCoordinate
                             _preventReentrancy = false
                         }
@@ -342,9 +342,11 @@ Item {
 
             sourceItem:
                 MissionItemIndexLabel {
-                index:      _missionItem.sequenceNumber + 1
+                index:      _missionItem.lastSequenceNumber - 1
                 label:      qsTr("DeTransition")
                 checked:    _missionItem.isCurrentItem
+                onClicked: _root.clicked(_missionItem.sequenceNumber)
+
             }
         }
     }
@@ -361,7 +363,7 @@ Item {
 
             sourceItem:
                 MissionItemIndexLabel {
-                index:      _missionItem.sequenceNumber + 2
+                index:      _missionItem.lastSequenceNumber
                 label:      qsTr("Land")
                 checked:    _missionItem.isCurrentItem
 
@@ -383,4 +385,98 @@ Item {
             visible:        _useLoiterToAlt
         }
     }
+
+    Component {
+        id: rotationIndicatorComponentTop
+
+        MapQuickItem {
+            visible: _useLoiterToAlt
+            property bool topIndicator: true
+
+            function updateCoordinate() {
+                coordinate = _missionItem.finalApproachCoordinate.atDistanceAndAzimuth(_missionItem.loiterRadius.rawValue, topIndicator ? 0 : 180)
+            }
+
+            Connections {
+                target:                             _missionItem
+                onTransitionCoordinateChanged:      updateCoordinate()
+                onLandingCoordinateChanged:         updateCoordinate()
+                onLoiterTangentCoordinateChanged:   updateCoordinate()
+                onFinalApproachCoordinateChanged:   updateCoordinate()
+            }
+
+           Component.onCompleted: updateCoordinate()
+
+            sourceItem: Shape {
+                width:            ScreenTools.defaultFontPixelHeight
+                height:           ScreenTools.defaultFontPixelHeight
+                anchors.centerIn: parent
+
+                transform: Rotation {
+                    origin.x: width / 2
+                    origin.y: height / 2
+                    angle:   (_missionItem.loiterClockwise.rawValue ? 0 : 180) + (topIndicator ? 180 : 0)
+                }
+
+                ShapePath {
+                    strokeWidth: 2
+                    strokeColor: "green"
+                    fillColor:   "green"
+                    startX:      0
+                    startY:      width / 2
+                    PathLine { x: width;  y: width     }
+                    PathLine { x: width;  y: 0         }
+                    PathLine { x: 0;      y: width / 2 }
+                }
+
+            }
+        }
+    }
+
+    Component {
+        id: rotationIndicatorComponentBottom
+
+        MapQuickItem {
+            visible: _useLoiterToAlt
+            property bool topIndicator: false
+
+            function updateCoordinate() {
+                coordinate = _missionItem.finalApproachCoordinate.atDistanceAndAzimuth(_missionItem.loiterRadius.rawValue, topIndicator ? 0 : 180)
+            }
+
+            Connections {
+                target:                             _missionItem
+                onTransitionCoordinateChanged:      updateCoordinate()
+                onLandingCoordinateChanged:         updateCoordinate()
+                onLoiterTangentCoordinateChanged:   updateCoordinate()
+                onFinalApproachCoordinateChanged:   updateCoordinate()
+            }
+            Component.onCompleted: updateCoordinate()
+
+            sourceItem: Shape {
+                width:            ScreenTools.defaultFontPixelHeight
+                height:           ScreenTools.defaultFontPixelHeight
+                anchors.centerIn: parent
+
+                transform: Rotation {
+                    origin.x: width / 2
+                    origin.y: height / 2
+                    angle:   (_missionItem.loiterClockwise.rawValue ? 0 : 180) + (topIndicator ? 180 : 0)
+                }
+
+                ShapePath {
+                    strokeWidth: 2
+                    strokeColor: "green"
+                    fillColor:   "green"
+                    startX:      0
+                    startY:      width / 2
+                    PathLine { x: width;  y: width     }
+                    PathLine { x: width;  y: 0         }
+                    PathLine { x: 0;      y: width / 2 }
+                }
+
+            }
+        }
+    }
+
 }

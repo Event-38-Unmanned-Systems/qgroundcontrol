@@ -59,9 +59,9 @@
     "shortDesc":        "Loiter radius.",
     "type":             "double",
     "decimalPlaces":    1,
-    "min":              1,
+    "min":             60,
     "units":            "m",
-    "default":          100.0
+    "default":          70.0
 },
 {
     "name":         "LoiterClockwise",
