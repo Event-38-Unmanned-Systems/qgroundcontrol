@@ -159,20 +159,11 @@ protected:
     bool            _altitudesAreRelative       = true;
 
     static const char* _jsonVtolTakeoffCoordinateCoordinateKey;
-
-
     static const char* _jsonLoiterRadiusKey;
     static const char* _jsonLoiterClockwiseKey;
-    static const char* _jsonLandingCoordinateKey;
-    static const char* _jsonAltitudesAreRelativeKey;
+    static const char* _jsonClimboutCoordinateKey;
     static const char* _jsonUseLoiterToAltKey;
-    static const char* _jsonStopTakingPhotosKey;
-    static const char* _jsonStopTakingVideoKey;
 
-    // Only in older file formats
-    static const char* _jsonDeprecatedLandingAltitudeRelativeKey;
-    static const char* _jsonDeprecatedLoiterAltitudeRelativeKey;
-    static const char* _jsonDeprecatedLoiterCoordinateKey;
 
 private slots:
     void    _recalcFromRadiusChange                         (void);

@@ -29,27 +29,12 @@ const char* TakeoffComplexItem::gradientName                    = "gradient";
 const char* TakeoffComplexItem::loiterRadiusName                = "LoiterRadius";
 
 
-
-//unsure what these do yet likely something mission download/upload -mwrighte38
 const char* TakeoffComplexItem::_jsonVtolTakeoffCoordinateCoordinateKey = "vtolTakeoffCoordinate";
+const char* TakeoffComplexItem::_jsonClimboutCoordinateKey       = "climboutCoordinate";
 const char* TakeoffComplexItem::_jsonLoiterRadiusKey            = "loiterRadius";
 const char* TakeoffComplexItem::_jsonLoiterClockwiseKey         = "loiterClockwise";
-const char* TakeoffComplexItem::_jsonLandingCoordinateKey       = "landCoordinate";
-const char* TakeoffComplexItem::_jsonAltitudesAreRelativeKey    = "altitudesAreRelative";
 const char* TakeoffComplexItem::_jsonUseLoiterToAltKey          = "useLoiterToAlt";
-const char* TakeoffComplexItem::_jsonStopTakingPhotosKey        = "stopTakingPhotos";
-const char* TakeoffComplexItem::_jsonStopTakingVideoKey         = "stopVideoPhotos";
 
-// Deprecated keys
-
-// Support for separate relative alt settings for land/loiter was removed. It now only has a single
-// relative alt setting stored in _jsonAltitudesAreRelativeKey.
-const char* TakeoffComplexItem::_jsonDeprecatedLandingAltitudeRelativeKey   = "landAltitudeRelative";
-const char* TakeoffComplexItem::_jsonDeprecatedLoiterAltitudeRelativeKey    = "loiterAltitudeRelative";
-
-// Name changed from _jsonDeprecatedLoiterCoordinateKey to _jsonFinalApproachCoordinateKey to reflect
-// the new support for using either a loiter or just a waypoint as the approach entry point.
-const char* TakeoffComplexItem::_jsonDeprecatedLoiterCoordinateKey          = "loiterCoordinate";
 
 TakeoffComplexItem::TakeoffComplexItem(PlanMasterController* masterController, bool flyView)
     : ComplexMissionItem        (masterController, flyView)
@@ -315,9 +300,6 @@ MissionItem* TakeoffComplexItem::_createVtolTakeoffItem(int seqNum, QObject* par
                            parent);
 }
 
-
-//loiterRadius()->rawValue().toDouble() * (_loiterClockwise()->rawValue().toBool() ? 1.0 : -1.0),
-
 MissionItem* TakeoffComplexItem::_createClimboutItem(int seqNum, QObject* parent)
 {
     if (useLoiterToAlt()->rawValue().toBool()) {
@@ -355,10 +337,95 @@ bool TakeoffComplexItem::_scanForItem(QmlObjectListModel* visualItems, bool flyV
 {
     qCDebug(TakeoffComplexItemLog) << "TakeoffComplexItem::scanForItem count" << visualItems->count();
 
-    if (visualItems->count() < 3) {
+    if (visualItems->count() < 2) {
         return false;
     }
-    return false;
+
+    // A valid takeoff pattern is comprised of the follow commands in this order at the end of the item list:
+    //  VTOL Takeoff - required
+    //  MAV_CMD_NAV_LOITER_TO_ALT or MAV_CMD_NAV_WAYPOINT
+
+    // Start looking for the commands in beginning of list.
+    int scanIndex = 0;
+
+    if (scanIndex > visualItems->count()) {
+        return false;
+    }
+
+    SimpleMissionItem* item = visualItems->value<SimpleMissionItem*>(scanIndex++);
+    if (!item) {
+        return false;
+    }
+
+    MissionItem& missionItemTakeoff = item->missionItem();
+    if (!IsTakeoffItemFunc(missionItemTakeoff)) {
+        return false;
+    }
+
+    MAV_FRAME landPointFrame = missionItemTakeoff.frame();
+
+    if (scanIndex < 0 || scanIndex > visualItems->count() - 1) {
+        return false;
+    }
+
+    item = visualItems->value<SimpleMissionItem*>(scanIndex++);
+    if (!item) {
+        return false;
+    }
+
+    bool useLoiterToAlt = true;
+    MissionItem& missionItemClimbout = item->missionItem();
+    if (missionItemClimbout.command() == MAV_CMD_NAV_LOITER_TO_ALT) {
+        if (missionItemClimbout.frame() != landPointFrame ||
+                missionItemClimbout.param1() != 1.0 || missionItemClimbout.param3() != 0 || missionItemClimbout.param4() != 1.0) {
+            return false;
+        }
+    } else if (missionItemClimbout.command() == MAV_CMD_NAV_WAYPOINT) {
+        if (missionItemClimbout.frame() != landPointFrame ||
+                missionItemClimbout.param1() != 0 || missionItemClimbout.param2() != 0 || missionItemClimbout.param3() != 0 ||
+                !qIsNaN(missionItemClimbout.param4()) ||
+                qIsNaN(missionItemClimbout.param5()) || qIsNaN(missionItemClimbout.param6()) || qIsNaN(missionItemClimbout.param6())) {
+            return false;
+        }
+        useLoiterToAlt = false;
+    } else {
+        return false;
+    }
+
+    // We made it this far so we do have a VTOL takeoff Pattern item at the end of the mission.
+    // Since we have scanned it we need to remove the items for it fromt the list
+
+
+    // Now stuff all the scanned information into the item
+
+    TakeoffComplexItem* complexItem = createItemFunc(masterController, flyView);
+
+    complexItem->_ignoreRecalcSignals = true;
+
+    complexItem->_altitudesAreRelative = landPointFrame == MAV_FRAME_GLOBAL_RELATIVE_ALT;
+    complexItem->setClimboutCoordinate(QGeoCoordinate(missionItemClimbout.param5(), missionItemClimbout.param6()));
+    complexItem->climboutAlt()->setRawValue(missionItemClimbout.param7());
+    complexItem->useLoiterToAlt()->setRawValue(useLoiterToAlt);
+
+    if (useLoiterToAlt) {
+        complexItem->loiterRadius()->setRawValue(qAbs(missionItemClimbout.param2()));
+        complexItem->loiterClockwise()->setRawValue(missionItemClimbout.param2() > 0);
+    }
+
+    complexItem->_vtolTakeoffCoordinate.setLatitude(missionItemTakeoff.param5());
+    complexItem->_vtolTakeoffCoordinate.setLongitude(missionItemTakeoff.param6());
+    complexItem->vtolAlt()->setRawValue(missionItemTakeoff.param7());
+
+    complexItem->_takeoffCoordSet = true;
+
+    complexItem->_ignoreRecalcSignals = false;
+
+    complexItem->_recalcFromCoordinateChange();
+    complexItem->setDirty(false);
+
+    visualItems->append(complexItem);
+
+    return true;
 }
 
 void TakeoffComplexItem::applyNewAltitude(double newAltitude)
@@ -446,18 +513,69 @@ QJsonObject TakeoffComplexItem::_save(void)
     coordinate = _climboutCoordinate;
     coordinate.setAltitude(climboutAlt()->rawValue().toDouble());
     JsonHelper::saveGeoCoordinate(coordinate, true /* writeAltitude */, jsonCoordinate);
-    saveObject[_jsonLandingCoordinateKey] = jsonCoordinate;
 
-    saveObject[_jsonLoiterClockwiseKey]         = loiterClockwise()->rawValue().toBool();
+    saveObject[_jsonClimboutCoordinateKey] = jsonCoordinate;
     saveObject[_jsonUseLoiterToAltKey]          = useLoiterToAlt()->rawValue().toBool();
-    saveObject[_jsonAltitudesAreRelativeKey]    = _altitudesAreRelative;
+    saveObject[_jsonLoiterRadiusKey]            = loiterRadius()->rawValue().toDouble();
+    saveObject[_jsonLoiterClockwiseKey]         = loiterClockwise()->rawValue().toBool();
+
 
     return saveObject;
 }
 
 bool TakeoffComplexItem::_load(const QJsonObject& complexObject, int sequenceNumber, const QString& jsonComplexItemTypeValue, bool useDeprecatedRelAltKeys, QString& errorString)
 {
-    return false;
+    QList<JsonHelper::KeyValidateInfo> keyInfoList = {
+        { JsonHelper::jsonVersionKey,                   QJsonValue::Double, true },
+        { VisualMissionItem::jsonTypeKey,               QJsonValue::String, true },
+        { ComplexMissionItem::jsonComplexItemTypeKey,   QJsonValue::String, true },
+        { _jsonVtolTakeoffCoordinateCoordinateKey,      QJsonValue::Array,  true },
+        { _jsonLoiterRadiusKey,                         QJsonValue::Double, true },
+        { _jsonLoiterClockwiseKey,                      QJsonValue::Bool,   true },
+        { _jsonClimboutCoordinateKey,                   QJsonValue::Array,  true },
+        { _jsonUseLoiterToAltKey,                       QJsonValue::Bool,   true },
+    };
+
+    if (!JsonHelper::validateKeys(complexObject, keyInfoList, errorString)) {
+        return false;
+    }
+
+    QString itemType = complexObject[VisualMissionItem::jsonTypeKey].toString();
+    QString complexType = complexObject[ComplexMissionItem::jsonComplexItemTypeKey].toString();
+    if (itemType != VisualMissionItem::jsonTypeComplexItemValue || complexType != jsonComplexItemTypeValue) {
+        errorString = tr("%1 does not support loading this complex mission item type: %2:%3").arg(qgcApp()->applicationName()).arg(itemType).arg(complexType);
+        return false;
+    }
+
+    setSequenceNumber(sequenceNumber);
+
+    _ignoreRecalcSignals = true;
+
+    QGeoCoordinate coordinate;
+    if (!JsonHelper::loadGeoCoordinate(complexObject[_jsonVtolTakeoffCoordinateCoordinateKey], true /* altitudeRequired */, coordinate, errorString)) {
+        return false;
+    }
+    _vtolTakeoffCoordinate = coordinate;
+
+    vtolAlt()->setRawValue(coordinate.altitude());
+
+    if (!JsonHelper::loadGeoCoordinate(complexObject[_jsonClimboutCoordinateKey], true /* altitudeRequired */, coordinate, errorString)) {
+        return false;
+    }
+    _climboutCoordinate = coordinate;
+    climboutAlt()->setRawValue(coordinate.altitude());
+
+    loiterRadius()->setRawValue(complexObject[_jsonLoiterRadiusKey].toDouble());
+    loiterClockwise()->setRawValue(complexObject[_jsonLoiterClockwiseKey].toBool());
+    useLoiterToAlt()->setRawValue(complexObject[_jsonUseLoiterToAltKey].toBool(true));
+
+    _takeoffCoordSet        = true;
+    _ignoreRecalcSignals    = false;
+
+    _recalcFromCoordinateChange();
+    emit coordinateChanged(this->coordinate());    // This will kick off terrain query
+
+    return true;
 }
 
 void TakeoffComplexItem::setAltitudesAreRelative(bool altitudesAreRelative)

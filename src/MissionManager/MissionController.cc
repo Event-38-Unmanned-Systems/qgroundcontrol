@@ -848,7 +848,17 @@ bool MissionController::_loadJsonMissionFileV2(const QJsonObject& json, QmlObjec
             }
             QString complexItemType = itemObject[ComplexMissionItem::jsonComplexItemTypeKey].toString();
 
-            if (complexItemType == SurveyComplexItem::jsonComplexItemTypeValue) {
+           if (complexItemType == VTOLTakeoffComplexItem::jsonComplexItemTypeValue) {
+                            qCDebug(MissionControllerLog) << "Loading VTOL Takeoff Pattern: nextSequenceNumber" << nextSequenceNumber;
+                            VTOLTakeoffComplexItem* takeoffItem = new VTOLTakeoffComplexItem(_masterController, _flyView);
+                            if (!takeoffItem->load(itemObject, nextSequenceNumber++, errorString)) {
+                                return false;
+                            }
+                            nextSequenceNumber = takeoffItem->lastSequenceNumber() + 1;
+                            qCDebug(MissionControllerLog) << "VTOL Takeoff Pattern load complete: nextSequenceNumber" << nextSequenceNumber;
+                            visualItems->append(takeoffItem);
+           }
+            else if (complexItemType == SurveyComplexItem::jsonComplexItemTypeValue) {
                 qCDebug(MissionControllerLog) << "Loading Survey: nextSequenceNumber" << nextSequenceNumber;
                 SurveyComplexItem* surveyItem = new SurveyComplexItem(_masterController, _flyView, QString() /* kmlFile */);
                 if (!surveyItem->load(itemObject, nextSequenceNumber++, errorString)) {
@@ -2224,6 +2234,9 @@ void MissionController::_scanForAdditionalSettings(QmlObjectListModel* visualIte
     if (!FixedWingLandingComplexItem::scanForItem(visualItems, _flyView, masterController)) {
         VTOLLandingComplexItem::scanForItem(visualItems, _flyView, masterController);
     }
+    // second we look for a takeoff patterns which are at the end
+    VTOLTakeoffComplexItem::scanForItem(visualItems, _flyView, masterController);
+
 
     int scanIndex = 0;
     while (scanIndex < visualItems->count()) {
