@@ -46,25 +46,25 @@
     "decimalPlaces":    2,
     "min":              0,
     "units":            "m",
-    "default":     10
+    "default":     50
 },
 {
     "name":             "TerrainAdjustMaxClimbRate",
-    "shortDesc": "The maximum climb rate from one waypoint to another when adjusting for terrain. Set to 0 for no max.",
+    "shortDesc": "The maximum climb rate from one waypoint to another when adjusting for terrain.",
     "type":             "double",
     "decimalPlaces":    2,
-    "min":              0,
+    "min":              1,
     "units":            "m/s",
-    "default":     0
+    "default":     2
 },
 {
     "name":             "TerrainAdjustMaxDescentRate",
-    "shortDesc": "The maximum descent rate from one waypoint to another when adjusting for terrain. Set to 0 for no max.",
+    "shortDesc": "The maximum descent rate from one waypoint to another when adjusting for terrain.",
     "type":             "double",
     "decimalPlaces":    2,
-    "min":              0,
+    "min":              1,
     "units":            "m/s",
-    "default":     0
+    "default":     2
 }
 ]
 }

@@ -14,6 +14,7 @@ import QGroundControl.Palette       1.0
 import QGroundControl.FlightMap     1.0
 
 TransectStyleComplexItemEditor {
+    property real   _spacer:                    ScreenTools.defaultFontPixelWidth / 2
     transectAreaDefinitionComplete: missionItem.surveyAreaPolygon.isValid
     transectAreaDefinitionHelp:     qsTr("Use the Polygon Tools to create the polygon which outlines your survey area.")
     transectValuesHeaderName:       qsTr("Transects")
