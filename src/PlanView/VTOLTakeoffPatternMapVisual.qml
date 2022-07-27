@@ -12,7 +12,7 @@ import QtQuick.Controls 1.2
 import QtLocation       5.3
 import QtPositioning    5.3
 import QtQuick.Layouts  1.11
-
+import QtQuick.Shapes   1.12
 import QGroundControl               1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.Palette       1.0
@@ -60,7 +60,7 @@ Item {
         if (objMgr.rgDynamicObjects.length === 0) {
             _vtolTakeoffPointObject = objMgr.createObject(vtolTakeoffPointComponent, map, true /* parentObjectIsMap */)
             _climboutPointObject = objMgr.createObject(climboutPointComponent, map, true /* parentObjectIsMap */)
-            var rgComponents = [ flightPathComponent, transitionBeginPathComponent,transitionFinishPathComponent, loiterRadiusComponent ,midGlideSlopeHeightComponent]
+            var rgComponents = [ flightPathComponent, transitionBeginPathComponent,transitionFinishPathComponent, loiterRadiusComponent , rotationIndicatorComponentTop,rotationIndicatorComponentBottom, midGlideSlopeHeightComponent]
             objMgr.createObjects(rgComponents, map, true /* parentObjectIsMap */)
         }
     }
@@ -130,7 +130,10 @@ Item {
         hideItemVisuals()
     }
 
-    on_UseLoiterToAltChanged: _setFlightPath()
+    on_UseLoiterToAltChanged:{
+        _calcGlideSlopeHeights()
+        _setFlightPath()
+    }
 
     Connections {
         target: _missionItem
@@ -152,6 +155,7 @@ Item {
         }
 
         onTakeoffCoordSetChanged: {
+            _missionItem.wizardMode = false;
             if (_missionItem.flyView) {
                 return
             }
@@ -249,13 +253,14 @@ Item {
 
             onItemCoordinateChanged: {
 
-              if (!_preventReentrancy) {
-                  _preventReentrancy = true;
+
                 if (!globals.activeVehicle){
                   _missionItem.vtolTakeoffCoordinate = itemCoordinate
                 }
+                /*if (!_preventReentrancy) {
+                    _preventReentrancy = true;
                 _preventReentrancy = false;
-                  }
+                  } */
             }
         }
     }
@@ -273,23 +278,24 @@ Item {
         onItemCoordinateChanged: {
             var angle = _missionItem.vtolTakeoffCoordinate.azimuthTo(itemCoordinate)
             var distance = _missionItem.vtolTakeoffCoordinate.distanceTo(itemCoordinate)
+            var minDist =  _useLoiterToAlt ? _missionItem.takeoffDist.rawMin + _missionItem.loiterRadius.rawValue :  _missionItem.takeoffDist.rawMin
 
             if (!_preventReentrancy) {
-                    if (distance < 300 ){
+                    if (distance < minDist ){
                         if (!_preventReentrancy) {
                             if (Drag.active) {
                                 _preventReentrancy = true
-                                _missionItem.climboutCoordinate = _missionItem.vtolTakeoffCoordinate.atDistanceAndAzimuth(300, angle)
+                                _missionItem.climboutCoordinate = _missionItem.vtolTakeoffCoordinate.atDistanceAndAzimuth(minDist, angle)
                                 _preventReentrancy = false
                             }
                         }
                     }
 
-                    else if (distance > 1000){
+                    else if (distance > _missionItem.takeoffDist.rawMax){
                         if (!_preventReentrancy) {
                             if (Drag.active) {
                                 _preventReentrancy = true
-                                _missionItem.climboutCoordinate = _missionItem.vtolTakeoffCoordinate.atDistanceAndAzimuth(1000, angle)
+                                _missionItem.climboutCoordinate = _missionItem.vtolTakeoffCoordinate.atDistanceAndAzimuth(_missionItem.takeoffDist.rawMax, angle)
                                 _preventReentrancy = false
                             }
                         }
@@ -349,8 +355,8 @@ Item {
         MapQuickItem {
             anchorPoint.x:  sourceItem.anchorPointX
             anchorPoint.y:  sourceItem.anchorPointY
-            z:              QGroundControl.zOrderMapItems
             coordinate:     _missionItem.vtolTakeoffCoordinate
+            z:              QGroundControl.zOrderMapItems
 
             sourceItem:
                 MissionItemIndexLabel {
@@ -370,8 +376,8 @@ Item {
         MapQuickItem {
             anchorPoint.x:  sourceItem.anchorPointX
             anchorPoint.y:  sourceItem.anchorPointY
-            z:              QGroundControl.zOrderMapItems
             coordinate:     _missionItem.climboutCoordinate
+            z:              QGroundControl.zOrderMapItems
 
             sourceItem:
                 MissionItemIndexLabel {
@@ -390,11 +396,102 @@ Item {
         MapCircle {
             z:              QGroundControl.zOrderMapItems
             center:         _missionItem.climboutCoordinate
-            radius:         100
+            radius:         _missionItem.loiterRadius.rawValue
             border.width:   2
             border.color:   "green"
             color:          "transparent"
             visible:        _useLoiterToAlt
         }
     }
+
+    Component {
+        id: rotationIndicatorComponentTop
+
+        MapQuickItem {
+            visible: _useLoiterToAlt
+            property bool topIndicator: true
+
+            function updateCoordinate() {
+                coordinate = _missionItem.climboutCoordinate.atDistanceAndAzimuth(_missionItem.loiterRadius.rawValue, topIndicator ? 0 : 180)
+            }
+
+            Connections {
+                target:                             _missionItem
+                onClimboutCoordinateChanged:         updateCoordinate()
+                onVtolTakeoffCoordinateChanged:      updateCoordinate()
+            }
+
+           Component.onCompleted: updateCoordinate()
+
+            sourceItem: Shape {
+                width:            ScreenTools.defaultFontPixelHeight
+                height:           ScreenTools.defaultFontPixelHeight
+                anchors.centerIn: parent
+
+                transform: Rotation {
+                    origin.x: width / 2
+                    origin.y: height / 2
+                    angle:   (_missionItem.loiterClockwise.rawValue ? 0 : 180) + (topIndicator ? 180 : 0)
+                }
+
+                ShapePath {
+                    strokeWidth: 2
+                    strokeColor: "green"
+                    fillColor:   "green"
+                    startX:      0
+                    startY:      width / 2
+                    PathLine { x: width;  y: width     }
+                    PathLine { x: width;  y: 0         }
+                    PathLine { x: 0;      y: width / 2 }
+                }
+
+            }
+        }
+    }
+    Component {
+        id: rotationIndicatorComponentBottom
+
+        MapQuickItem {
+            visible: _useLoiterToAlt
+            property bool topIndicator: false
+
+            function updateCoordinate() {
+                coordinate = _missionItem.climboutCoordinate.atDistanceAndAzimuth(_missionItem.loiterRadius.rawValue, topIndicator ? 0 : 180)
+            }
+
+            Connections {
+                target:                             _missionItem
+                onClimboutCoordinateChanged:         updateCoordinate()
+                onVtolTakeoffCoordinateChanged:      updateCoordinate()
+            }
+
+           Component.onCompleted: updateCoordinate()
+
+            sourceItem: Shape {
+                width:            ScreenTools.defaultFontPixelHeight
+                height:           ScreenTools.defaultFontPixelHeight
+                anchors.centerIn: parent
+
+                transform: Rotation {
+                    origin.x: width / 2
+                    origin.y: height / 2
+                    angle:   (_missionItem.loiterClockwise.rawValue ? 0 : 180) + (topIndicator ? 180 : 0)
+                }
+
+                ShapePath {
+                    strokeWidth: 2
+                    strokeColor: "green"
+                    fillColor:   "green"
+                    startX:      0
+                    startY:      width / 2
+                    PathLine { x: width;  y: width     }
+                    PathLine { x: width;  y: 0         }
+                    PathLine { x: 0;      y: width / 2 }
+                }
+
+            }
+        }
+    }
+
+
 }

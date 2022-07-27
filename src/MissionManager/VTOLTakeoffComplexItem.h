@@ -60,6 +60,7 @@ private:
     const Fact*     _loiterClockwise        (void) const final { return &_loiterClockwiseFact; }
     const Fact*     _useLoiterToAlt        (void) const final { return &_useLoiterToAltFact; }
     const Fact*     _gradient        (void) const final { return &_gradientFact;}
+    const Fact*     _loiterRadius           (void) const final { return &_loiterRadiusFact; }
 
     MissionItem*    _createTakeoffItem         (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent) final;
 
@@ -71,6 +72,7 @@ private:
     Fact            _loiterClockwiseFact;
     Fact            _useLoiterToAltFact;
     Fact            _gradientFact;
+    Fact            _loiterRadiusFact;
 
     friend VTOLTakeoffPatternTest;
 };

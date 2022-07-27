@@ -28,6 +28,7 @@ public:
     TakeoffComplexItem(PlanMasterController* masterController, bool flyView);
     Q_PROPERTY(Fact*            takeoffDist             READ    takeoffDist                                                     CONSTANT)
     Q_PROPERTY(Fact*            vtolAlt                 READ    vtolAlt                                                         CONSTANT)
+    Q_PROPERTY(Fact*            loiterRadius            READ    loiterRadius                                                    CONSTANT)
     Q_PROPERTY(Fact*            climboutAlt             READ    climboutAlt                                                     CONSTANT)
     Q_PROPERTY(Fact*            takeoffHeading          READ    takeoffHeading                                                  CONSTANT)
     Q_PROPERTY(Fact*            loiterClockwise         READ    loiterClockwise                                                 CONSTANT)
@@ -38,6 +39,7 @@ public:
     Q_PROPERTY(bool             altitudesAreRelative    READ    altitudesAreRelative        WRITE setAltitudesAreRelative       NOTIFY altitudesAreRelativeChanged)
     Q_PROPERTY(bool             takeoffCoordSet         READ    takeoffCoordSet                                                 NOTIFY takeoffCoordSetChanged)
 
+    const Fact* loiterRadius            (void) const { return _loiterRadius(); }
     const Fact* takeoffDist           (void) const { return _takeoffDist(); }
     const Fact* vtolAlt           (void) const { return _vtolAlt(); }
     const Fact* climboutAlt   (void) const { return _climboutAlt(); }
@@ -53,6 +55,7 @@ public:
     Fact* loiterClockwise       (void) { return const_cast<Fact*>(const_cast<const TakeoffComplexItem*>(this)->_loiterClockwise()); };
     Fact* useLoiterToAlt        (void) { return const_cast<Fact*>(const_cast<const TakeoffComplexItem*>(this)->_useLoiterToAlt()); };
     Fact* gradient      (void) { return const_cast<Fact*>(const_cast<const TakeoffComplexItem*>(this)->_gradient()); };
+    Fact* loiterRadius          (void) { return const_cast<Fact*>(const_cast<const TakeoffComplexItem*>(this)->_loiterRadius()); };
 
     bool            altitudesAreRelative    (void) const { return _altitudesAreRelative; }
     bool            takeoffCoordSet         (void) const { return _takeoffCoordSet; }
@@ -95,8 +98,9 @@ public:
     void                setSequenceNumber           (int sequenceNumber) final;
     double              amslEntryAlt                (void) const final;
     double              amslExitAlt                 (void) const final;
-    double              minAMSLAltitude             (void) const final { return amslExitAlt(); }
-    double              maxAMSLAltitude             (void) const final { return amslEntryAlt(); }
+    double              minAMSLAltitude             (void) const final { return amslEntryAlt(); }
+    double              maxAMSLAltitude             (void) const final { return amslExitAlt(); }
+    double              amslgroundAlt               (void);
 
     static const char* takeoffDistName;
     static const char* vtolAltName;
@@ -105,6 +109,7 @@ public:
     static const char* loiterClockwiseName;
     static const char* useLoiterToAltName;
     static const char* gradientName;
+    static const char* loiterRadiusName;
 
 signals:
     void vtolTakeoffCoordinateChanged (QGeoCoordinate coordinate);
@@ -128,7 +133,7 @@ protected:
     virtual const Fact*     _loiterClockwise        (void) const = 0;
     virtual const Fact*     _useLoiterToAlt         (void) const = 0;
     virtual const Fact*     _gradient               (void) const = 0;
-
+    virtual const Fact*     _loiterRadius           (void) const = 0;
 
     virtual MissionItem*    _createTakeoffItem         (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent) = 0;
 

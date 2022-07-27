@@ -64,6 +64,16 @@
 "max":              6.6,
 "decimalPlaces":    1,
 "default":          3.0
+},
+{
+    "name":             "LoiterRadius",
+    "shortDesc":        "Loiter radius.",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "min":             70,
+    "max":             300,
+    "units":            "m",
+    "default":          100.0
 }
 ]
 }

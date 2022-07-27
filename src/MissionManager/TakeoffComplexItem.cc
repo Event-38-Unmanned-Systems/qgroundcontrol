@@ -26,6 +26,9 @@ const char* TakeoffComplexItem::takeoffHeadingName              = "takeoffHeadin
 const char* TakeoffComplexItem::loiterClockwiseName             = "loiterClockwise";
 const char* TakeoffComplexItem::useLoiterToAltName              = "useLoiterToAlt";
 const char* TakeoffComplexItem::gradientName                    = "gradient";
+const char* TakeoffComplexItem::loiterRadiusName                = "LoiterRadius";
+
+
 
 //unsure what these do yet likely something mission download/upload -mwrighte38
 const char* TakeoffComplexItem::_jsonVtolTakeoffCoordinateCoordinateKey = "vtolTakeoffCoordinate";
@@ -60,6 +63,7 @@ TakeoffComplexItem::TakeoffComplexItem(PlanMasterController* masterController, b
 
 void TakeoffComplexItem::_init(void)
 {   
+    connect(loiterRadius(),             &Fact::valueChanged,                                this, &TakeoffComplexItem::_recalcFromCoordinateChange);
 
     connect(takeoffDist(),              &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromHeadingAndDistanceChange);
     connect(vtolAlt(),                  &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromCoordinateChange);
@@ -67,12 +71,13 @@ void TakeoffComplexItem::_init(void)
 
     connect(takeoffHeading(),           &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromRadiusChange);
     connect(loiterClockwise(),          &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromRadiusChange);
-    connect(useLoiterToAlt(),           &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromHeadingAndDistanceChange);
+    connect(useLoiterToAlt(),           &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromCoordinateChange);
     connect(gradient(),                 &Fact::rawValueChanged,                             this, &TakeoffComplexItem::_recalcFromRadiusChange);
 
     connect(this,                       &TakeoffComplexItem::vtolTakeoffCoordinateChanged,  this, &TakeoffComplexItem::_recalcFromCoordinateChange);
     connect(this,                       &TakeoffComplexItem::climboutCoordinateChanged,     this, &TakeoffComplexItem::_recalcFromCoordinateChange);
 
+    connect(loiterRadius(),             &Fact::valueChanged,                                this, &TakeoffComplexItem::_setDirty);
     connect(vtolAlt(),                  &Fact::valueChanged,                                this, &TakeoffComplexItem::_setDirty);
     connect(climboutAlt(),              &Fact::valueChanged,                                this, &TakeoffComplexItem::_setDirty);
     connect(takeoffDist(),              &Fact::valueChanged,                                this, &TakeoffComplexItem::_setDirty);
@@ -140,6 +145,7 @@ void TakeoffComplexItem::setVtolTakeoffCoordinate(const QGeoCoordinate& coordina
         _vtolTakeoffCoordinate = coordinate;
         emit coordinateChanged(coordinate);
         emit vtolTakeoffCoordinateChanged(coordinate);
+        //emit exitCoordinateChanged(_climboutCoordinate);
     }
 }
 
@@ -180,19 +186,23 @@ void TakeoffComplexItem::_recalcFromHeadingAndDistanceChange(void)
         // These are our known values
         double takeoffdistance = takeoffDist()->rawValue().toDouble();
         double heading = takeoffHeading()->rawValue().toDouble();
+        double minDist = useLoiterToAlt()->rawValue().toBool() ? takeoffDist()->rawMin().toDouble() + loiterRadius()->rawValue().toDouble() : takeoffDist()->rawMin().toDouble();
 
-        if (useLoiterToAlt()->rawValue().toBool()){
-
-            takeoffdistance = takeoffdistance + 100;
+        if (takeoffdistance < minDist){
+            takeoffdistance = minDist;
+        }
+        else if (takeoffdistance > takeoffDist()->rawMax().toDouble()){
+            takeoffdistance = takeoffDist()->rawMax().toDouble();
         }
 
        if(!_vtolTakeoffCoordSet){
-        _vtolTakeoffCoordinate = _climboutCoordinate.atDistanceAndAzimuth(takeoffdistance, heading);
+        setVtolTakeoffCoordinate(_climboutCoordinate.atDistanceAndAzimuth(takeoffdistance, heading));
         }
        else{
-           _climboutCoordinate = _vtolTakeoffCoordinate.atDistanceAndAzimuth(takeoffdistance, heading+180);
+           setClimboutCoordinate(_vtolTakeoffCoordinate.atDistanceAndAzimuth(takeoffdistance, heading+180));
        }
         _ignoreRecalcSignals = true;
+        takeoffDist()->setRawValue(takeoffdistance);
         emit vtolTakeoffCoordinateChanged(_vtolTakeoffCoordinate);
         emit climboutCoordinateChanged(_climboutCoordinate);
         emit coordinateChanged(_vtolTakeoffCoordinate);
@@ -207,8 +217,9 @@ void TakeoffComplexItem::_recalcFromHeadingAndDistanceChange(void)
             double takeoffdistance = takeoffDist()->rawValue().toDouble();
             double heading = _vtolTakeoffCoordinate.azimuthTo(_climboutCoordinate);
 
-            _climboutCoordinate = _vtolTakeoffCoordinate.atDistanceAndAzimuth(takeoffdistance, heading);
+            setClimboutCoordinate(_vtolTakeoffCoordinate.atDistanceAndAzimuth(takeoffdistance, heading));
             _ignoreRecalcSignals = true;
+            takeoffDist()->setRawValue(takeoffdistance);
             emit vtolTakeoffCoordinateChanged(_vtolTakeoffCoordinate);
             emit climboutCoordinateChanged(_climboutCoordinate);
             emit coordinateChanged(_climboutCoordinate);
@@ -242,9 +253,10 @@ void TakeoffComplexItem::_recalcFromCoordinateChange(void)
             }
 
         double takeoffdist = _vtolTakeoffCoordinate.distanceTo(_climboutCoordinate);
+        double minDist = useLoiterToAlt()->rawValue().toBool() ? takeoffDist()->rawMin().toDouble() + loiterRadius()->rawValue().toDouble() : takeoffDist()->rawMin().toDouble();
 
-        if (takeoffdist < takeoffDist()->rawMin().toDouble()){
-            takeoffdist = takeoffDist()->rawMin().toDouble();
+        if (takeoffdist < minDist){
+            takeoffdist = minDist;
         }
         else if (takeoffdist > takeoffDist()->rawMax().toDouble()){
             takeoffdist = takeoffDist()->rawMax().toDouble();
@@ -253,12 +265,12 @@ void TakeoffComplexItem::_recalcFromCoordinateChange(void)
 
 
         // Heading is from loiter to land, hence +180
-        _climboutCoordinate = _vtolTakeoffCoordinate.atDistanceAndAzimuth(takeoffdist, heading);
+        setClimboutCoordinate(_vtolTakeoffCoordinate.atDistanceAndAzimuth(takeoffdist, heading));
 
         _ignoreRecalcSignals = true;
         takeoffDist()->setRawValue(takeoffdist);
-        emit climboutCoordinateChanged(_climboutCoordinate);
         emit vtolTakeoffCoordinateChanged(_vtolTakeoffCoordinate);
+        emit climboutCoordinateChanged(_climboutCoordinate);
         emit coordinateChanged(_vtolTakeoffCoordinate);
         _ignoreRecalcSignals = false;
         }
@@ -270,6 +282,9 @@ int TakeoffComplexItem::lastSequenceNumber(void) const
     //  land start, loiter, land
     // Optional items are:
     //  stop photos/video
+
+    int _sequenceNumber = 2;
+
     return _sequenceNumber;
 }
 
@@ -310,7 +325,7 @@ MissionItem* TakeoffComplexItem::_createClimboutItem(int seqNum, QObject* parent
                                MAV_CMD_NAV_LOITER_TO_ALT,
                                _altitudesAreRelative ? MAV_FRAME_GLOBAL_RELATIVE_ALT : MAV_FRAME_GLOBAL,
                                1.0,             // Heading required = true
-                               0.0,
+                               loiterRadius()->rawValue().toDouble() * (_loiterClockwise()->rawValue().toBool() ? 1.0 : -1.0),
                                0.0,             // param 3 - unused
                                1.0,             // Exit crosstrack - tangent of loiter to land point
                                _climboutCoordinate.latitude(),
@@ -380,7 +395,12 @@ void TakeoffComplexItem::setSequenceNumber(int sequenceNumber)
 
 double TakeoffComplexItem::amslEntryAlt(void) const
 {
-    return vtolAlt()->rawValue().toDouble(); //remove now as altitude is relative for vtol wp + (_altitudesAreRelative ? _missionController->plannedHomePosition().altitude() : 0);
+    return vtolAlt()->rawValue().toDouble() + (_altitudesAreRelative ? _missionController->plannedHomePosition().altitude() : 0);
+}
+
+double TakeoffComplexItem::amslgroundAlt(void)
+{
+    return vtolAlt()->rawValue().toDouble() + (_altitudesAreRelative ? _missionController->plannedHomePosition().altitude() : 0);
 }
 
 double TakeoffComplexItem::amslExitAlt(void) const

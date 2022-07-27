@@ -117,6 +117,16 @@ Rectangle {
                     Layout.fillWidth:   true
                 }
 
+                QGCLabel {
+                    text:       qsTr("Loiter Radius")
+                    visible:    missionItem.useLoiterToAlt.rawValue
+                }
+
+                FactTextField {
+                    Layout.fillWidth:   true
+                    fact:               missionItem.loiterRadius
+                    visible:            missionItem.useLoiterToAlt.rawValue
+                }
             }
         }
 
@@ -127,15 +137,19 @@ Rectangle {
             fact:       missionItem.useLoiterToAlt
         }
         Item { width: 1; height: _spacer }
+        FactCheckBox {
+            text:       qsTr("Loiter clockwise")
+            fact:       missionItem.loiterClockwise
+            visible:    missionItem.useLoiterToAlt.rawValue
+        }
         QGCCheckBox {
             anchors.right:  parent.right
             text:           qsTr("Altitudes relative to launch")
-            checked:        missionItem.altitudesAreRelative
-            visible:        QGroundControl.corePlugin.options.showMissionAbsoluteAltitude || !missionItem.altitudesAreRelative
+            checked:        true
+            visible:        false
             onClicked:      missionItem.altitudesAreRelative = checked
         }        
         }
-
         }
 
     Column {

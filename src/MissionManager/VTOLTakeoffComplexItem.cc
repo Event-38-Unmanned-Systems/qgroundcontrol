@@ -20,7 +20,7 @@
 
 QGC_LOGGING_CATEGORY(VTOLTakeoffComplexItemLog, "VTOLTakeoffComplexItemLog")
 
-const QString VTOLTakeoffComplexItem::name(VTOLTakeoffComplexItem::tr("VTOL Takeoff"));
+const QString VTOLTakeoffComplexItem::name(VTOLTakeoffComplexItem::tr("Takeoff Pattern"));
 
 const char* VTOLTakeoffComplexItem::settingsGroup =            "VTOLTakeoff";
 const char* VTOLTakeoffComplexItem::jsonComplexItemTypeValue = "VTOLTakeoffPattern";
@@ -35,6 +35,7 @@ VTOLTakeoffComplexItem::VTOLTakeoffComplexItem(PlanMasterController* masterContr
     , _loiterClockwiseFact      (settingsGroup, _metaDataMap[loiterClockwiseName])
     , _useLoiterToAltFact       (settingsGroup, _metaDataMap[useLoiterToAltName])
     , _gradientFact             (settingsGroup, _metaDataMap[gradientName])
+    , _loiterRadiusFact         (settingsGroup, _metaDataMap[loiterRadiusName])
 {
     _editorQml      = "qrc:/qml/VTOLTakeoffPatternEditor.qml";
     _isIncomplete   = false;
@@ -115,9 +116,15 @@ void VTOLTakeoffComplexItem::_updateFlightPathSegmentsDontCallDirectly(void)
     _flightPathSegments.beginReset();
     _flightPathSegments.clearAndDeleteContents();
 
-    _appendFlightPathSegment(FlightPathSegment::SegmentTypeTakeoff, vtolTakeoffCoordinate(), amslEntryAlt(), vtolTakeoffCoordinate(), amslExitAlt());
+    _appendFlightPathSegment(FlightPathSegment::SegmentTypeTakeoff, vtolTakeoffCoordinate(), amslgroundAlt(), vtolTakeoffCoordinate(), amslEntryAlt());
 
-    _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, climboutCoordinate(), amslEntryAlt(), climboutCoordinate(), amslExitAlt());
+
+   QGeoCoordinate endTransition =_vtolTakeoffCoordinate.atDistanceAndAzimuth(120, _vtolTakeoffCoordinate.azimuthTo(_climboutCoordinate));
+
+    _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, vtolTakeoffCoordinate(), amslEntryAlt(), endTransition, amslEntryAlt());
+
+    _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, endTransition, amslEntryAlt(), climboutCoordinate(), amslExitAlt());
+
 
     _flightPathSegments.endReset();
 
