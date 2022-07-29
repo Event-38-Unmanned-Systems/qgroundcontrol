@@ -911,21 +911,49 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
     else if (severity <= MAV_SEVERITY_NOTICE) {
         readAloud = true;
 
-        if (messageText == "Resetting previous waypoint"){
+    if (messageText == "Resetting previous waypoint"){
            readAloud = false;
            skipOutput = true;
         }
     }
-
-    if (messageText == "Airspeed calibration started"){
-       readAloud = true;
-    }
-
     if (messageText == "Airspeed 1 calibrated"){
        readAloud = true;
        messageText = "Airspeed Calibrated";
     }
-
+    if (_flying && _armed){
+    if (messageText.contains("VTOLTakeoff")){
+        readAloud = true;
+        messageText = "Begining takeoff";
+    }
+    else if (messageText == "Landing sequence start"){
+       readAloud = true;
+       messageText = "Heading to landing sequence";
+    }
+    else if (messageText == "Transition done"){
+       readAloud = true;
+       messageText = "Transition Complete";
+    }
+    else if (messageText.contains("Change alt to")){
+        readAloud = true;
+        messageText = "Altitude Changed";
+    }
+    else if (messageText.contains("Land descend started")){
+        readAloud = true;
+        messageText = "Beginning Descent";
+    }
+    else if (messageText.contains("VTOLLand")){
+        readAloud = true;
+        messageText = "Detransition started";
+    }
+    else if (messageText.contains("Land descend started")){
+        readAloud = true;
+        messageText = "Beginning Descent";
+    }
+    else if (messageText.contains("Land final started")){
+        readAloud = true;
+        messageText = "Land final";
+    }
+    }
     if (readAloud) {
         if (!skipSpoken) {
             qgcApp()->toolbox()->audioOutput()->say(messageText);
