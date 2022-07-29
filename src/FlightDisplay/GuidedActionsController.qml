@@ -63,7 +63,7 @@ Item {
     readonly property string startMissionMessage:               qsTr("Takeoff from ground and start the current mission.")
     readonly property string continueMissionMessage:            qsTr("Continue the mission from the current waypoint.")
     readonly property string resumeMissionUploadFailMessage:    qsTr("Upload of resume mission failed. Confirm to retry upload")
-    readonly property string landMessage:                       qsTr("Send vehicle to Landing Pattern.")
+    readonly property string landMessage:                       qsTr("Land vehicle.")
     readonly property string rtlMessage:                        qsTr("Return to the launch position of the vehicle.")
     readonly property string changeAltMessage:                  qsTr("Change the altitude of the vehicle up or down.")
     readonly property string gotoMessage:                       qsTr("Move the vehicle to the specified location.")
@@ -105,6 +105,7 @@ Item {
     property bool   _useChecklist:              QGroundControl.settingsManager.appSettings.useChecklist.rawValue && QGroundControl.corePlugin.options.preFlightChecklistUrl.toString().length
     property bool   _enforceChecklist:          _useChecklist && QGroundControl.settingsManager.appSettings.enforceChecklist.rawValue
     property bool   _canArm:                    _activeVehicle ? (_useChecklist ? (_enforceChecklist ? _activeVehicle.checkListState === Vehicle.CheckListPassed : true) : true) : false
+    property bool _aboveAlt:                    _activeVehicle ? ((isNaN(_activeVehicle.altitudeRelative.value) ? 0.0 : _activeVehicle.altitudeRelative.value) > 50) : false
 
     property bool showEmergenyStop:     _guidedActionsEnabled && !_hideEmergenyStop && _vehicleArmed && _vehicleFlying
     property bool showArm:              _guidedActionsEnabled && !_vehicleArmed && _canArm
@@ -115,12 +116,12 @@ Item {
     property bool showLand:             _guidedActionsEnabled && _activeVehicle.guidedModeSupported && _vehicleArmed && !_activeVehicle.fixedWing && !_vehicleInLandMode
     property bool showStartMission:     _guidedActionsEnabled && _missionAvailable && !_missionActive && !_vehicleFlying && _canArm
     property bool showContinueMission:  _guidedActionsEnabled && _missionAvailable && !_missionActive && _vehicleArmed && _vehicleFlying && (_currentMissionIndex < _missionItemCount - 1)
-    property bool showPause:            _guidedActionsEnabled && _vehicleArmed && _activeVehicle.pauseVehicleSupported && _vehicleFlying && !_vehiclePaused && !_fixedWingOnApproach
-    property bool showChangeAlt:        _guidedActionsEnabled && _vehicleFlying && _activeVehicle.guidedModeSupported && _vehicleArmed && !_missionActive
+    property bool showPause:            _guidedActionsEnabled && _vehicleArmed && _activeVehicle.pauseVehicleSupported && _vehicleFlying && !_vehiclePaused && !_fixedWingOnApproach && !_vehicleQuadplaneMode && _aboveAlt
+    property bool showChangeAlt:        _guidedActionsEnabled && _vehicleFlying && _activeVehicle.guidedModeSupported && _vehicleArmed && !_missionActive && !_vehicleQuadplaneMode && _aboveAlt
     property bool showOrbit:            _guidedActionsEnabled && _vehicleFlying && __orbitSupported && !_missionActive
     property bool showROI:              _guidedActionsEnabled && _vehicleFlying && __roiSupported && !_missionActive
     property bool showLandAbort:        _guidedActionsEnabled && _vehicleFlying && _fixedWingOnApproach
-    property bool showGotoLocation:     _guidedActionsEnabled && _vehicleFlying
+    property bool showGotoLocation:     _guidedActionsEnabled && _vehicleFlying && !_vehicleQuadplaneMode && _aboveAlt
     property bool showActionList:       _guidedActionsEnabled && (showStartMission || showResumeMission || showChangeAlt || showLandAbort)
 
     // Note: The '_missionItemCount - 2' is a hack to not trigger resume mission when a mission ends with an RTL item
@@ -137,6 +138,7 @@ Item {
     property bool   _vehicleArmed:          _activeVehicle ? _activeVehicle.armed  : false
     property bool   _vehicleFlying:         _activeVehicle ? _activeVehicle.flying  : false
     property bool   _vehicleLanding:        _activeVehicle ? _activeVehicle.landing  : false
+    property bool   _vehicleQuadplaneMode:  false
     property bool   _vehiclePaused:         false
     property bool   _vehicleInMissionMode:  false
     property bool   _vehicleInRTLMode:      false
@@ -260,6 +262,30 @@ Item {
     property var _actionData
 
     on_FlightModeChanged: {
+        if (_activeVehicle){
+            if (_flightMode === "QuadPlane Land"){
+                _vehicleQuadplaneMode = true
+            }
+            else if (_flightMode === "QuadPlane AutoTune"){
+                _vehicleQuadplaneMode = true
+            }
+            else if (_flightMode === "QuadPlane RTL"){
+                _vehicleQuadplaneMode = true
+            }
+            else if (_flightMode === "QuadPlane Loiter"){
+                _vehicleQuadplaneMode = true
+            }
+            else if (_flightMode === "QuadPlane Hover"){
+                _vehicleQuadplaneMode = true
+            }
+            else if (_flightMode === "QuadPlane Stabilize"){
+                _vehicleQuadplaneMode = true
+            }
+            else if (_flightMode === "QuadPlane Acro"){
+                _vehicleQuadplaneMode = true
+            }
+            else {_vehicleQuadplaneMode = false}
+        }
         _vehiclePaused =        _activeVehicle ? _flightMode === _activeVehicle.pauseFlightMode : false
         _vehicleInRTLMode =     _activeVehicle ? _flightMode === _activeVehicle.rtlFlightMode || _flightMode === _activeVehicle.smartRTLFlightMode : false
         _vehicleInLandMode =    _activeVehicle ? _flightMode === _activeVehicle.landFlightMode : false
