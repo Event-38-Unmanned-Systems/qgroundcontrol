@@ -40,7 +40,7 @@ CustomFirmwarePlugin::CustomFirmwarePlugin()
         E400PlaneMode(E400PlaneMode::QSTABILIZE,      false),
         E400PlaneMode(E400PlaneMode::QHOVER,          false),
         E400PlaneMode(E400PlaneMode::QLOITER,         false),
-        E400PlaneMode(E400PlaneMode::QLAND,           true),
+        E400PlaneMode(E400PlaneMode::QLAND,           false),
         E400PlaneMode(E400PlaneMode::QRTL,            false),
         E400PlaneMode(E400PlaneMode::QAUTOTUNE,       false),
         E400PlaneMode(E400PlaneMode::QACRO,           false),
