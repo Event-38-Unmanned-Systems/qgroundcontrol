@@ -254,21 +254,23 @@ Item {
                 var angle = _missionItem.landingCoordinate.azimuthTo(itemCoordinate)
                 var tangentangle = _missionItem.landingCoordinate.azimuthTo(_useLoiterToAlt ? _missionItem.loiterTangentCoordinate : _missionItem.finalApproachCoordinate)
                 var distance = _missionItem.landingCoordinate.distanceTo(itemCoordinate)
+                var min = 300; //_missionItem.landingDistance.rawMin;
+                var max = 1000; //_missionItem.landingDistance.rawMax;
 
-                if (distance < 300 ){
+                if (distance < min ){
                     if (!_preventReentrancy) {
                         if (Drag.active) {
                             _preventReentrancy = true
-                            _missionItem.finalApproachCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(300, angle)
+                            _missionItem.finalApproachCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(min, angle)
                             _preventReentrancy = false
                         }
                     }
                 }
-                else if (distance > 1000){
+                else if (distance > max){
                     if (!_preventReentrancy) {
                         if (Drag.active) {
                             _preventReentrancy = true
-                            _missionItem.finalApproachCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(1000, angle)
+                            _missionItem.finalApproachCoordinate = _missionItem.landingCoordinate.atDistanceAndAzimuth(max, angle)
                             _preventReentrancy = false
                         }
                     }
@@ -408,8 +410,8 @@ Item {
            Component.onCompleted: updateCoordinate()
 
             sourceItem: Shape {
-                width:            ScreenTools.defaultFontPixelHeight
-                height:           ScreenTools.defaultFontPixelHeight
+                width:            ScreenTools.defaultFontPixelHeight/1.5
+                height:           ScreenTools.defaultFontPixelHeight/1.5
                 anchors.centerIn: parent
 
                 transform: Rotation {
@@ -454,8 +456,8 @@ Item {
             Component.onCompleted: updateCoordinate()
 
             sourceItem: Shape {
-                width:            ScreenTools.defaultFontPixelHeight
-                height:           ScreenTools.defaultFontPixelHeight
+                width:            ScreenTools.defaultFontPixelHeight/1.5
+                height:           ScreenTools.defaultFontPixelHeight/1.5
                 anchors.centerIn: parent
 
                 transform: Rotation {

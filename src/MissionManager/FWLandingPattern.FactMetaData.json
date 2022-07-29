@@ -5,12 +5,13 @@
 [
 {
     "name":             "LandingDistance",
-    "shortDesc":        "Distance between approach and land points.",
+    "shortDesc":        "Distance between landing and approach points.",
     "type":             "double",
     "units":            "m",
-    "min":              10,
+    "min":              300.0,
     "decimalPlaces":    1,
-    "default":          300.0
+    "default":          400.0,
+    "max":              1000.0
 },
 {
     "name":             "LandingHeading",

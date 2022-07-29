@@ -424,8 +424,8 @@ Item {
            Component.onCompleted: updateCoordinate()
 
             sourceItem: Shape {
-                width:            ScreenTools.defaultFontPixelHeight
-                height:           ScreenTools.defaultFontPixelHeight
+                width:            ScreenTools.defaultFontPixelHeight/ 1.5
+                height:           ScreenTools.defaultFontPixelHeight/ 1.5
                 anchors.centerIn: parent
 
                 transform: Rotation {
@@ -468,8 +468,8 @@ Item {
            Component.onCompleted: updateCoordinate()
 
             sourceItem: Shape {
-                width:            ScreenTools.defaultFontPixelHeight
-                height:           ScreenTools.defaultFontPixelHeight
+                width:            ScreenTools.defaultFontPixelHeight / 1.5
+                height:           ScreenTools.defaultFontPixelHeight / 1.5
                 anchors.centerIn: parent
 
                 transform: Rotation {
