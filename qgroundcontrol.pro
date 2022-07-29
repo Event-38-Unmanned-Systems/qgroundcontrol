@@ -1549,3 +1549,6 @@ LinuxBuild {
 
     INSTALLS += target share_qgroundcontrol share_icons share_metainfo share_applications
 }
+
+ANDROID_EXTRA_LIBS =
+android: include(C:/Users/Mathew/AppData/Local/Android/Sdk/android_openssl/openssl.pri)
