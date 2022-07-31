@@ -105,7 +105,7 @@ Item {
     property bool   _useChecklist:              QGroundControl.settingsManager.appSettings.useChecklist.rawValue && QGroundControl.corePlugin.options.preFlightChecklistUrl.toString().length
     property bool   _enforceChecklist:          _useChecklist && QGroundControl.settingsManager.appSettings.enforceChecklist.rawValue
     property bool   _canArm:                    _activeVehicle ? (_useChecklist ? (_enforceChecklist ? _activeVehicle.checkListState === Vehicle.CheckListPassed : true) : true) : false
-    property bool _aboveAlt:                    _activeVehicle ? ((isNaN(_activeVehicle.altitudeRelative.value) ? 0.0 : _activeVehicle.altitudeRelative.value) > 50) : false
+    property bool _aboveAlt:                    _activeVehicle ? ((isNaN(_activeVehicle.altitudeRelative.value) ? 0.0 : QGroundControl.unitsConversion.appSettingsHorizontalDistanceUnitsToMeters(_activeVehicle.altitudeRelative.value)) > 50) : false
 
     property bool showEmergenyStop:     _guidedActionsEnabled && !_hideEmergenyStop && _vehicleArmed && _vehicleFlying
     property bool showArm:              _guidedActionsEnabled && !_vehicleArmed && _canArm
