@@ -8,9 +8,9 @@
     "shortDesc":        "Distance between VTOL Takeoff and Climbout Waypoint.",
     "type":             "double",
     "units":            "m",
-    "min":              300,
+    "min":              200,
     "decimalPlaces":    1,
-    "default":          400.0,
+    "default":          300.0,
     "max":              1000.0
 },
 {
