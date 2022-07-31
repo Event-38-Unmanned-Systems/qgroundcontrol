@@ -103,14 +103,18 @@ QGCButton {
             // No way to proceed past this failure
             return
         }
-        if (telemetryFailure && allowTelemetryFailureOverride && _telemetryState !== _statePassed) {
+        else if (telemetryFailure && allowTelemetryFailureOverride && _telemetryState !== _statePassed) {
             // User is allowed to proceed past this failure
             _telemetryState = _statePassed
             return
         }
-        if (manualText !== "" && _manualState !== _statePassed) {
+        else if (manualText !== "" && _manualState !== _statePassed) {
             // User is confirming a manual check
             _manualState = _statePassed
+        }
+        else if (manualText !== "" && _manualState == _statePassed) {
+            // User is confirming a manual check
+            reset()
         }
     }
 

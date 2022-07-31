@@ -57,7 +57,7 @@ Item {
             PreFlightCheckButton {
                 name:            qsTr("Actuators")
                 manualText:      qsTr("Press to move control surfaces. Did they work properly?")
-                onPressed: _activeVehicle.preflightServoTest();
+                onPressed: if (_manualState != _statePassed){_activeVehicle.preflightServoTest();}
             }
             PreFlightSoundCheck {
             }
@@ -69,13 +69,14 @@ Item {
             PreFlightCheckButton {
                 name:        qsTr("Calibrate Airspeed")
                 manualText:  qsTr("Start calibration")
-                onPressed: _activeVehicle.preflightCalibration()
+                onPressed: if (_manualState != _statePassed){_activeVehicle.preflightCalibration()}
             }
             // Check list item group 2 - Final checks before launch
             PreFlightCheckButton {
                 name:        qsTr("Payload")
                 manualText:  qsTr("Press to capture image. Image captured?")
-                onPressed:   _activeVehicle.triggerSimpleCamera()
+
+                onPressed:   if (_manualState != _statePassed){_activeVehicle.triggerSimpleCamera()}
             }
 
             PreFlightCheckButton {

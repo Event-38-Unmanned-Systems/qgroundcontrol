@@ -107,7 +107,7 @@ ColumnLayout {
     // We delay the updates when a group passes so the user can see all items green for a moment prior to hiding
     Timer {
         id:         delayedGroupPassed
-        interval:   750
+        interval:   400
 
         property int index
 
