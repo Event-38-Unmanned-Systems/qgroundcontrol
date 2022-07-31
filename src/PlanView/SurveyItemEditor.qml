@@ -43,23 +43,22 @@ TransectStyleComplexItemEditor {
                 Layout.fillWidth:       true
                 onUpdated:              angleSlider.value = missionItem.gridAngle.value
             }
-            Item { width: 1; height: _spacer * 6 }
-            Item { width: 1; height: _spacer * 6 }
+            Item { width: 1; height: _spacer * 2 }
             QGCSlider {
                 id:                     angleSlider
                 minimumValue:           0
                 maximumValue:           359
                 stepSize:               1
                 tickmarksEnabled:       false
+                implicitHeight:         30
                 Layout.fillWidth:       true
                 Layout.columnSpan:      2
-                Layout.preferredHeight: _spacer * 12
                 onValueChanged:         missionItem.gridAngle.value = value
                 Component.onCompleted:  value = missionItem.gridAngle.value
                 updateValueWhileDragging: true
             }
-            Item { width: 1; height: _spacer * 6 }
-            Item { width: 1; height: _spacer * 6 }
+            Item { width: 1; height: _spacer * 2 }
+            Item { width: 1; height: _spacer * 1 }
             QGCLabel {
                 text:       qsTr("Turnaround dist")
                 visible:    !forPresets
