@@ -863,6 +863,13 @@ void Vehicle::_chunkedStatusTextTimeout(void)
 
 void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
 {
+
+    //init beginning times for filtering noisy messages
+    if (initfilterTimes){
+        _noisyGCSLongMessage = QTime::currentTime();
+        initfilterTimes = false;
+    }
+
     ChunkedStatusTextInfo_t&    chunkedInfo =   _chunkedStatusTextInfoMap[compId];
     uint8_t                     severity =      chunkedInfo.severity;
     QStringList&                rgChunks =      chunkedInfo.rgMessageChunks;
@@ -890,6 +897,7 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
     bool skipOutput = false;
     bool ardupilotPrearm = messageText.startsWith(QStringLiteral("PreArm"));
     bool px4Prearm = messageText.startsWith(QStringLiteral("preflight"), Qt::CaseInsensitive) && severity >= MAV_SEVERITY_CRITICAL;
+
     if (ardupilotPrearm || px4Prearm) {
         // Limit repeated PreArm message to once every 10 seconds
         if (_noisySpokenPrearmMap.contains(messageText) && _noisySpokenPrearmMap[messageText].msecsTo(QTime::currentTime()) < (10 * 1000)) {
@@ -920,30 +928,53 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
        readAloud = true;
        messageText = "Airspeed Calibrated";
     }
+    //silence noisy GCS failsafe. This is spammed while a failsafe long event happens on ardupilot while waiting for a transition to occur or when a gcs failsafe occurs while in a landing sequence.
+    else if (messageText.contains("Failsafe. Long event on: type=3/reason=5")){
+
+        if (_noisyGCSLongMessage.msecsTo(QTime::currentTime()) < (10 * 1000)){
+            readAloud = false;
+            skipSpoken = true;
+            skipOutput = true;
+        }
+        else{
+            _noisyGCSLongMessage = QTime::currentTime();
+            messageText = "GCS Failsafe on";
+            readAloud = true;
+            skipSpoken = false;
+            skipOutput = false;
+        }
+    }
+    else if (messageText.contains("Failsafe. Long event off: reason=5")){
+        readAloud = true;
+        messageText = "GCS Failsafe off";
+    }
     if (_flying && _armed){
+        //voice vtol takeoff usually not voiced
     if (messageText.contains("VTOLTakeoff")){
         readAloud = true;
         messageText = "Begining takeoff";
     }
+    //voice do land start
     else if (messageText == "Landing sequence start"){
        readAloud = true;
        messageText = "Heading to landing sequence";
     }
+    //voice transition complete
     else if (messageText == "Transition done"){
        readAloud = true;
        messageText = "Transition Complete";
     }
+    //voice guided altitude change
     else if (messageText.contains("Change alt to")){
         readAloud = true;
         messageText = "Altitude Changed";
     }
-    else if (messageText.contains("Land descend started")){
-        readAloud = true;
-        messageText = "Beginning Descent";
-    }
+
+    //voice landing sequences
     else if (messageText.contains("VTOLLand")){
         readAloud = true;
-        messageText = "Detransition started";
+        //hack so sound output isnt "di transition"
+        messageText = "Dee transition started";
     }
     else if (messageText.contains("Land descend started")){
         readAloud = true;
@@ -953,12 +984,32 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
         readAloud = true;
         messageText = "Land final";
     }
+
+    //voice battery failsafes
+    else if (messageText.contains(" in2 critical")){
+        readAloud = false;
+        skipOutput = true;
+    }
+    else if (messageText.contains("Low battery aircraft will only transition on landing or manual command")){
+        readAloud = true;
+        messageText = "Low battery land soon";
+    }
+    else if (messageText.contains("Battery 1 is critical")){
+        readAloud = true;
+        messageText = "Battery at critical level";
+    }
     }
     if (readAloud) {
         if (!skipSpoken) {
             qgcApp()->toolbox()->audioOutput()->say(messageText);
         }
     }
+
+    //hack so console output isnt mispelled
+    if (messageText.contains("Dee transition started")){
+            messageText = "De-transition started";
+        }
+
     if (!skipOutput){
     emit textMessageReceived(id(), compId, severity, messageText);
     }

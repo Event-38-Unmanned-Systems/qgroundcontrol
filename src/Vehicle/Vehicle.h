@@ -1195,7 +1195,8 @@ private:
     float       _loadProgress           = 0.0f;
 
     QMap<QString, QTime> _noisySpokenPrearmMap; ///< Used to prevent PreArm messages from being spoken too often
-
+    QTime _noisyGCSLongMessage;
+    bool initfilterTimes = true;
     // Orbit status values
     bool            _orbitActive = false;
     QGCMapCircle    _orbitMapCircle;
