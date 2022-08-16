@@ -25,7 +25,7 @@ import QGroundControl.FactControls      1.0
 
 Rectangle {
     height:     mainLayout.height + (_margins * 2)
-    color:      "#cc212529"
+    color:      qgcPal.globalTheme === QGCPalette.Light ? "#ccFFFFFF" : "#cc212529"
     radius:     _margins
     visible:    (_mavlinkCamera || _videoStreamAvailable || _simpleCameraAvailable) && !QGroundControl.videoManager.streaming && multiVehiclePanelSelector.showSingleVehiclePanel
     property real   _margins:                                   ScreenTools.defaultFontPixelHeight / 2
