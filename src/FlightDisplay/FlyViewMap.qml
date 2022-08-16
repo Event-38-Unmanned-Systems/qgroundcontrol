@@ -407,6 +407,37 @@ FlightMap {
         }
     }
 
+
+    MapQuickItem {
+        id:             roiItem
+        visible:        true
+        z:              QGroundControl.zOrderMapItems
+        anchorPoint.x:  sourceItem.anchorPointX
+        anchorPoint.y:  sourceItem.anchorPointY
+        sourceItem: MissionItemIndexLabel {
+            checked:    true
+            index:      -1
+            label:      qsTr("ROI", "point camera here")
+        }
+
+        function show(coord) {
+            roiItem.coordinate = coord
+            roiItem.visible = true
+        }
+
+        function hide() {
+            roiItem.visible = false
+        }
+
+        function actionConfirmed() {
+            // We leave the indicator visible. The handling for onInGuidedModeChanged will hide it.
+        }
+
+        function actionCancelled() {
+            hide()
+        }
+    }
+
     // Orbit editing visuals
     QGCMapCircleVisuals {
         id:             orbitMapCircle
@@ -528,6 +559,17 @@ FlightMap {
                 }
             }
             QGCMenuItem {
+                text:           qsTr("Point camera here")
+                visible:        globals.guidedControllerFlyView.showGimbalROI
+
+                onTriggered: {
+                    roiItem.show(clickMenu.coord)
+                    globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionGimbalROI, clickMenu.coord, roiItem)
+                }
+
+            }
+
+            QGCMenuItem {
                 text:           qsTr("Orbit at location")
                 visible:        globals.guidedControllerFlyView.showOrbit
 
@@ -550,7 +592,7 @@ FlightMap {
         onClicked: {
             if (!globals.guidedControllerFlyView.guidedUIVisible && (globals.guidedControllerFlyView.showGotoLocation || globals.guidedControllerFlyView.showOrbit || globals.guidedControllerFlyView.showROI)) {
                 orbitMapCircle.hide()
-                gotoLocationItem.hide()
+                //gotoLocationItem.hide()
                 var clickCoord = _root.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
                 clickMenu.coord = clickCoord
                 clickMenu.popup()

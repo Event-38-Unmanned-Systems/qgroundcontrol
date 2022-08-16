@@ -27,8 +27,7 @@ Rectangle {
     height:     mainLayout.height + (_margins * 2)
     color:      "#cc212529"
     radius:     _margins
-    visible:    (_mavlinkCamera || _videoStreamAvailable || _simpleCameraAvailable) && multiVehiclePanelSelector.showSingleVehiclePanel
-
+    visible:    (_mavlinkCamera || _videoStreamAvailable || _simpleCameraAvailable) && !QGroundControl.videoManager.streaming && multiVehiclePanelSelector.showSingleVehiclePanel
     property real   _margins:                                   ScreenTools.defaultFontPixelHeight / 2
     property var    _activeVehicle:                             QGroundControl.multiVehicleManager.activeVehicle
 

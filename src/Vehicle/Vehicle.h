@@ -371,6 +371,8 @@ public:
     Q_INVOKABLE void guidedModeROI(const QGeoCoordinate& centerCoord);
     Q_INVOKABLE void stopGuidedModeROI();
 
+    Q_INVOKABLE void nighthawkGimbalROI(const QGeoCoordinate& centerCoord);
+
     /// Command vehicle to pause at current location. If vehicle supports guide mode, vehicle will be left
     /// in guided mode after pause.
     Q_INVOKABLE void pauseVehicle();
@@ -419,7 +421,12 @@ public:
 
     Q_INVOKABLE void setPIDTuningTelemetryMode(PIDTuningTelemetryMode mode);
 
-    Q_INVOKABLE void gimbalControlValue (double pitch, double yaw);
+    Q_INVOKABLE void gimbalControlValue (double pitch, double yaw, double zoom);
+    Q_INVOKABLE void nighthawkStreamSwitch (double stream);
+    Q_INVOKABLE void nightHawkStillCapture ();
+    Q_INVOKABLE void nightHawkRecordChange (double stream);
+
+
     Q_INVOKABLE void gimbalPitchStep    (int direction);
     Q_INVOKABLE void gimbalYawStep      (int direction);
     Q_INVOKABLE void centerGimbal       ();
@@ -686,7 +693,7 @@ public:
     ///     @param command MAV_CMD to send
     ///     @param showError true: Display error to user if command failed, false:  no error shown
     /// Signals: mavCommandResult on success or failure
-    void sendMavCommand(int compId, MAV_CMD command, bool showError, float param1 = 0.0f, float param2 = 0.0f, float param3 = 0.0f, float param4 = 0.0f, float param5 = 0.0f, float param6 = 0.0f, float param7 = 0.0f);
+    void sendMavCommand(int compId, MAV_CMD command, bool showError, float param1 = 0.0f, float param2 = 0.0f, float param3 = 0.0f, float param4 = 0.0f, float param5 = 0.0f, float param6 = 0.0f, float param7 = 0.0f,bool sendGimbal=false);
     void sendMavCommandInt(int compId, MAV_CMD command, MAV_FRAME frame, bool showError, float param1, float param2, float param3, float param4, double param5, double param6, float param7);
 
     ///
@@ -1035,7 +1042,7 @@ private:
     EventHandler& _eventHandler         (uint8_t compid);
 
     static void _rebootCommandResultHandler(void* resultHandlerData, int compId, MAV_RESULT commandResult, uint8_t progress, MavCmdResultFailureCode_t failureCode);
-
+    int     _tempId;
     int     _id;                    ///< Mavlink system id
     int     _defaultComponentId;
     bool    _offlineEditingVehicle = false; ///< true: This Vehicle is a "disconnected" vehicle for ui use while offline editing
@@ -1164,6 +1171,7 @@ private:
     float               _curGimbalRoll  = 0.0f;
     float               _curGimbalPitch = 0.0f;
     float               _curGimbalYaw  = 0.0f;
+    float               _curGimbalZoom = 0.0f;
     bool                _haveGimbalData = false;
     bool                _isROIEnabled   = false;
     Joystick*           _activeJoystick = nullptr;
@@ -1272,8 +1280,8 @@ private:
     static const int                _mavCommandAckTimeoutMSecs              = 3000;
     static const int                _mavCommandAckTimeoutMSecsHighLatency   = 120000;
 
-    void _sendMavCommandWorker  (bool commandInt, bool showError, MavCmdResultHandler resultHandler, void* resultHandlerData, int compId, MAV_CMD command, MAV_FRAME frame, float param1, float param2, float param3, float param4, float param5, float param6, float param7);
-    void _sendMavCommandFromList(int index);
+    void _sendMavCommandWorker  (bool commandInt, bool showError, MavCmdResultHandler resultHandler, void* resultHandlerData, int compId, MAV_CMD command, MAV_FRAME frame, float param1, float param2, float param3, float param4, float param5, float param6, float param7,bool sendGimbal=false);
+    void _sendMavCommandFromList(int index,bool sendGimbal=false);
     int  _findMavCommandListEntryIndex(int targetCompId, MAV_CMD command);
     bool _sendMavCommandShouldRetry(MAV_CMD command);
 

@@ -53,6 +53,7 @@ Item {
     readonly property string gotoTitle:                     qsTr("Go To Location")
     readonly property string vtolTransitionTitle:           qsTr("VTOL Transition")
     readonly property string roiTitle:                      qsTr("ROI")
+    readonly property string gimbalRoiTitle:                qsTr("Gimbal ROI")
     readonly property string actionListTitle:               qsTr("Action")
 
     readonly property string armMessage:                        qsTr("Arm the vehicle.")
@@ -75,6 +76,7 @@ Item {
     readonly property string vtolTransitionFwdMessage:          qsTr("Transition VTOL to fixed wing flight.")
     readonly property string vtolTransitionMRMessage:           qsTr("Transition VTOL to multi-rotor flight.")
     readonly property string roiMessage:                        qsTr("Make the specified location a Region Of Interest.")
+    readonly property string gimbalRoiMessage:                  qsTr("Point camera at location.")
 
     readonly property int actionRTL:                        1
     readonly property int actionLand:                       2
@@ -100,6 +102,7 @@ Item {
     readonly property int actionROI:                        22
     readonly property int actionActionList:                 23
     readonly property int actionForceArm:                   24
+    readonly property int actionGimbalROI:                  25
 
     property var    _activeVehicle:             QGroundControl.multiVehicleManager.activeVehicle
     property bool   _useChecklist:              QGroundControl.settingsManager.appSettings.useChecklist.rawValue && QGroundControl.corePlugin.options.preFlightChecklistUrl.toString().length
@@ -122,6 +125,7 @@ Item {
     property bool showROI:              _guidedActionsEnabled && _vehicleFlying && __roiSupported && !_missionActive
     property bool showLandAbort:        _guidedActionsEnabled && _vehicleFlying && _fixedWingOnApproach
     property bool showGotoLocation:     _guidedActionsEnabled && _vehicleFlying && !_vehicleQuadplaneMode && _aboveAlt
+    property bool showGimbalROI:        _guidedActionsEnabled && _vehicleFlying && QGroundControl.videoManager.streaming
     property bool showActionList:       _guidedActionsEnabled && (showStartMission || showResumeMission || showChangeAlt || showLandAbort)
 
     // Note: The '_missionItemCount - 2' is a hack to not trigger resume mission when a mission ends with an RTL item
@@ -475,6 +479,11 @@ Item {
             confirmDialog.message = roiMessage
             confirmDialog.hideTrigger = Qt.binding(function() { return !showROI })
             break;
+        case actionGimbalROI:
+            confirmDialog.title = gimbalRoiTitle
+            confirmDialog.message = gimbalRoiMessage
+            confirmDialog.hideTrigger = Qt.binding(function() { return !showGimbalROI })
+            break;
         case actionActionList:
             actionList.show()
             return
@@ -557,6 +566,9 @@ Item {
             break
         case actionROI:
             _activeVehicle.guidedModeROI(actionData)
+            break
+        case actionGimbalROI:
+            _activeVehicle.nighthawkGimbalROI(actionData)
             break
         default:
             console.warn(qsTr("Internal error: unknown actionCode"), actionCode)

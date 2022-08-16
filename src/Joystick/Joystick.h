@@ -212,7 +212,11 @@ signals:
     void gimbalPitchStep            (int direction);
     void gimbalYawStep              (int direction);
     void centerGimbal               ();
-    void gimbalControlValue         (double pitch, double yaw);
+    void gimbalControlValue         (double pitch, double yaw,double zoom);
+    void nighthawkStreamSwitch      (double stream);
+    void nightHawkStillCapture      ();
+    void nightHawkRecordChange      (double stream);
+
     void setArmed                   (bool arm);
     void setVtolInFwdFlight         (bool set);
     void setFlightMode              (const QString& flightMode);
@@ -232,10 +236,17 @@ protected:
     void    _handleButtons          ();
     void    _buildActionList        (Vehicle* activeVehicle);
 
-    void    _pitchStep              (int direction);
-    void    _yawStep                (int direction);
+    void    _pitchStep              (double direction);
+    void    _yawStep                (double direction);
+    void    _nightHawkstreamSwitch  ();
+    void    _nightHawkStillCapture  ();
+    void    _nightHawkRecordChange  (double state);
+    void    _nightHawkZoom          (double state);
+
     double  _localYaw       = 0.0;
     double  _localPitch     = 0.0;
+    double  _localZoom      = 0.0;
+    double _lastknownStream = 1; //camera starts in VIS 0 = VIS 1 = IR
 
 private:
     virtual bool _open      ()          = 0;
@@ -339,6 +350,15 @@ private:
     static const char* _buttonActionContinuousZoomIn;
     static const char* _buttonActionContinuousZoomOut;
     static const char* _buttonActionNextStream;
+    static const char* _buttonActionNighthawkChangeStream;
+
+    static const char* _buttonActionNighthawkRecordStart;
+    static const char* _buttonActionNighthawkRecordStop;
+    static const char* _buttonActionNighthawkstillcapture;
+    static const char* _buttonActionNighthawkZoomIn;
+    static const char* _buttonActionNighthawkZoomOut;
+
+
     static const char* _buttonActionPreviousStream;
     static const char* _buttonActionNextCamera;
     static const char* _buttonActionPreviousCamera;
