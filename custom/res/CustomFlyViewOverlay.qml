@@ -171,7 +171,7 @@ Item {
                 Layout.minimumWidth:    indicatorValueWidth
                 horizontalAlignment:    Text.AlignLeft
             }
-            //-- Ground Speed
+            //-- Air Speed
             QGCColoredImage {
                 height:                 _indicatorsHeight
                 width:                  height
@@ -182,7 +182,7 @@ Item {
                 color:                  qgcPal.text
             }
             QGCLabel {
-                text:                   _activeVehicle ? _activeVehicle.groundSpeed.value.toFixed(1) + ' ' + _activeVehicle.groundSpeed.units : "0.0"
+                text:                   _activeVehicle ? _activeVehicle.airSpeed.value.toFixed(1) + ' ' + _activeVehicle.groundSpeed.units : "0.0"
                 color:                  _indicatorsColor
                 font.pointSize:         ScreenTools.smallFontPointSize
                 Layout.fillWidth:       true
