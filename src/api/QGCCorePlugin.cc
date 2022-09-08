@@ -458,7 +458,8 @@ const QVariantList& QGCCorePlugin::toolBarIndicators(void)
 
 QList<int> QGCCorePlugin::firstRunPromptStdIds(void)
 {
-    QList<int> rgStdIds = { unitsFirstRunPromptId, offlineVehicleFirstRunPromptId };
+    QList<int> rgStdIds = { unitsFirstRunPromptId};
+    //offlineVehicleFirstRunPromptId
     return rgStdIds;
 }
 

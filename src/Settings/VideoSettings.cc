@@ -44,15 +44,12 @@ DECLARE_SETTINGGROUP(Video, "Video")
 #endif
     videoSourceList.append(videoSourceTCP);
     videoSourceList.append(videoSourceMPEGTS);
-    videoSourceList.append(videoSource3DRSolo);
-    videoSourceList.append(videoSourceParrotDiscovery);
-    videoSourceList.append(videoSourceYuneecMantisG);
 #endif
 #ifndef QGC_DISABLE_UVC
-    QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+   /* QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
     for (const QCameraInfo &cameraInfo: cameras) {
         videoSourceList.append(cameraInfo.description());
-    }
+    }*/
 #endif
     if (videoSourceList.count() == 0) {
         _noVideo = true;

@@ -151,7 +151,7 @@ Rectangle {
 
                             FactCheckBox {
                                 text:       qsTr("Use Vertical Instrument Panel")
-                                visible:    _alternateInstrumentPanel.visible
+                                visible:    false
                                 fact:       _alternateInstrumentPanel
 
                                 property Fact _alternateInstrumentPanel: QGroundControl.settingsManager.flyViewSettings.alternateInstrumentPanel
@@ -159,7 +159,7 @@ Rectangle {
 
                             FactCheckBox {
                                 text:       qsTr("Show additional heading indicators on Compass")
-                                visible:    _showAdditionalIndicatorsCompass.visible
+                                visible:    false
                                 fact:       _showAdditionalIndicatorsCompass
 
                                 property Fact _showAdditionalIndicatorsCompass: QGroundControl.settingsManager.flyViewSettings.showAdditionalIndicatorsCompass
@@ -167,7 +167,7 @@ Rectangle {
 
                             FactCheckBox {
                                 text:       qsTr("Lock Compass Nose-Up")
-                                visible:    _lockNoseUpCompass.visible
+                                visible:    false
                                 fact:       _lockNoseUpCompass
 
                                 property Fact _lockNoseUpCompass: QGroundControl.settingsManager.flyViewSettings.lockNoseUpCompass
@@ -175,7 +175,7 @@ Rectangle {
 
                             FactCheckBox {
                                 text:       qsTr("Show simple camera controls (DIGICAM_CONTROL)")
-                                visible:    _showDumbCameraControl.visible
+                                visible:    false
                                 fact:       _showDumbCameraControl
 
                                 property Fact _showDumbCameraControl: QGroundControl.settingsManager.flyViewSettings.showSimpleCameraControl
@@ -381,8 +381,10 @@ Rectangle {
                                     fact:                   QGroundControl.settingsManager.appSettings.defaultMissionItemAltitude
                                 }
 
-                                QGCLabel { text: qsTr("VTOL TransitionDistance") }
+                                QGCLabel { text: qsTr("VTOL TransitionDistance")
+                                visible: false}
                                 FactTextField {
+                                    visible: false
                                     Layout.preferredWidth:  _valueFieldWidth
                                     fact:                   QGroundControl.settingsManager.planViewSettings.vtolTransitionDistance
                                 }
@@ -391,12 +393,13 @@ Rectangle {
                             FactCheckBox {
                                 text:   qsTr("Use MAV_CMD_CONDITION_GATE for pattern generation")
                                 fact:   QGroundControl.settingsManager.planViewSettings.useConditionGate
+                                visible: false
                             }
 
                             FactCheckBox {
                                 text:       qsTr("Missions Do Not Require Takeoff Item")
                                 fact:       _planViewSettings.takeoffItemNotRequired
-                                visible:    _planViewSettings.takeoffItemNotRequired.visible
+                                visible: false
                             }
                         }
                     }
@@ -527,13 +530,13 @@ Rectangle {
 
                                 QGCLabel {
                                     text:                   qsTr("Stream GCS Position")
-                                    visible:                _followTarget.visible
+                                    visible:                false
                                 }
                                 FactComboBox {
                                     Layout.preferredWidth:  _comboFieldWidth
                                     fact:                   _followTarget
                                     indexModel:             false
-                                    visible:                _followTarget.visible
+                                    visible:                false
                                 }
                                 QGCLabel {
                                     text:                           qsTr("UI Scaling")
@@ -728,7 +731,7 @@ Rectangle {
                     Item { width: 1; height: _margins; visible: autoConnectSectionLabel.visible }
                     QGCLabel {
                         id:         autoConnectSectionLabel
-                        text:       qsTr("AutoConnect to the following devices")
+                        text:       qsTr("AutoConnect to aircraft")
                         visible:    QGroundControl.settingsManager.autoConnectSettings.visible
                     }
                     Rectangle {
@@ -750,16 +753,9 @@ Rectangle {
 
                                 Repeater {
                                     id:     autoConnectRepeater
-                                    model:  [ QGroundControl.settingsManager.autoConnectSettings.autoConnectPixhawk,
-                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectSiKRadio,
-                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectPX4Flow,
-                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectLibrePilot,
-                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectUDP,
-                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectRTKGPS,
-                                        QGroundControl.settingsManager.autoConnectSettings.autoConnectZeroConf,
-                                    ]
+                                    model:  [QGroundControl.settingsManager.autoConnectSettings.autoConnectSiKRadio]
 
-                                    property var names: [ qsTr("Pixhawk"), qsTr("SiK Radio"), qsTr("PX4 Flow"), qsTr("LibrePilot"), qsTr("UDP"), qsTr("RTK GPS"), qsTr("Zero-Conf") ]
+                                    property var names: [ qsTr("AutoConnect") ]
 
                                     FactCheckBox {
                                         text:       autoConnectRepeater.names[index]
@@ -845,7 +841,7 @@ Rectangle {
                     QGCLabel {
                         id:         rtkSectionLabel
                         text:       qsTr("RTK GPS")
-                        visible:    QGroundControl.settingsManager.rtkSettings.visible
+                        visible:    false
                     }
                     Rectangle {
                         Layout.preferredHeight: rtkGrid.height + (_margins * 2)

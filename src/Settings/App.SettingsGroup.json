@@ -92,7 +92,7 @@
     "shortDesc": "Save telemetry log even if vehicle was not armed",
     "longDesc":  "If this option is enabled a telemtry log will be saved even if vehicle was never armed.",
     "type":             "bool",
-    "default":     false
+    "default":     true
 },
 {
     "name":             "audioMuted",
@@ -154,7 +154,7 @@
     "units":                "pt",
     "min":                  6,
     "max":                  48,
-    "default":         0
+    "default":         11
 },
 {
     "name":             "indoorPalette",
@@ -163,7 +163,7 @@
     "type":             "uint32",
     "enumStrings":      "Indoor,Outdoor",
     "enumValues":       "1,0",
-    "default":     1
+    "default":     0
 },
 {
     "name":             "showLargeCompass",
@@ -247,7 +247,7 @@
     "type":             "uint32",
     "enumStrings":      "Never,Always,When in Follow Me Flight Mode",
     "enumValues":       "0,1,2",
-    "default":     2
+    "default":     0
 },
 {
     "name":                 "apmStartMavlinkStreams",
