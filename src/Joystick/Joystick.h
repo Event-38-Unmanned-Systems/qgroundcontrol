@@ -214,6 +214,7 @@ signals:
     void centerGimbal               ();
     void gimbalControlValue         (double pitch, double yaw,double zoom);
     void nighthawkStreamSwitch      (double stream);
+    void nighthawksetMode           (double mode);
     void nightHawkStillCapture      ();
     void nightHawkRecordChange      (double stream);
 
@@ -239,6 +240,7 @@ protected:
     void    _pitchStep              (double direction);
     void    _yawStep                (double direction);
     void    _nightHawkstreamSwitch  ();
+    void    _nightHawksetMode  (double mode);
     void    _nightHawkStillCapture  ();
     void    _nightHawkRecordChange  (double state);
     void    _nightHawkZoom          (double state);
@@ -351,6 +353,11 @@ private:
     static const char* _buttonActionContinuousZoomOut;
     static const char* _buttonActionNextStream;
     static const char* _buttonActionNighthawkChangeStream;
+    static const char* _buttonActionNighthawkHoldCoordinate;
+    static const char* _buttonActionNighthawkObservation;
+    static const char* _buttonActionNighthawk2dscan;
+    static const char* _buttonActionNighthawknadirscan;
+
 
     static const char* _buttonActionNighthawkRecordStart;
     static const char* _buttonActionNighthawkRecordStop;

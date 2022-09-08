@@ -78,7 +78,7 @@ Item {
                 id:             expoSlider
                 width:          ScreenTools.defaultFontPixelWidth * 20
                 minimumValue:   0
-                maximumValue:   0.75
+                maximumValue:   1
                 Component.onCompleted: value = -_activeJoystick.exponential
                 onValueChanged: _activeJoystick.exponential = -value
              }

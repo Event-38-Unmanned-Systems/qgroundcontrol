@@ -847,7 +847,7 @@ void Vehicle::_handleCameraImageCaptured(const mavlink_message_t& message)
     QGeoCoordinate imageCoordinate((double)feedback.lat / qPow(10.0, 7.0), (double)feedback.lon / qPow(10.0, 7.0), feedback.alt);
     qCDebug(VehicleLog) << "_handleCameraFeedback coord:index" << imageCoordinate << feedback.image_index << feedback.capture_result;
     if (feedback.capture_result == 1) {
-        _cameraTriggerPoints.append(new QGCQGeoCoordinate(imageCoordinate, this));
+        //_cameraTriggerPoints.append(new QGCQGeoCoordinate(imageCoordinate, this));
     }
 }
 
@@ -2734,8 +2734,10 @@ void Vehicle::guidedModeROI(const QGeoCoordinate& centerCoord)
     }
 }
 
-void Vehicle::nighthawkGimbalROI(const QGeoCoordinate& centerCoord)
-{
+void Vehicle::_terrainDataReceived(bool success, QList<double> heights){
+
+    double _terrainAltitude = success ? heights[0] : 0;
+
     //qDebug() << "Gimbal:" << pitch << yaw;
     sendMavCommand(
                 190,
@@ -2745,10 +2747,22 @@ void Vehicle::nighthawkGimbalROI(const QGeoCoordinate& centerCoord)
                 0,                                   // Roll (not used)
                 0,             // Yaw -180 - 180
                 0,                                   // Altitude (not used)
-                centerCoord.longitude(),                                   // Latitude (not used)
-                centerCoord.latitude(),                                   // Longitude (not used)
-                0,   // MAVLink Roll,Pitch,Yaw
+                gimbalCoordinate.latitude(),                                   // Latitude (not used)
+                gimbalCoordinate.longitude(),                                   // Longitude (not used)
+                _terrainAltitude,   // MAVLink Roll,Pitch,Yaw
                 true);
+
+    qDebug() << "11 PTC On lat= " << (int)(gimbalCoordinate.latitude() * 10000000.0) << " lon = " << (int)(gimbalCoordinate.longitude() * 10000000.0 )<< " alt = " << _terrainAltitude;
+
+}
+
+void Vehicle::nighthawkGimbalROI(const QGeoCoordinate& centerCoord)
+{   gimbalCoordinate = centerCoord;
+    _currentTerrainAtCoordinateQuery = new TerrainAtCoordinateQuery(true /* autoDelet */);
+    connect(_currentTerrainAtCoordinateQuery, &TerrainAtCoordinateQuery::terrainDataReceived, this, &Vehicle::_terrainDataReceived);
+    QList<QGeoCoordinate> rgCoord;
+    rgCoord.append(centerCoord);
+    _currentTerrainAtCoordinateQuery->requestData(rgCoord);
 }
 
 void Vehicle::stopGuidedModeROI()
@@ -3998,6 +4012,22 @@ void Vehicle::gimbalControlValue(double pitch, double yaw, double zoom)
                 true);
 }
 
+void Vehicle::nighthawksetMode(double mode)
+{
+    sendMavCommand(
+                190,
+                MAV_CMD_DO_DIGICAM_CONTROL,
+                false,                               // show errors
+                0,
+                mode, // 0 Stow 1 Pilot 2 Hold Coordinate 3 Observation 4 Local Position 5 Global Position 6 GRR 7 Tracking 8 EPR 9 Nadir 10 Nadir Scan 11 2D Scan 12 Point to Coordinate 13 Un-stabilized Position
+                0,
+                0,
+                0,
+                0,
+                0,   // MAVLink Roll,Pitch,Yaw
+                true);
+}
+
 void Vehicle::nighthawkStreamSwitch(double stream)
 {
     //qDebug() << "Gimbal:" << pitch << yaw;
@@ -4215,7 +4245,11 @@ void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, flo
 
                         sendMessageOnLinkThreadSafe(sharedLink.get(), message);
 
-                    float newgimbalPitch = (thrust * 2 - 1) * axesScaling;
+
+                   float newgimbalPitch = thrust*1000 + 1000;
+
+                   newYawCommand  =  1500 - (yaw * axesScaling)/2;
+
 
                     mavlink_msg_rc_channels_override_pack_chan(_mavlink->getSystemId(),
                                                                    _mavlink->getComponentId(),

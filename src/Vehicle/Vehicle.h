@@ -46,6 +46,7 @@
 #include "RallyPointManager.h"
 #include "FTPManager.h"
 #include "ImageProtocolManager.h"
+#include "TerrainQuery.h"
 
 class Actuators;
 class EventHandler;
@@ -423,6 +424,7 @@ public:
 
     Q_INVOKABLE void gimbalControlValue (double pitch, double yaw, double zoom);
     Q_INVOKABLE void nighthawkStreamSwitch (double stream);
+    Q_INVOKABLE void nighthawksetMode(double mode);
     Q_INVOKABLE void nightHawkStillCapture ();
     Q_INVOKABLE void nightHawkRecordChange (double stream);
 
@@ -827,7 +829,6 @@ public:
     quint64     mavlinkReceivedCount    () const{ return _mavlinkReceivedCount; }    /// Total number of sucessful messages received
     quint64     mavlinkLossCount        () const{ return _mavlinkLossCount; }        /// Total number of lost messages
     float       mavlinkLossPercent      () const{ return _mavlinkLossPercent; }      /// Running loss rate
-
     qreal       gimbalRoll              () const{ return static_cast<qreal>(_curGimbalRoll);}
     qreal       gimbalPitch             () const{ return static_cast<qreal>(_curGimbalPitch); }
     qreal       gimbalYaw               () const{ return static_cast<qreal>(_curGimbalYaw); }
@@ -954,6 +955,7 @@ signals:
     void sensorsParametersResetAck      (bool success);
 
 private slots:
+    void _terrainDataReceived               (bool success, QList<double> heights);
     void _mavlinkMessageReceived            (LinkInterface* link, mavlink_message_t message);
     void _sendMessageMultipleNext           ();
     void _parametersReady                   (bool parametersReady);
@@ -985,6 +987,7 @@ private slots:
     void _gotProgressUpdate                 (float progressValue);
 
 private:
+    TerrainAtCoordinateQuery*   _currentTerrainAtCoordinateQuery    = nullptr;
     void _joystickChanged               (Joystick* joystick);
     void _loadSettings                  ();
     void _saveSettings                  ();
@@ -1063,7 +1066,7 @@ private:
     bool            _joystickEnabled = false;
 
     UAS* _uas = nullptr;
-
+    QGeoCoordinate  gimbalCoordinate;
     QGeoCoordinate  _coordinate;
     QGeoCoordinate  _homePosition;
     QGeoCoordinate  _armedPosition;
