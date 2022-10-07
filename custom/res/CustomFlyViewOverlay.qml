@@ -208,6 +208,7 @@ Item {
                 Layout.minimumWidth:    indicatorValueWidth
                 horizontalAlignment:    firstLabel.horizontalAlignment
             }
+
             //-- Distance
             QGCColoredImage {
                 height:                 _indicatorsHeight
@@ -220,7 +221,7 @@ Item {
 
             }
             QGCLabel {
-                text:                   _distance ? _distanceStr : noGPS
+                text:                   _distance ? _distanceStr : "0"
                 color:                  _distance ? _indicatorsColor : qgcPal.colorOrange
                 font.pointSize:         ScreenTools.smallFontPointSize
                 Layout.fillWidth:       true
