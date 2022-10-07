@@ -208,6 +208,7 @@ public:
     Q_PROPERTY(bool                 isOfflineEditingVehicle     READ isOfflineEditingVehicle                                        CONSTANT)
     Q_PROPERTY(QString              brandImageIndoor            READ brandImageIndoor                                               NOTIFY firmwareTypeChanged)
     Q_PROPERTY(QString              brandImageOutdoor           READ brandImageOutdoor                                              NOTIFY firmwareTypeChanged)
+    Q_PROPERTY(int                  imagesCaptures              READ imagesCaptures                                                 NOTIFY imagesCapturesChanged)
     Q_PROPERTY(int                  sensorsPresentBits          READ sensorsPresentBits                                             NOTIFY sensorsPresentBitsChanged)
     Q_PROPERTY(int                  sensorsEnabledBits          READ sensorsEnabledBits                                             NOTIFY sensorsEnabledBitsChanged)
     Q_PROPERTY(int                  sensorsHealthBits           READ sensorsHealthBits                                              NOTIFY sensorsHealthBitsChanged)
@@ -526,7 +527,7 @@ public:
     void setPrearmError(const QString& prearmError);
 
     QmlObjectListModel* cameraTriggerPoints () { return &_cameraTriggerPoints; }
-
+    int  imagesCaptures          () const { return static_cast<int>(_imagesCaptures); }
     int  flowImageIndex() const{ return _flowImageIndex; }
 
     //-- Mavlink Logging
@@ -899,6 +900,8 @@ signals:
     void autoDisarmChanged              ();
     void flightModesChanged             ();
     void sensorsPresentBitsChanged      (int sensorsPresentBits);
+    void imagesCapturesChanged          (int imagesCaptures);
+
     void sensorsEnabledBitsChanged      (int sensorsEnabledBits);
     void sensorsHealthBitsChanged       (int sensorsHealthBits);
     void sensorsUnhealthyBitsChanged    (int sensorsUnhealthyBits);
@@ -1086,6 +1089,7 @@ private:
     bool            _landing = false;
     bool            _vtolInFwdFlight = false;
     uint32_t        _onboardControlSensorsPresent = 0;
+    uint32_t        _imagesCaptures = 0;
     uint32_t        _onboardControlSensorsEnabled = 0;
     uint32_t        _onboardControlSensorsHealth = 0;
     uint32_t        _onboardControlSensorsUnhealthy = 0;

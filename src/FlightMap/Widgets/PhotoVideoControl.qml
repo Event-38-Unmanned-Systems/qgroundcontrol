@@ -291,7 +291,7 @@ Rectangle {
             }
             QGCLabel {
                 Layout.alignment:   Qt.AlignHCenter
-                text:               _activeVehicle ? ('00000' + _activeVehicle.cameraTriggerPoints.count).slice(-5) : "00000"
+                text:               _activeVehicle ? _activeVehicle.imagesCaptures !== 0 ? ('00000' + _activeVehicle.imagesCaptures).slice(-5) : ('00000' + _activeVehicle.cameraTriggerPoints.count).slice(-5) : "00000"
                 font.pointSize:     ScreenTools.largeFontPointSize
                 visible:            _modeIndicatorPhotoMode
             }

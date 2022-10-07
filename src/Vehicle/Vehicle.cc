@@ -798,7 +798,9 @@ void Vehicle::_handleCameraFeedback(const mavlink_message_t& message)
 
     QGeoCoordinate imageCoordinate((double)feedback.lat / qPow(10.0, 7.0), (double)feedback.lng / qPow(10.0, 7.0), feedback.alt_msl);
     qCDebug(VehicleLog) << "_handleCameraFeedback coord:index" << imageCoordinate << feedback.img_idx;
+    if (_imagesCaptures == 0){
     _cameraTriggerPoints.append(new QGCQGeoCoordinate(imageCoordinate, this));
+    }
 }
 #endif
 
@@ -847,8 +849,11 @@ void Vehicle::_handleCameraImageCaptured(const mavlink_message_t& message)
     QGeoCoordinate imageCoordinate((double)feedback.lat / qPow(10.0, 7.0), (double)feedback.lon / qPow(10.0, 7.0), feedback.alt);
     qCDebug(VehicleLog) << "_handleCameraFeedback coord:index" << imageCoordinate << feedback.image_index << feedback.capture_result;
     if (feedback.capture_result == 1) {
-        //_cameraTriggerPoints.append(new QGCQGeoCoordinate(imageCoordinate, this));
+        _cameraTriggerPoints.append(new QGCQGeoCoordinate(imageCoordinate, this));
     }
+    _imagesCaptures = feedback.image_index;
+    emit imagesCapturesChanged(_imagesCaptures);
+
 }
 
 void Vehicle::_chunkedStatusTextTimeout(void)
