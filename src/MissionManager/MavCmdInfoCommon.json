@@ -589,12 +589,14 @@
             "category":             "Flight control",
             "param5": {
                 "label":            "Latitude",
-                "default":          37.803784,
+                "units":            "deg",
+                "default":          0,
                 "decimalPlaces":    7
             },
             "param6": {
                 "label":            "Longitude",
-                "default":          -122.462276,
+                "units":            "deg",
+                "default":          0,
                 "decimalPlaces":    7
             }
         },
