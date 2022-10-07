@@ -347,7 +347,9 @@ Item {
         closeAll()
         confirmDialog.action = actionCode
         confirmDialog.actionData = actionData
+        if (actionCode !== actionGoto){
         confirmDialog.hideTrigger = true
+        }
         confirmDialog.mapIndicator = mapIndicator
         confirmDialog.optionText = ""
         _actionData = actionData

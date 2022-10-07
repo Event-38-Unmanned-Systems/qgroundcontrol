@@ -378,6 +378,10 @@ FlightMap {
                 // Hide goto indicator when vehicle falls out of guided mode
                 gotoLocationItem.visible = false
             }
+            if (inGotoFlightMode){
+                gotoLocationItem.visible = true
+            }
+
         }
 
         Connections {
@@ -585,6 +589,7 @@ FlightMap {
                 onTriggered: {
                     roiLocationItem.show(clickMenu.coord)
                     globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionROI, clickMenu.coord, roiLocationItem)
+                    roiLocationItem.show(clickMenu.coord)
                 }
             }
         }
