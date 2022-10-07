@@ -47,6 +47,14 @@ Rectangle {
         rotation:               -90
         transformOrigin:        Item.TopLeft
     }
+    QGCLabel {
+        id:                     xtitleLabel
+        anchors.bottom:         parent.bottom
+        width:                  parent.width
+        font.pointSize:         ScreenTools.smallFontPointSize
+        text:                   qsTr("Mission Distance (%1)").arg(_unitsConversion.appSettingsHorizontalDistanceUnitsString)
+        horizontalAlignment:    Text.AlignHCenter
+    }
 
     QGCFlickable {
         id:                 terrainProfileFlickable
@@ -79,10 +87,10 @@ Rectangle {
                     max:                        _unitsConversion.metersToAppSettingsHorizontalDistanceUnits(missionController.missionDistance)
                     lineVisible:                true
                     labelsFont.family:          "Fixed"
-                    labelsFont.pointSize:       ScreenTools.smallFontPointSize
-                    labelsColor:                "white"
+                    labelsFont.pointSize:       ScreenTools.defaultFontPixelHeight / 2
+                    labelsColor:                qgcPal.globalTheme === QGCPalette.Dark ? "white" : "black"
                     tickCount:                  5
-                    gridLineColor:              "#44FFFFFF"
+                    gridLineColor:              qgcPal.globalTheme === QGCPalette.Dark ? "white" : "#44000000"
                 }
 
                 ValueAxis {
@@ -91,10 +99,10 @@ Rectangle {
                     max:                        _unitsConversion.metersToAppSettingsVerticalDistanceUnits(_maxAMSLAltitude)
                     lineVisible:                true
                     labelsFont.family:          "Fixed"
-                    labelsFont.pointSize:       ScreenTools.smallFontPointSize
-                    labelsColor:                "white"
+                    labelsFont.pointSize:       ScreenTools.defaultFontPixelHeight / 2 - 1
+                    labelsColor:                qgcPal.globalTheme === QGCPalette.Dark ? "white" : "black"
                     tickCount:                  4
-                    gridLineColor:              "#44FFFFFF"
+                    gridLineColor:              qgcPal.globalTheme === QGCPalette.Dark ? "#44FFFFFF" : "#44000000"
                 }
 
                 LineSeries {
@@ -128,7 +136,7 @@ Rectangle {
                             id:         simpleItem
                             height:     terrainProfile.height
                             width:      1
-                            color:      "white"
+                            color:      qgcPal.globalTheme === QGCPalette.Dark ? "white" : "black"
                             x:          (object.distanceFromStart * terrainProfile.pixelsPerMeter)
                             visible:    object.isSimpleItem || object.isSingleItem
 
@@ -147,7 +155,7 @@ Rectangle {
                             id:         complexItemEntry
                             height:     terrainProfile.height
                             width:      1
-                            color:      "white"
+                            color:      qgcPal.globalTheme === QGCPalette.Dark ? "white" : "black"
                             x:          (object.distanceFromStart * terrainProfile.pixelsPerMeter)
                             visible:    complexItem.visible
 
@@ -165,7 +173,7 @@ Rectangle {
                             id:         complexItemExit
                             height:     terrainProfile.height
                             width:      1
-                            color:      "white"
+                            color:      qgcPal.globalTheme === QGCPalette.Dark ? "white" : "black"
                             x:          ((object.distanceFromStart + object.complexDistance) * terrainProfile.pixelsPerMeter)
                             visible:    complexItem.visible
 
