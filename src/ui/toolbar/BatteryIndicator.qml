@@ -16,7 +16,6 @@ import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Palette               1.0
 import MAVLink                              1.0
-
 //-------------------------------------------------------------------------
 //-- Battery Indicator
 Item {
@@ -24,7 +23,7 @@ Item {
     anchors.top:    parent.top
     anchors.bottom: parent.bottom
     width:          batteryIndicatorRow.width
-
+    property var mahRemaining: -5
     property bool showIndicator: true
 
     property var _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
@@ -75,20 +74,54 @@ Item {
                     return qgcPal.text
                 }
             }
+            /*these are estimated averages determined from a 100
+            minute endurance flight on the E400 used to determine the starting
+            estimated capicity of the flight battery*/
+            function getMahRemaining() {
+                var mahUsed
+            if (battery.voltage.rawValue > 32.6){
+                //~100% battery over this voltage
+                mahUsed = 0
+            }
+            else if (battery.voltage.rawValue >= 29.86){
+            //~5512 mah in this range max
+            mahUsed = 5512 * ((32.6 - battery.voltage.rawValue) / (32.6 - 29.86))
+            }
+            else if (battery.voltage.rawValue >= 28.22){
+                //~3800 mah
+                mahUsed = 5512 + (3800  * (29.86 - battery.voltage.rawValue) / (29.86 - 28.22))
+            }
+            else if (battery.voltage.rawValue >= 26.96){
+              //~2854 mah left
+                mahUsed = 5512 + 3800 + (2854  * (28.22 - battery.voltage.rawValue) / (28.22 - 26.96))
+            }
+            else if (battery.voltage.rawValue >= 24.0){
+              //~3832 mah left
+                mahUsed = 5512 + 3800 + 2854 + (3832  * (26.96 - battery.voltage.rawValue) / (26.96 - 24.0))
+            }
+            else if (battery.voltage.rawValue >= 0){
+              //0 mah left
+                mahUsed = 16000
+            }
+            mahRemaining = 16000 - mahUsed
+            }
 
             function getBatteryPercentageText() {
-                if (!isNaN(battery.percentRemaining.rawValue)) {
-                    if (battery.percentRemaining.rawValue > 98.9) {
-                        return qsTr("100%")
-                    } else {
-                        return battery.percentRemaining.valueString + battery.percentRemaining.units
-                    }
-                } else if (!isNaN(battery.voltage.rawValue)) {
-                    return battery.voltage.valueString + battery.voltage.units
-                } else if (battery.chargeState.rawValue !== MAVLink.MAV_BATTERY_CHARGE_STATE_UNDEFINED) {
-                    return battery.chargeState.enumStringValue
+
+                if (!isNaN(battery.voltage.rawValue) && mahRemaining === -5){
+                    getMahRemaining()
                 }
-                return ""
+                //handle mod 0 case? Some weird error in here that sometimes
+                //happens when connecting to plane. Makes HUD set to NAN
+                if (!isNaN(battery.mahConsumed.rawValue) && mahRemaining !== -5){
+                       var percent = ((mahRemaining - battery.mahConsumed.rawValue)  / 16000) * 100
+                       if (percent !== 0){
+                       percent = percent - (percent % 1)
+                       return percent.toString() + battery.percentRemaining.units
+                       }
+                       else {return ""}
+                }
+                else {return ""}
             }
 
             QGCColoredImage {

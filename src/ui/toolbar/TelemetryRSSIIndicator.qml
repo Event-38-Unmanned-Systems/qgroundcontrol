@@ -21,13 +21,13 @@ import QGroundControl.Palette               1.0
 Item {
     id:             _root
     anchors.top:    parent.top
-    anchors.bottom: parent.bottom
-    width:          telemIcon.width * 1.1
+    anchors.bottom: parent.bottom   
+    width:          (gpsValuesColumn.x + gpsValuesColumn.width) * 1.1
 
     property bool showIndicator: _hasTelemetry
 
     property var  _activeVehicle:   QGroundControl.multiVehicleManager.activeVehicle
-    property bool _hasTelemetry:    _activeVehicle ? _activeVehicle.telemetryLRSSI !== 0 : false
+    property bool _hasTelemetry:    _activeVehicle
 
     Component {
         id: telemRSSIInfo
@@ -45,7 +45,7 @@ Item {
                 anchors.centerIn:   parent
                 QGCLabel {
                     id:             telemLabel
-                    text:           qsTr("Telemetry RSSI Status")
+                    text:           qsTr("Telemetry Status")
                     font.family:    ScreenTools.demiboldFontFamily
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
@@ -55,7 +55,10 @@ Item {
                     columnSpacing:      ScreenTools.defaultFontPixelWidth
                     columns:            2
                     anchors.horizontalCenter: parent.horizontalCenter
-                    QGCLabel { text: qsTr("Local RSSI:") }
+                    QGCLabel { text: qsTr("Telemetry:") }
+                    QGCLabel { text: globals.activeVehicle ? (100 - globals.activeVehicle.mavlinkLossPercent.toFixed(0)) + '%' : qsTr("Not Connected")}
+
+                    /*QGCLabel { text: qsTr("Local RSSI:") }
                     QGCLabel { text: _activeVehicle.telemetryLRSSI + " dBm"}
                     QGCLabel { text: qsTr("Remote RSSI:") }
                     QGCLabel { text: _activeVehicle.telemetryRRSSI + " dBm"}
@@ -69,6 +72,7 @@ Item {
                     QGCLabel { text: _activeVehicle.telemetryLNoise }
                     QGCLabel { text: qsTr("Remote Noise:") }
                     QGCLabel { text: _activeVehicle.telemetryRNoise }
+                    */
                 }
             }
         }
@@ -83,6 +87,19 @@ Item {
         fillMode:           Image.PreserveAspectFit
         color:              qgcPal.buttonText
     }
+
+    Column {
+        id:                     gpsValuesColumn
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin:     ScreenTools.defaultFontPixelWidth / 2
+        anchors.left:           telemIcon.right
+            QGCLabel {
+            visible:                    _activeVehicle
+            color:                      qgcPal.buttonText
+            text:                       globals.activeVehicle ? (100 - globals.activeVehicle.mavlinkLossPercent.toFixed(0)) + '%' : qsTr("N/A")
+        }
+    }
+
     MouseArea {
         anchors.fill: parent
         onClicked: {
