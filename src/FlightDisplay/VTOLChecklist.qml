@@ -46,10 +46,13 @@ Item {
 
         PreFlightCheckGroup {
             name: qsTr("Pre-launch Checks")
+
             PreFlightCheckButton {
+                height:         10 * ScreenTools.defaultFontPixelWidth
                 name:            qsTr("Heading")
                 manualText:      qsTr("Icon heading matches actual heading?")
-            }
+                image: qsTr("/qmlimages/PaperPlane.svg")
+                }
             PreFlightCheckButton {
                 name:        qsTr("Mission")
                 manualText:  qsTr("Please confirm mission is valid (waypoints valid, no terrain collision).")

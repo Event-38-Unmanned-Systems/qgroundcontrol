@@ -26,6 +26,7 @@ import QGroundControl.ScreenTools   1.0
 ///                 Or it can also optionally be override by the user.
 /// If a button uses both manual and telemetry checks, the telemetry check takes precendence and must be passed first.
 QGCButton {
+    property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
     property string name:                           ""
     property string manualText:                     ""      ///< text to show for a manual check, "" signals no manual check
     property string telemetryTextFailure                    ///< text to show if telemetry check failed (override not allowed)
@@ -38,8 +39,8 @@ QGCButton {
     property int _telemetryState:       _statePassed
     property int _horizontalPadding:    ScreenTools.defaultFontPixelWidth
     property int _verticalPadding:      Math.round(ScreenTools.defaultFontPixelHeight / 2)
-    property real _stateFlagWidth:      ScreenTools.defaultFontPixelWidth * 4
-
+    property real _stateFlagWidth:      ScreenTools.defaultFontPixelWidth * 8
+    property string image: ""
     readonly property int _statePending:    0   ///< Telemetry check is failing or manual check not yet verified, user can click to make it pass
     readonly property int _stateFailed:     1   ///< Telemetry check is failing, user cannot click to make it pass
     readonly property int _statePassed:     2   ///< Check has passed
@@ -67,17 +68,83 @@ QGCButton {
     rightPadding:   _horizontalPadding
 
     background: Rectangle {
-        color:          qgcPal.button
+        color:          qgcPal.globalTheme === QGCPalette.Dark ? qgcPal.button : "#bababc"
         border.color:   qgcPal.button;
 
         Rectangle {
             color:          _color
-            anchors.left:   parent.left
+            anchors.left: parent.left
             anchors.top:    parent.top
             anchors.bottom: parent.bottom
             width:          _stateFlagWidth
+
+
+            //-- Compass
+                //-- Large circle
+                Rectangle {
+                    visible: name == "Heading" ? true : false
+                    id:                 compassBezel
+                    height:             _stateFlagWidth
+                    width:              _stateFlagWidth
+                    radius:             _stateFlagWidth * 0.5
+                    border.color:       qgcPal.text
+                    border.width:       1
+                    color:              Qt.rgba(0,0,0,0)                     
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                //-- North Label
+                Rectangle {
+                    visible: name == "Heading" ? true : false
+                    height:             ScreenTools.defaultFontPixelHeight * 0.75
+                    width:              ScreenTools.defaultFontPixelWidth  * 2
+                    radius:             ScreenTools.defaultFontPixelWidth  * 0.25
+                    color:              qgcPal.windowShade
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    QGCLabel {
+                        text:               "N"
+                        color:              qgcPal.colorRed
+                        font.pointSize:     ScreenTools.smallFontPointSize
+                        anchors.centerIn:   parent
+                    }
+                }
+                //-- Needle
+                Image {
+                    visible: name == "Heading" ? true : false
+                    id:                 vehicleIcon
+                    source:             image
+                    mipmap:             true
+                    width:              _stateFlagWidth
+                    sourceSize.width:   _stateFlagWidth
+                    fillMode:           Image.PreserveAspectFit
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    transform: Rotation {
+                        origin.x:       vehicleIcon.width  / 2
+                        origin.y:       vehicleIcon.height / 2
+                        angle:          _activeVehicle   ? _activeVehicle.heading.rawValue : 0
+                    }
+                }
+                Rectangle {
+                    visible: name == "Heading" ? true : false
+                    height:             ScreenTools.defaultFontPixelHeight * 0.75
+                    width:              ScreenTools.defaultFontPixelWidth  * 3.5
+                    radius:             ScreenTools.defaultFontPixelWidth  * 0.25
+                    color:              qgcPal.windowShade
+                    anchors.bottom:         parent.bottom
+                    anchors.bottomMargin:   ScreenTools.defaultFontPixelHeight * -0.25
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    QGCLabel {
+                        text:               _activeVehicle   ? _activeVehicle.heading.rawValue : 0
+                        color:              qgcPal.colorRed
+                        font.pointSize:     ScreenTools.smallFontPointSize
+                        anchors.centerIn:   parent
+                    }
+                }
+             }
         }
-    }
+
+
+
 
     contentItem: QGCLabel {
         wrapMode:               Text.WordWrap
@@ -85,6 +152,7 @@ QGCButton {
         color:                  qgcPal.buttonText
         text:                   _text
     }
+
 
     function _updateTelemetryState() {
         if (telemetryFailure) {
