@@ -77,8 +77,7 @@ Item {
             // Check list item group 2 - Final checks before launch
             PreFlightCheckButton {
                 name:        qsTr("Payload")
-                manualText:  qsTr("Press to capture image. Image captured?")
-
+                manualText:  qsTr("Lens cap removed? Press to capture image. Image captured?")
                 onPressed:   if (_manualState != _statePassed){_activeVehicle.triggerSimpleCamera()}
             }
 
