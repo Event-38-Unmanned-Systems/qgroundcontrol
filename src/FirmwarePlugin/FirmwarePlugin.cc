@@ -421,6 +421,22 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
         _cameraList.append(QVariant::fromValue(metaData));
 
         metaData = new CameraMetaData(
+                    "Sony A7R IV 24mm",
+                    tr("Sony"),
+                    tr("Sony A7R IV 24mm"),
+                    35.8,             // sensorWidth
+                    23.8,             // sensorHeight
+                    9504,               // imageWidth
+                    6336,               // imageHeight
+                    24,                 // focalLength
+                    true,               // true: landscape orientation
+                    true,              // true: camera is fixed orientation
+                    1.0,                // minimum trigger interval
+                    "",
+                    this);              // parent
+        _cameraList.append(QVariant::fromValue(metaData));
+
+        metaData = new CameraMetaData(
                     "Flir Duo R",
                     tr("Flir"),
                     tr("Duo R"),
