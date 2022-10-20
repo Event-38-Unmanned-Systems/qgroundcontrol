@@ -62,12 +62,15 @@ Rectangle {
             wrapMode:               Text.WordWrap
             horizontalAlignment:    Text.AlignHCenter
             text:                   qsTr("New Alt(rel)")
+            color:              "#ffffff"
+
         }
 
         QGCLabel {
             id:                         altField
             anchors.horizontalCenter:   parent.horizontalCenter
             text:                       newAltitudeAppUnits + " " + QGroundControl.unitsConversion.appSettingsHorizontalDistanceUnitsString
+            color:              "#ffffff"
 
             property real   altGainRange:           Math.max(_sliderMaxAlt - _vehicleAltitude, 0)
             property real   altLossRange:           Math.max(_vehicleAltitude - _sliderMinAlt, 0)
@@ -90,6 +93,7 @@ Rectangle {
         anchors.left:       parent.left
         anchors.right:      parent.right
         orientation:        Qt.Vertical
+        implicitHeight:         30
         minimumValue:       _flying ? -1 : 0
         maximumValue:       1
         zeroCentered:       true
