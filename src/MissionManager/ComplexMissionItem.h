@@ -31,6 +31,7 @@ public:
 
     const ComplexMissionItem& operator=(const ComplexMissionItem& other);
 
+    Q_PROPERTY(QGroundControlQmlGlobal::AltMode entryAltitudeMode READ entryAltitudeMode        NOTIFY entryAltitudeModeChanged)
     Q_PROPERTY(QString              patternName         READ patternName            CONSTANT)
     Q_PROPERTY(double               complexDistance     READ complexDistance        NOTIFY complexDistanceChanged)
     Q_PROPERTY(bool                 presetsSupported    READ presetsSupported       CONSTANT)
@@ -99,10 +100,16 @@ public:
     bool presetsSupported   (void) { return !presetsSettingsGroup().isEmpty(); }
     bool isIncomplete       (void) const { return _isIncomplete; }
 
+    QGroundControlQmlGlobal::AltMode entryAltitudeMode(void) const { return _entryAltitudeMode; }
+    //void setEntryAltitudeMode(QGroundControlQmlGlobal::AltMode entryAltitudeMode);
+    QGroundControlQmlGlobal::AltMode    _entryAltitudeMode = QGroundControlQmlGlobal::AltitudeModeRelative;
+
+
     /// This mission item attribute specifies the type of the complex item.
     static const char* jsonComplexItemTypeKey;
 
 signals:
+    void entryAltitudeModeChanged        (void);
     void complexDistanceChanged     (void);
     void boundingCubeChanged        (void);
     void greatestDistanceToChanged  (void);

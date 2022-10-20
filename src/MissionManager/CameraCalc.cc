@@ -258,7 +258,6 @@ bool CameraCalc::load(const QJsonObject& originalJson, bool deprecatedFollowTerr
     _cameraNameFact.setRawValue(canonicalCameraName);
 
     setDistanceMode(static_cast<QGroundControlQmlGlobal::AltMode>(json[distanceModeName].toInt()));
-
     _adjustedFootprintSideFact.setRawValue      (json[adjustedFootprintSideName].toDouble());
     _adjustedFootprintFrontalFact.setRawValue   (json[adjustedFootprintFrontalName].toDouble());
     _distanceToSurfaceFact.setRawValue          (json[distanceToSurfaceName].toDouble());
@@ -319,7 +318,7 @@ void CameraCalc::setDistanceMode(QGroundControlQmlGlobal::AltMode altMode)
 {
     if (altMode != _distanceMode) {
         _distanceMode = altMode;
-        emit distanceModeChanged(_distanceMode);
+        emit distanceModeChanged(_distanceMode);      
     }
 }
 

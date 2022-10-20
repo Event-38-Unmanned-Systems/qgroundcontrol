@@ -40,8 +40,7 @@ Rectangle {
     property string _setToVehicleHeadingStr:    qsTr("Set to vehicle heading")
     property string _setToVehicleLocationStr:   qsTr("Set to vehicle location")
     property bool   _showCameraSection:         !_missionVehicle.apmFirmware
-    property int    _altitudeMode:              missionItem.altitudesAreRelative ? QGroundControl.AltitudeModeRelative : QGroundControl.AltitudeModeAbsolute
-
+    property int    _altitudeMode:              missionItem.altitudesAreRelative
 
     Column {
         id:                 editorColumn
@@ -50,6 +49,63 @@ Rectangle {
         anchors.right:      parent.right
         spacing:            _margin
         visible:            !editorColumnNeedLandingPoint.visible
+
+        Component { id: altModeDialogComponent; AltModeDialog { } }
+
+    SectionHeader {
+        anchors.left:   parent.left
+        anchors.right:  parent.right
+        id: terrainApproachSection
+        text:           qsTr("Return Altitude frame")
+    }
+        Item { width: 1; height: _spacer }
+
+Column {
+    visible:         terrainApproachSection.checked
+        MouseArea {
+            width:  availableWidth
+            height: childrenRect.height
+            onClicked: {
+                var removeModes = []
+                var updateFunction = function(altMode){ missionItem.landingAltitudeMode = altMode }
+                if (!_missionVehicle.supportsTerrainFrame) {
+                    removeModes.push(QGroundControl.AltitudeModeTerrainFrame)
+                }
+                mainWindow.showPopupDialogFromComponent(altModeDialogComponent, { rgRemoveModes: removeModes, updateAltModeFn: updateFunction })
+            }
+
+            RowLayout {
+                spacing: ScreenTools.defaultFontPixelWidth
+                QGCLabel {
+                    id:     altModeLabel
+                    text:   QGroundControl.altitudeModeShortDescription(missionItem.landingAltitudeMode)
+                }
+                QGCColoredImage {
+                    height:     ScreenTools.defaultFontPixelHeight / 2
+                    width:      height
+                    source:     "/res/DropArrow.svg"
+                    color:      altModeLabel.color
+                }
+            }
+        }
+
+            GridLayout {
+               Item { width: 1; height: _spacer/2 }
+               Item { width: 1; height: _spacer/2 }
+                visible:         missionItem.landingAltitudeMode === QGroundControl.AltitudeModeTerrainFrame
+                anchors.left:    parent.left
+                anchors.right:   parent.right
+                columns:         2
+
+                QGCLabel { text: qsTr("Return Altitude") }
+
+                AltitudeFactTextField {
+                    Layout.fillWidth:   true
+                    fact:               missionItem.terrainApproach
+                    altitudeMode:       missionItem.landingAltitudeMode
+                }
+            }
+}
 
         SectionHeader {
             id:             finalApproachSection

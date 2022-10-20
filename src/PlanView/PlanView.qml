@@ -109,7 +109,8 @@ Item {
             editorMap.zoomLevel = QGroundControl.flightMapZoom
             editorMap.center    = QGroundControl.flightMapPosition
             if (!_planMasterController.containsItems) {
-                toolStrip.simulateClick(toolStrip.fileButtonIndex)
+               //insert takeoff inserttakeoff vtoltakeoff - mwrightE38 adds takeoff into mission on button click.
+               // toolStrip.simulateClick(toolStrip.fileButtonIndex)
             }
         }
     }

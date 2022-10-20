@@ -87,6 +87,14 @@
     "shortDesc":    "Stop taking video",
     "type":         "bool",
     "default":      true
+},
+{
+"name":             "TerrainApproach",
+"shortDesc":        "Altitude to begin landing approach from.",
+"type":             "double",
+"units":            "m",
+"decimalPlaces":    1,
+"default":          100.0
 }
 ]
 }

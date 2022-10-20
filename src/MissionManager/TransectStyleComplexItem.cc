@@ -331,7 +331,7 @@ bool TransectStyleComplexItem::_load(const QJsonObject& complexObject, bool forP
             emit maxAMSLAltitudeChanged();
             _amslEntryAltChanged();
             _amslExitAltChanged();
-            emit _updateFlightPathSegmentsSignal();
+            emit _updateFlightPathSegmentsSignal();            
         }
     }
 
@@ -403,6 +403,9 @@ bool TransectStyleComplexItem::hoverAndCaptureAllowed(void) const
 
 void TransectStyleComplexItem::_rebuildTransects(void)
 {
+
+    _missionController->setSurveyAltitude(_cameraCalc.distanceToSurface()->rawValue().toDouble());
+
     if (_ignoreRecalc) {
         return;
     }
@@ -483,6 +486,7 @@ void TransectStyleComplexItem::_rebuildTransects(void)
     emit _updateFlightPathSegmentsSignal();
     _amslEntryAltChanged();
     _amslExitAltChanged();
+
 }
 
 void TransectStyleComplexItem::_segmentTerrainCollisionChanged(bool terrainCollision)
@@ -649,7 +653,9 @@ void TransectStyleComplexItem::_polyPathTerrainData(bool success, const QList<Te
         // Now that we have terrain data we can adjust
         _rgPathHeightInfo = rgPathHeightInfo;
         _adjustForAvailableTerrainData();
+        emit lastSequenceNumberChanged(lastSequenceNumber());
         emit readyForSaveStateChanged();
+        emit _updateFlightPathSegmentsSignal();
     }
     _currentTerrainPolyPathQuery = nullptr;
 }
@@ -666,6 +672,8 @@ void TransectStyleComplexItem::_missionItemCoordTerrainData(bool success, QList<
         _rgFlyThroughMissionItemCoordsTerrainHeights = heights;
         _adjustForAvailableTerrainData();
         emit readyForSaveStateChanged();
+        _rebuildTransects();
+        setDirty(true);
     }
     _currentTerrainPolyPathQuery = nullptr;
 }
@@ -717,6 +725,7 @@ void TransectStyleComplexItem::_adjustForAvailableTerrainData(void)
     case QGroundControlQmlGlobal::AltitudeModeTerrainFrame:
         if (_loadedMissionItems.count()) {
             _buildFlightPathCoordInfoFromMissionItems();
+
         } else {
             _buildFlightPathCoordInfoFromPathHeightInfoForTerrainFrame();
         }
@@ -992,6 +1001,9 @@ void TransectStyleComplexItem::_buildFlightPathCoordInfoFromPathHeightInfoForTer
             fromCoordInfo.coord.setAltitude(distanceToSurface + pathHeightInfo.heights.first());
             toCoordInfo.coord.setAltitude(distanceToSurface + pathHeightInfo.heights.last());
 
+            _minAMSLAltitude = std::fmin(_minAMSLAltitude, fromCoordInfo.coord.altitude());
+            _maxAMSLAltitude = std::fmax(_maxAMSLAltitude, fromCoordInfo.coord.altitude());
+
             if (transectCoordIndex == 0) {
                 _rgFlightPathCoordInfo.append(fromCoordInfo);
             }
@@ -1032,7 +1044,10 @@ void TransectStyleComplexItem::_buildFlightPathCoordInfoFromMissionItems(void)
         toCoordInfo.coord.setAltitude(toCoordInfo.coord.altitude() + heightAtCoord);
 
         _rgFlightPathCoordInfo.append(fromCoordInfo);
+        _minAMSLAltitude = std::fmin(_minAMSLAltitude, fromCoordInfo.coord.altitude());
+        _maxAMSLAltitude = std::fmax(_maxAMSLAltitude, fromCoordInfo.coord.altitude());
     }
+
 }
 
 int TransectStyleComplexItem::lastSequenceNumber(void) const
@@ -1111,6 +1126,9 @@ int TransectStyleComplexItem::lastSequenceNumber(void) const
 
 void TransectStyleComplexItem::_distanceModeChanged(int distanceMode)
 {
+    _missionController->setSurveyAltitudeMode(static_cast<QGroundControlQmlGlobal::AltMode>(distanceMode));
+    _entryAltitudeMode = static_cast<QGroundControlQmlGlobal::AltMode>(distanceMode);
+    emit _missionController->_recalcFlightPathSegmentsSignal();
     if (static_cast<QGroundControlQmlGlobal::AltMode>(distanceMode) == QGroundControlQmlGlobal::AltitudeModeCalcAboveTerrain) {
         _refly90DegreesFact.setRawValue(false);
         _hoverAndCaptureFact.setRawValue(false);
@@ -1451,9 +1469,14 @@ double TransectStyleComplexItem::minAMSLAltitude(void) const
 
     if (_cameraCalc.distanceMode() == QGroundControlQmlGlobal::AltitudeModeCalcAboveTerrain) {
         return _minAMSLAltitude;
-    } else {
+    }
+    else if (_cameraCalc.distanceMode() == QGroundControlQmlGlobal::AltitudeModeTerrainFrame){
+        return _missionController->minAMSLAltitude() + _cameraCalc.distanceToSurface()->rawValue().toDouble();
+            }
+    else {
         return _cameraCalc.distanceToSurface()->rawValue().toDouble() + (_cameraCalc.distanceMode() == QGroundControlQmlGlobal::AltitudeModeRelative ? _missionController->plannedHomePosition().altitude() : 0);
     }
+
 }
 
 double TransectStyleComplexItem::maxAMSLAltitude(void) const
@@ -1462,7 +1485,10 @@ double TransectStyleComplexItem::maxAMSLAltitude(void) const
 
     if (_cameraCalc.distanceMode() == QGroundControlQmlGlobal::AltitudeModeCalcAboveTerrain) {
         return _maxAMSLAltitude;
-    } else {
+    }     else if (_cameraCalc.distanceMode() == QGroundControlQmlGlobal::AltitudeModeTerrainFrame){
+        return _maxAMSLAltitude + _cameraCalc.distanceToSurface()->rawValue().toDouble();
+            }
+    else {
         return _cameraCalc.distanceToSurface()->rawValue().toDouble() + (_cameraCalc.distanceMode() == QGroundControlQmlGlobal::AltitudeModeRelative ? _missionController->plannedHomePosition().altitude() : 0);
     }
 }

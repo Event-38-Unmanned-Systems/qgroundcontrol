@@ -344,6 +344,7 @@ SimpleLandingComplexItem::SimpleLandingComplexItem(PlanMasterController* masterC
     , _useLoiterToAltFact       (settingsGroup, _metaDataMap[useLoiterToAltName])
     , _stopTakingPhotosFact     (settingsGroup, _metaDataMap[stopTakingPhotosName])
     , _stopTakingVideoFact      (settingsGroup, _metaDataMap[stopTakingVideoName])
+    , _terrainApproachFact      (settingsGroup, _metaDataMap[terrainApproachName])
 {
     _isIncomplete   = false;
 

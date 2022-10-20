@@ -45,6 +45,7 @@ FixedWingLandingComplexItem::FixedWingLandingComplexItem(PlanMasterController* m
     , _stopTakingPhotosFact     (settingsGroup, _metaDataMap[stopTakingPhotosName])
     , _stopTakingVideoFact      (settingsGroup, _metaDataMap[stopTakingVideoName])
     , _valueSetIsDistanceFact   (settingsGroup, _metaDataMap[valueSetIsDistanceName])
+    , _terrainApproachFact      (settingsGroup, _metaDataMap[terrainApproachName])
 {
     _editorQml      = "qrc:/qml/FWLandingPatternEditor.qml";
     _isIncomplete   = false;
@@ -171,6 +172,8 @@ void FixedWingLandingComplexItem::_updateFlightPathSegmentsDontCallDirectly(void
 
     _flightPathSegments.beginReset();
     _flightPathSegments.clearAndDeleteContents();
+    _entrycoord = finalApproachCoordinate();
+
     if (useLoiterToAlt()->rawValue().toBool()) {
         _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), loiterTangentCoordinate(),  amslEntryAlt()); // Best we can do to simulate loiter circle terrain profile
         _appendFlightPathSegment(FlightPathSegment::SegmentTypeLand, loiterTangentCoordinate(), amslEntryAlt(), landingCoordinate(),        amslExitAlt());

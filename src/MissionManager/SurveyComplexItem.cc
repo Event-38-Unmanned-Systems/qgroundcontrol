@@ -74,6 +74,9 @@ SurveyComplexItem::SurveyComplexItem(PlanMasterController* masterController, boo
 {
     _editorQml = "qrc:/qml/SurveyItemEditor.qml";
 
+    _cameraCalc.setDistanceMode(_missionController->globalAltitudeMode());
+    _entryAltitudeMode = _missionController->globalAltitudeMode();
+
     // If the user hasn't changed turnaround from the default (which is a fixed wing default) and we are multi-rotor set the multi-rotor default.
     // NULL check since object creation during unit testing passes NULL for vehicle
     if (_controllerVehicle && _controllerVehicle->multiRotor() && _turnAroundDistanceFact.rawValue().toDouble() == _turnAroundDistanceFact.rawDefaultValue().toDouble()) {

@@ -74,6 +74,8 @@ private:
     const Fact*     _useLoiterToAlt         (void) const final { return &_useLoiterToAltFact; }
     const Fact*     _stopTakingPhotos       (void) const final { return &_stopTakingPhotosFact; }
     const Fact*     _stopTakingVideo        (void) const final { return &_stopTakingVideoFact; }
+    const Fact*     _terrainApproach        (void) const final { return &_terrainApproachFact; }
+
     void            _calcGlideSlope         (void) final;
     MissionItem*    _createLandItem         (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent) final;
 
@@ -92,6 +94,8 @@ private:
     Fact            _stopTakingPhotosFact;
     Fact            _stopTakingVideoFact;
     Fact            _valueSetIsDistanceFact;
+    Fact            _terrainApproachFact;
+
 
     static const char* _jsonValueSetIsDistanceKey;
 

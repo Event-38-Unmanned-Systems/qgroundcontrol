@@ -109,6 +109,7 @@ public:
     Q_PROPERTY(double               minAMSLAltitude                 MEMBER _minAMSLAltitude             NOTIFY minAMSLAltitudeChanged)          ///< Minimum altitude associated with this mission. Used to calculate percentages for terrain status.
     Q_PROPERTY(double               maxAMSLAltitude                 MEMBER _maxAMSLAltitude             NOTIFY maxAMSLAltitudeChanged)          ///< Maximum altitude associated with this mission. Used to calculate percentages for terrain status.
 
+    Q_PROPERTY(QGroundControlQmlGlobal::AltMode surveyAltitudeMode         READ surveyAltitudeMode         WRITE setSurveyAltitudeMode NOTIFY surveyAltitudeModeChanged)
     Q_PROPERTY(QGroundControlQmlGlobal::AltMode globalAltitudeMode         READ globalAltitudeMode         WRITE setGlobalAltitudeMode NOTIFY globalAltitudeModeChanged)
     Q_PROPERTY(QGroundControlQmlGlobal::AltMode globalAltitudeModeDefault  READ globalAltitudeModeDefault  NOTIFY globalAltitudeModeChanged)                               ///< Default to use for newly created items
 
@@ -260,10 +261,16 @@ public:
     int  batteriesRequired          (void) const { return _missionFlightStatus.batteriesRequired; }     ///< -1 for not supported
 
     bool isEmpty                    (void) const;
+    double surveyAltitude(void);
 
+    QGroundControlQmlGlobal::AltMode surveyAltitudeMode(void);
     QGroundControlQmlGlobal::AltMode globalAltitudeMode(void);
     QGroundControlQmlGlobal::AltMode globalAltitudeModeDefault(void);
     void setGlobalAltitudeMode(QGroundControlQmlGlobal::AltMode altMode);
+    void setSurveyAltitudeMode(QGroundControlQmlGlobal::AltMode SurveyAltMode);
+    void setSurveyAltitude(double SurveyAlt);
+
+
 
 signals:
     void visualItemsChanged                 (void);
@@ -283,6 +290,8 @@ signals:
     void resumeMissionUploadFail            (void);
     void batteryChangePointChanged          (int batteryChangePoint);
     void batteriesRequiredChanged           (int batteriesRequired);
+    void surveyAltitudeChanged              (void);
+    void surveyAltitudeModeChanged          (void);
     void plannedHomePositionChanged         (QGeoCoordinate plannedHomePosition);
     void progressPctChanged                 (double progressPct);
     void currentMissionIndexChanged         (int currentMissionIndex);
@@ -405,8 +414,10 @@ private:
     double                      _minAMSLAltitude =              0;
     double                      _maxAMSLAltitude =              0;
     bool                        _missionContainsVTOLTakeoff =   false;
+    double _SurveyAlt;
 
     QGroundControlQmlGlobal::AltMode _globalAltMode = QGroundControlQmlGlobal::AltitudeModeRelative;
+    QGroundControlQmlGlobal::AltMode _SurveyAltMode = QGroundControlQmlGlobal::AltitudeModeRelative;
 
     static const char*  _settingsGroup;
 

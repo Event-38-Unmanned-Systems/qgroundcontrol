@@ -457,6 +457,7 @@ VisualMissionItem* MissionController::insertComplexMissionItem(QString itemName,
             // We are in mixed altitude modes, so copy from previous. Otherwise alt mode will be set from global setting in constructor.
             if (_findPreviousAltitude(visualItemIndex, &prevAltitude, &prevAltMode)) {
                 qobject_cast<SurveyComplexItem*>(newItem)->cameraCalc()->setDistanceMode(prevAltMode);
+                newItem->_entryAltitudeMode = prevAltMode;
             }
         }
     } else if (itemName == FixedWingLandingComplexItem::name) {
@@ -590,6 +591,8 @@ void MissionController::removeVisualItem(int viIndex)
             bool rollSupported = false;
             bool pitchSupported = false;
             bool yawSupported = false;
+            setSurveyAltitudeMode(static_cast<QGroundControlQmlGlobal::AltMode>(globalAltitudeMode()));
+            setSurveyAltitude(0);
             CameraSection* cameraSection = _settingsItem->cameraSection();
             if (_controllerVehicle->firmwarePlugin()->hasGimbal(_controllerVehicle, rollSupported, pitchSupported, yawSupported) && pitchSupported) {
                 if (cameraSection->specifyGimbal() && cameraSection->gimbalPitch()->rawValue().toDouble() == -90.0 && cameraSection->gimbalYaw()->rawValue().toDouble() == 0.0) {
@@ -1238,9 +1241,22 @@ FlightPathSegment* MissionController::_addFlightPathSegment(FlightPathSegmentHas
 {
     FlightPathSegment* segment = nullptr;
 
-    if (prevItemPairHashTable.contains(pair) && (prevItemPairHashTable[pair]->segmentType() == FlightPathSegment::SegmentTypeTerrainFrame) != mavlinkTerrainFrame) {
+    if (prevItemPairHashTable.contains(pair) && !(mavlinkTerrainFrame)) {
         // Pair already exists and connected, just re-use
+         if (pair.second->commandName() == "Landing Pattern" || "Survey" || "Corridor Scan"){
+             prevItemPairHashTable.remove(pair);
+             segment = _createFlightPathSegmentWorker(pair, mavlinkTerrainFrame);
+             _flightPathSegmentHashTable[pair] = segment;
+         }
+         else{
         _flightPathSegmentHashTable[pair] = segment = prevItemPairHashTable.take(pair);
+         }
+    }
+    else if (prevItemPairHashTable.contains(pair) && (mavlinkTerrainFrame)) {
+        // Pair already exists and connected, just re-use
+        prevItemPairHashTable.remove(pair);
+        segment = _createFlightPathSegmentWorker(pair, mavlinkTerrainFrame);
+        _flightPathSegmentHashTable[pair] = segment;
     } else {
         segment = _createFlightPathSegmentWorker(pair, mavlinkTerrainFrame);
         _flightPathSegmentHashTable[pair] = segment;
@@ -1404,8 +1420,20 @@ void MissionController::_recalcFlightPathSegments(void)
 
                     lastSegmentVisualItemPair =  VisualItemPair(lastFlyThroughVI, visualItem);
                     if (!_flyView || addDirectionArrow) {
-                        SimpleMissionItem* simpleItem = qobject_cast<SimpleMissionItem*>(lastFlyThroughVI);
-                        bool mavlinkTerrainFrame = simpleItem ? simpleItem->missionItem().frame() == MAV_FRAME_GLOBAL_TERRAIN_ALT : false;
+                        SimpleMissionItem* simpleItem = qobject_cast<SimpleMissionItem*>(visualItem);
+                        ComplexMissionItem* complexItem = qobject_cast<ComplexMissionItem*>(visualItem);
+                        bool mavlinkTerrainFrame = false;
+                        if (simpleItem){
+                         mavlinkTerrainFrame = simpleItem->missionItem().frame() == MAV_FRAME_GLOBAL_TERRAIN_ALT;
+                        }
+                        if (complexItem){
+
+                           mavlinkTerrainFrame = complexItem->entryAltitudeMode() == QGroundControlQmlGlobal::AltitudeModeTerrainFrame;
+
+                        }
+                        if (mavlinkTerrainFrame){
+                            mavlinkTerrainFrame = true;
+                        }
                         FlightPathSegment* segment = _addFlightPathSegment(oldSegmentTable, lastSegmentVisualItemPair, mavlinkTerrainFrame);
                         segment->setSpecialVisual(roiActive);
                         if (addDirectionArrow) {
@@ -2717,11 +2745,22 @@ QGroundControlQmlGlobal::AltMode MissionController::globalAltitudeMode(void)
     return _globalAltMode;
 }
 
+QGroundControlQmlGlobal::AltMode MissionController::surveyAltitudeMode(void)
+{
+    return _SurveyAltMode;
+}
+
+double MissionController::surveyAltitude(void)
+{
+    return _SurveyAlt;
+}
+
 QGroundControlQmlGlobal::AltMode MissionController::globalAltitudeModeDefault(void)
 {
     if (_globalAltMode == QGroundControlQmlGlobal::AltitudeModeMixed) {
         return QGroundControlQmlGlobal::AltitudeModeRelative;
     } else {
+        setSurveyAltitudeMode(_globalAltMode);
         return _globalAltMode;
     }
 }
@@ -2732,4 +2771,19 @@ void MissionController::setGlobalAltitudeMode(QGroundControlQmlGlobal::AltMode a
         _globalAltMode = altMode;
         emit globalAltitudeModeChanged();
     }
+    setSurveyAltitudeMode(altMode);
+}
+
+void MissionController::setSurveyAltitudeMode(QGroundControlQmlGlobal::AltMode altMode)
+{
+    if (_SurveyAltMode != altMode) {
+        _SurveyAltMode = altMode;
+        emit surveyAltitudeModeChanged();
+    }
+}
+
+void MissionController::setSurveyAltitude(double alt)
+{
+        _SurveyAlt = alt;
+        emit surveyAltitudeChanged();
 }

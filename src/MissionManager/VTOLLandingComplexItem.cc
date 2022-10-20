@@ -41,6 +41,7 @@ VTOLLandingComplexItem::VTOLLandingComplexItem(PlanMasterController* masterContr
     , _stopTakingPhotosFact     (settingsGroup, _metaDataMap[stopTakingPhotosName])
     , _stopTakingVideoFact      (settingsGroup, _metaDataMap[stopTakingVideoName])
     , _glideSlopeFact           (settingsGroup, _metaDataMap[glideSlopeName])
+    , _terrainApproachFact      (settingsGroup, _metaDataMap[terrainApproachName])
 
 {
     _editorQml      = "qrc:/qml/VTOLLandingPatternEditor.qml";
@@ -157,11 +158,18 @@ void VTOLLandingComplexItem::_updateFlightPathSegmentsDontCallDirectly(void)
 
     _flightPathSegments.beginReset();
     _flightPathSegments.clearAndDeleteContents();
+    _entrycoord = finalApproachCoordinate();
+    _entrycoord.setAltitude(amslEntryAlt());
+
     if (useLoiterToAlt()->rawValue().toBool()) {
-        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), loiterTangentCoordinate(),  amslEntryAlt()); // Best we can do to simulate loiter circle terrain profile
-        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, loiterTangentCoordinate(), amslEntryAlt(), transitionCoordinate(),        amslTransitionAlt());
-    } else {
-        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, finalApproachCoordinate(), amslEntryAlt(), transitionCoordinate(),        amslTransitionAlt());
+        if (_landingAltMode == QGroundControlQmlGlobal::AltitudeModeTerrainFrame){
+            //_appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, _entrycoord, amslEntryAlt(), _entrycoord,  amslLoiterAlt()); // Best we can do to simulate loiter circle terrain profile
+        }
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, _entrycoord, amslEntryAlt(), loiterTangentCoordinate(),  amslLoiterAlt()); // Best we can do to simulate loiter circle terrain profile
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, loiterTangentCoordinate(), amslLoiterAlt(), transitionCoordinate(),        amslTransitionAlt());
+    }
+    else {
+        _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, _entrycoord, amslEntryAlt(), transitionCoordinate(),        amslTransitionAlt());
     }
 
     _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, transitionCoordinate(), amslTransitionAlt(), landingCoordinate(), amslTransitionAlt());
@@ -173,5 +181,7 @@ void VTOLLandingComplexItem::_updateFlightPathSegmentsDontCallDirectly(void)
         emit terrainCollisionChanged(true);
     }
 
+    emit coordinateChanged(coordinate());
+    _missionController->_recalcFlightPathSegmentsSignal();
     _masterController->missionController()->recalcTerrainProfile();
 }

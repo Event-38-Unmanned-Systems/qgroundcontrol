@@ -36,6 +36,7 @@ public:
     Q_PROPERTY(Fact*            loiterClockwise         READ    loiterClockwise                                                 CONSTANT)
     Q_PROPERTY(Fact*            useLoiterToAlt          READ    useLoiterToAlt                                                  CONSTANT)
     Q_PROPERTY(Fact*            stopTakingPhotos        READ    stopTakingPhotos                                                CONSTANT)
+    Q_PROPERTY(Fact*            terrainApproach         READ    terrainApproach                                                 CONSTANT)
     Q_PROPERTY(Fact*            stopTakingVideo         READ    stopTakingVideo                                                 CONSTANT)
     Q_PROPERTY(QGeoCoordinate   finalApproachCoordinate READ    finalApproachCoordinate     WRITE setFinalApproachCoordinate    NOTIFY finalApproachCoordinateChanged)
     Q_PROPERTY(QGeoCoordinate   transitionCoordinate    READ    transitionCoordinate        WRITE setTransitionCoordinate       NOTIFY transitionCoordinateChanged)
@@ -43,6 +44,10 @@ public:
     Q_PROPERTY(QGeoCoordinate   landingCoordinate       READ    landingCoordinate           WRITE setLandingCoordinate          NOTIFY landingCoordinateChanged)
     Q_PROPERTY(bool             altitudesAreRelative    READ    altitudesAreRelative        WRITE setAltitudesAreRelative       NOTIFY altitudesAreRelativeChanged)
     Q_PROPERTY(bool             landingCoordSet         READ    landingCoordSet                                                 NOTIFY landingCoordSetChanged)
+    Q_PROPERTY(QGroundControlQmlGlobal::AltMode landingAltitudeMode         READ landingAltitudeMode         WRITE setLandingAltitudeMode NOTIFY landingAltitudeModeChanged)
+    Q_PROPERTY(double           terrainAltitude2                     READ terrainAltitude2                                                    NOTIFY terrainAltitudeChanged2)                      ///< The altitude of terrain at the coordinate position, NaN if not known
+
+
 
     Q_INVOKABLE void setLandingHeadingToTakeoffHeading();
     const Fact* transitionDistance      (void) const { return _transitionDistance(); }
@@ -56,6 +61,8 @@ public:
     const Fact* useLoiterToAlt          (void) const { return _useLoiterToAlt(); }
     const Fact* stopTakingPhotos        (void) const { return _stopTakingPhotos(); }
     const Fact* stopTakingVideo         (void) const { return _stopTakingVideo(); }
+    const Fact* terrainApproach         (void) const { return _terrainApproach(); }
+
 
     Fact* transitionDistance         (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_transitionDistance()); };
     Fact* transitionAlt         (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_transitionAlt()); };
@@ -68,6 +75,7 @@ public:
     Fact* useLoiterToAlt        (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_useLoiterToAlt()); };
     Fact* stopTakingPhotos      (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_stopTakingPhotos()); };
     Fact* stopTakingVideo       (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_stopTakingVideo()); };
+    Fact* terrainApproach       (void) { return const_cast<Fact*>(const_cast<const LandingComplexItem*>(this)->_terrainApproach()); };
 
     bool            altitudesAreRelative    (void) const { return _altitudesAreRelative; }
     bool            landingCoordSet         (void) const { return _landingCoordSet; }
@@ -80,6 +88,8 @@ public:
     void setTransitionCoordinate    (const QGeoCoordinate& coordinate);
     void setFinalApproachCoordinate (const QGeoCoordinate& coordinate);
     void setAltitudesAreRelative    (bool altitudesAreRelative);
+    void setLandingAltitudeMode(QGroundControlQmlGlobal::AltMode LandingAltMode);
+    QGroundControlQmlGlobal::AltMode landingAltitudeMode(void);
 
     // Overrides from ComplexMissionItem
     double  complexDistance     (void) const final;
@@ -95,7 +105,7 @@ public:
     QString             commandDescription          (void) const final { return "Landing Pattern"; }
     QString             commandName                 (void) const final { return "Landing Pattern"; }
     QString             abbreviation                (void) const final { return "L"; }
-    QGeoCoordinate      coordinate                  (void) const final { return _finalApproachCoordinate; }
+    QGeoCoordinate      coordinate                  (void) const final { return _entrycoord; }
     QGeoCoordinate      exitCoordinate              (void) const final { return _landingCoordinate; }
     int                 sequenceNumber              (void) const final { return _sequenceNumber; }
     double              specifiedFlightSpeed        (void) final { return std::numeric_limits<double>::quiet_NaN(); }
@@ -111,8 +121,10 @@ public:
     void                setSequenceNumber           (int sequenceNumber) final;
     double              amslEntryAlt                (void) const final;
     double              amslExitAlt                 (void) const final;
+    double              terrainAltitude2             (void) const { return _terrainAltitude2; }
     double              minAMSLAltitude             (void) const final { return amslExitAlt(); }
     double              maxAMSLAltitude             (void) const final { return amslEntryAlt(); }
+    QGroundControlQmlGlobal::AltMode _landingAltMode = QGroundControlQmlGlobal::AltitudeModeRelative;
 
     static const char* transitionDistanceName;
     static const char* transitionAltName;
@@ -125,19 +137,22 @@ public:
     static const char* useLoiterToAltName;
     static const char* stopTakingPhotosName;
     static const char* stopTakingVideoName;
+    static const char* terrainApproachName;
 
 signals:
+    void terrainAltitudeChanged2         (double terrainAltitude);
     void transitionCoordinateChanged (QGeoCoordinate coordinate);
     void finalApproachCoordinateChanged (QGeoCoordinate coordinate);
     void loiterTangentCoordinateChanged (QGeoCoordinate coordinate);
     void landingCoordinateChanged       (QGeoCoordinate coordinate);
     void landingCoordSetChanged         (bool landingCoordSet);
     void altitudesAreRelativeChanged    (bool altitudesAreRelative);
+    void landingAltitudeModeChanged          (void);
     void _updateFlightPathSegmentsSignal(void);
 
 protected slots:
     virtual void _updateFlightPathSegmentsDontCallDirectly(void) = 0;
-
+    void recalcFlightPath                          (void);
     void _recalcFromHeadingAndDistanceChange        (void);
     void _recalcFromCoordinateChange                (void);
     void _setDirty                                  (void);
@@ -154,13 +169,19 @@ protected:
     virtual const Fact*     _useLoiterToAlt         (void) const = 0;
     virtual const Fact*     _stopTakingPhotos       (void) const = 0;
     virtual const Fact*     _stopTakingVideo        (void) const = 0;
+    virtual const Fact*     _terrainApproach        (void) const = 0;
     virtual void            _calcGlideSlope         (void) = 0;
     virtual MissionItem*    _createLandItem         (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent) = 0;
     double amslTransitionAlt           (void);
+    double amslTerrainAlt              (void);
+    double amslLoiterAlt               (void);
+    double                      _terrainAltitude2            = qQNaN();                          ///< Altitude of terrain at coordinate position, NaN for not known
+
 
     void            _init                   (void);
     QPointF         _rotatePoint            (const QPointF& point, const QPointF& origin, double angle);
     MissionItem*    _createDoLandStartItem  (int seqNum, QObject* parent);
+    MissionItem*    _createTerrainApproachItem(int seqNum, QObject* parent);
     MissionItem*    _createFinalApproachItem(int seqNum, QObject* parent);
     MissionItem*    _createTransitionItem(int seqNum, QObject* parent);
     QJsonObject     _save                   (void);
@@ -174,6 +195,7 @@ protected:
     int             _sequenceNumber             = 0;
     bool            _dirty                      = false;
     QGeoCoordinate  _transitionCoordinate;
+    QGeoCoordinate  _entrycoord;
     QGeoCoordinate  _finalApproachCoordinate;
     QGeoCoordinate  _loiterTangentCoordinate;
     QGeoCoordinate  _landingCoordinate;
@@ -189,17 +211,30 @@ protected:
     static const char* _jsonUseLoiterToAltKey;
     static const char* _jsonStopTakingPhotosKey;
     static const char* _jsonStopTakingVideoKey;
+    static const char* _jsonTerrainApproachKey;
+    static const char* _jsonAltTerFrameKey;
 
     // Only in older file formats
     static const char* _jsonDeprecatedLandingAltitudeRelativeKey;
     static const char* _jsonDeprecatedLoiterAltitudeRelativeKey;
     static const char* _jsonDeprecatedLoiterCoordinateKey;
 
+
 private slots:
+    void _updateTerrainAltitude2 (void);
+    void _terrainDataReceived2   (bool success, QList<double> heights);
+    void _reallyUpdateTerrainAltitude2 (void);
     void    _recalcFromRadiusChange                         (void);
     void    _signalLastSequenceNumberChanged                (void);
     void    _updateFinalApproachCoodinateAltitudeFromFact   (void);
     void    _updateLandingCoodinateAltitudeFromFact     (void);
 
     friend class LandingComplexItemTest;
+
+private:
+
+    QTimer                      _updateTerrainTimer;
+    TerrainAtCoordinateQuery*   _currentTerrainAtCoordinateQuery = nullptr;
+    double _lastLatTerrainQuery = 0;
+    double _lastLonTerrainQuery = 0;
 };

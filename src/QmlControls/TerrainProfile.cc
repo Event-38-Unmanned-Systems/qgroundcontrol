@@ -162,7 +162,7 @@ void TerrainProfile::_addFlightProfileSegment(FlightPathSegment* segment, double
 
     if (segment->segmentType() == FlightPathSegment::SegmentTypeTerrainFrame) {
         double terrainDistance = 0;
-        double distanceToSurface = segment->coord1AMSLAlt() - segment->amslTerrainHeights().first().value<double>();
+        double distanceToSurface = segment->coord2AMSLAlt() - segment->amslTerrainHeights().last().value<double>();
         for (int heightIndex=0; heightIndex<segment->amslTerrainHeights().count(); heightIndex++) {
             // Move along the x axis which is distance
             if (heightIndex == 0) {

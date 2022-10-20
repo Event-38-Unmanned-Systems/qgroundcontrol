@@ -48,21 +48,22 @@ QGCPopupDialog {
             help:       qsTr("Specified altitudes are relative to launch position height.")
             modeValue:  QGroundControl.AltitudeModeRelative
         }
-        ListElement {
+        /*ListElement {
             modeName:   qsTr("AMSL")
             help:       qsTr("Specified altitudes are Above Mean Sea Level.")
             modeValue:  QGroundControl.AltitudeModeAbsolute
+        } */
+        ListElement {
+            modeName:   qsTr("Terrain Frame")
+            help:       qsTr("Specified altitudes are distance above terrain. The actual altitude flown is controlled by the vehicle either from terrain height maps being sent to vehicle or a distance sensor.")
+            modeValue:  QGroundControl.AltitudeModeTerrainFrame
         }
+        /*
         ListElement {
             modeName:   qsTr("Calculated Above Terrain")
             help:       qsTr("Specified altitudes are distance above terrain. Actual altitudes sent to vehicle are calculated from terrain data and sent as AMSL values.")
             modeValue:  QGroundControl.AltitudeModeCalcAboveTerrain
-        }
-        /*ListElement {
-            modeName:   qsTr("Terrain Frame")
-            help:       qsTr("Specified altitudes are distance above terrain. The actual altitude flown is controlled by the vehicle either from terrain height maps being sent to vehicle or a distance sensor.")
-            modeValue:  QGroundControl.AltitudeModeTerrainFrame
-        } */
+        }*/
        /* ListElement {
             modeName:   qsTr("Mixed Modes")
             help:       qsTr("The altitude mode can differ for each individual item.")
