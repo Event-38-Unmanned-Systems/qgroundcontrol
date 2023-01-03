@@ -291,7 +291,6 @@ QString QGCSerialPortInfo::_boardTypeToString(BoardType_t boardType)
     return unknown;
 }
 
-
 QList<QGCSerialPortInfo> QGCSerialPortInfo::availablePorts(void)
 {
     typedef QPair<quint16, quint16> VidPidPair_t;
@@ -300,13 +299,15 @@ QList<QGCSerialPortInfo> QGCSerialPortInfo::availablePorts(void)
     QMap<VidPidPair_t, QStringList> seenSerialNumbers;
 
     for (QSerialPortInfo portInfo: QSerialPortInfo::availablePorts()) {
+
         if (!isSystemPort(&portInfo)) {
-            if (portInfo.hasVendorIdentifier() && portInfo.hasProductIdentifier() && !portInfo.serialNumber().isEmpty() && portInfo.serialNumber() != "0") {
+
+                if (portInfo.hasVendorIdentifier() && portInfo.hasProductIdentifier() && !portInfo.serialNumber().isEmpty() && portInfo.serialNumber() != "0") {
                 VidPidPair_t vidPid(portInfo.vendorIdentifier(), portInfo.productIdentifier());
                 if (seenSerialNumbers.contains(vidPid) && seenSerialNumbers[vidPid].contains(portInfo.serialNumber())) {
                     // Some boards are a composite USB device, with the first port being mavlink and the second something else. We only expose to first mavlink port.
-                    qCDebug(QGCSerialPortInfoLog) << "Skipping secondary port on same device" << portInfo.portName() << portInfo.vendorIdentifier() << portInfo.productIdentifier() << portInfo.serialNumber();
-                    continue;
+                    //qCDebug(QGCSerialPortInfoLog) << "Taking secondary port on same device" << portInfo.portName() << portInfo.vendorIdentifier() << portInfo.productIdentifier() << portInfo.serialNumber();
+                    seenSerialNumbers[vidPid].clear();
                 }
                 seenSerialNumbers[vidPid].append(portInfo.serialNumber());
             }
