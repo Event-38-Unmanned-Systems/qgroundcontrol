@@ -23,7 +23,7 @@
     "shortDesc": "Video RTSP Url",
     "longDesc":  "RTSP url address and port to bind to for video stream. Example: rtsp://192.168.42.1:554/live",
     "type":             "string",
-    "default":     ""
+    "default":     "rtsp://192.168.168.179:554/live0"
 },
 {
     "name":             "tcpUrl",

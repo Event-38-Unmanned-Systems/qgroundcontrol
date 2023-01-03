@@ -2435,6 +2435,8 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
                     static_cast<float>(pitch),
                     static_cast<float>(yaw),
                     static_cast<float>(thrust),
+                    65535, //no input for gimbal roll
+                    65535, //no input for gimbal pitch
                     0);
     }
 }
@@ -2675,34 +2677,9 @@ void Vehicle::guidedModeChangeAltitude(double altitudeChange, bool pauseVehicle)
 
 void Vehicle::guidedModeOrbit(const QGeoCoordinate& centerCoord, double radius, double amslAltitude)
 {
-    if (!orbitModeSupported()) {
-        qgcApp()->showAppMessage(QStringLiteral("Orbit mode not supported by Vehicle."));
-        return;
-    }
-    if (capabilityBits() & MAV_PROTOCOL_CAPABILITY_COMMAND_INT) {
-        sendMavCommandInt(
-                    defaultComponentId(),
-                    MAV_CMD_DO_ORBIT,
-                    MAV_FRAME_GLOBAL,
-                    true,                           // show error if fails
-                    static_cast<float>(radius),
-                    static_cast<float>(qQNaN()),    // Use default velocity
-                    0,                              // Vehicle points to center
-                    static_cast<float>(qQNaN()),    // reserved
-                    centerCoord.latitude(), centerCoord.longitude(), static_cast<float>(amslAltitude));
-    } else {
-        sendMavCommand(
-                    defaultComponentId(),
-                    MAV_CMD_DO_ORBIT,
-                    true,                           // show error if fails
-                    static_cast<float>(radius),
-                    static_cast<float>(qQNaN()),    // Use default velocity
-                    0,                              // Vehicle points to center
-                    static_cast<float>(qQNaN()),    // reserved
-                    static_cast<float>(centerCoord.latitude()),
-                    static_cast<float>(centerCoord.longitude()),
-                    static_cast<float>(amslAltitude));
-    }
+    if (parameterManager()->parameterExists(FactSystem::defaultComponentId, QStringLiteral("WP_LOITER_RAD"))) {
+                parameterManager()->getParameter(FactSystem::defaultComponentId, "WP_LOITER_RAD")->setRawValue(radius);
+            }
 }
 
 void Vehicle::guidedModeROI(const QGeoCoordinate& centerCoord)
@@ -2745,7 +2722,7 @@ void Vehicle::_terrainDataReceived(bool success, QList<double> heights){
 
     //qDebug() << "Gimbal:" << pitch << yaw;
     sendMavCommand(
-                190,
+                MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_SET_ROI,
                 false,                               // show errors
                 0,           // Pitch 0 - 90
@@ -2755,7 +2732,7 @@ void Vehicle::_terrainDataReceived(bool success, QList<double> heights){
                 gimbalCoordinate.latitude(),                                   // Latitude (not used)
                 gimbalCoordinate.longitude(),                                   // Longitude (not used)
                 _terrainAltitude,   // MAVLink Roll,Pitch,Yaw
-                true);
+                false);
 
     qDebug() << "11 PTC On lat= " << (int)(gimbalCoordinate.latitude() * 10000000.0) << " lon = " << (int)(gimbalCoordinate.longitude() * 10000000.0 )<< " alt = " << _terrainAltitude;
 
@@ -2967,7 +2944,7 @@ bool Vehicle::_sendMavCommandShouldRetry(MAV_CMD command)
 void Vehicle::_sendMavCommandWorker(bool commandInt, bool showError, MavCmdResultHandler resultHandler, void* resultHandlerData, int targetCompId, MAV_CMD command, MAV_FRAME frame, float param1, float param2, float param3, float param4, float param5, float param6, float param7,bool sendGimbal)
 {
     if (sendGimbal){
-       _tempId = 255;
+       _tempId = _id;
     }
     else{_tempId = _id;}
 
@@ -3031,7 +3008,7 @@ void Vehicle::_sendMavCommandFromList(int index, bool sendGimbal)
 
     //hack until gimbal is fixed by nextvision
     if (sendGimbal){
-       _tempId = 255;
+       _tempId = _id;
     }
     else {_tempId = _id;}
 
@@ -3403,7 +3380,7 @@ void Vehicle::preflightCalibration(void)
 void Vehicle::preflightServoTest(void)
 {
         if (!_armed){
-        sendJoystickDataThreadSafe(1,-1,0,0,0);
+        sendJoystickDataThreadSafe(1,-1,0,0,65535,65535,0);
         }
 }
 
@@ -4004,7 +3981,7 @@ void Vehicle::gimbalControlValue(double pitch, double yaw, double zoom)
 {
     //qDebug() << "Gimbal:" << pitch << yaw;
     sendMavCommand(
-                190,
+                MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
                 false,                               // show errors
                 6,           // Pitch 0 - 90
@@ -4020,7 +3997,7 @@ void Vehicle::gimbalControlValue(double pitch, double yaw, double zoom)
 void Vehicle::nighthawksetMode(double mode)
 {
     sendMavCommand(
-                190,
+                MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
                 false,                               // show errors
                 0,
@@ -4030,14 +4007,14 @@ void Vehicle::nighthawksetMode(double mode)
                 0,
                 0,
                 0,   // MAVLink Roll,Pitch,Yaw
-                true);
+                false);
 }
 
 void Vehicle::nighthawkStreamSwitch(double stream)
 {
     //qDebug() << "Gimbal:" << pitch << yaw;
     sendMavCommand(
-                190,
+                MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
                 false,                               // show errors
                 3,           // Pitch 0 - 90
@@ -4047,13 +4024,13 @@ void Vehicle::nighthawkStreamSwitch(double stream)
                 0,                                   // Latitude (not used)
                 0,                                   // Longitude (not used)
                 0,   // MAVLink Roll,Pitch,Yaw
-                true);
+                false);
 }
 void Vehicle::nightHawkRecordChange(double state)
 {
     //qDebug() << "Gimbal:" << pitch << yaw;
     sendMavCommand(
-                190,
+                MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
                 false,                               // show errors
                 2,           // nighthawk set record state
@@ -4063,13 +4040,13 @@ void Vehicle::nightHawkRecordChange(double state)
                 0,
                 0,
                 0,
-                true);
+                false);
 }
 
 void Vehicle::nightHawkStillCapture()
 {
     sendMavCommand(
-                190,
+                MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
                 false,                               // show errors
                 1,           // Pitch 0 - 90
@@ -4079,7 +4056,7 @@ void Vehicle::nightHawkStillCapture()
                 0,                                   // Latitude (not used)
                 0,                                   // Longitude (not used)
                 0,   // MAVLink Roll,Pitch,Yaw
-                true);
+                false);
 }
 
 void Vehicle::gimbalPitchStep(int direction)
@@ -4202,7 +4179,7 @@ void Vehicle::clearAllParamMapRC(void)
     }
 }
 
-void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, float thrust, quint16 buttons)
+void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, float thrust, float gimbalRoll ,float gimbalPitch, quint16 buttons)
 {
     SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
     if (!sharedLink) {
@@ -4216,29 +4193,25 @@ void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, flo
 
     mavlink_message_t message;
 
+    if (abs(gimbalRoll) < .35){
+        gimbalRoll = 0;
+    }
+    if (abs(gimbalPitch) < .35){
+        gimbalPitch = 0;
+    }
     // Incoming values are in the range -1:1
     float axesScaling =         1.0 * 1000.0;
     float newRollCommand =      roll * axesScaling;
     float newPitchCommand  =    pitch * axesScaling;    // Joystick data is reverse of mavlink values
     float newYawCommand    =    yaw * axesScaling;
-    //float newThrustCommand =    thrust * axesScaling;
-
- /*   mavlink_msg_manual_control_pack_chan(
-                static_cast<uint8_t>(_mavlink->getSystemId()),
-                static_cast<uint8_t>(_mavlink->getComponentId()),
-                sharedLink->mavlinkChannel(),
-                &message,
-                static_cast<uint8_t>(_id),
-                static_cast<int16_t>(newPitchCommand),
-                static_cast<int16_t>(newRollCommand),
-                static_cast<int16_t>(newThrustCommand),
-                static_cast<int16_t>(newYawCommand),
-                buttons,
-                0, 0, 0, 0);
-*/
+    float newThrustCommand =    thrust * axesScaling;
+    float newgimbalRoll  =  gimbalRoll * axesScaling;
+    float newgimbalPitch = gimbalPitch * axesScaling;
 
 
-                        //qDebug() << newRollCommand << newPitchCommand << newYawCommand << newThrustCommand;
+                        qDebug() << "jstick" << roll << pitch << yaw << thrust << gimbalRoll << gimbalPitch;
+
+                        qDebug() << "convrt" << newRollCommand << newPitchCommand << newYawCommand << newThrustCommand << newgimbalRoll << gimbalPitch;
 
                         // Send the MANUAL_COMMAND message
                         mavlink_msg_manual_control_pack_chan(_mavlink->getSystemId(),
@@ -4246,20 +4219,16 @@ void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, flo
                                                              sharedLink->mavlinkChannel(),
                                                              &message,
                                                              static_cast<uint8_t>(_id),
-                                                             newPitchCommand, newRollCommand, 0, 0, buttons,0, 0, 0, 0);
+                                                             newPitchCommand, newRollCommand, newThrustCommand, newYawCommand, buttons,0, 0, 0, 0);
 
-                        sendMessageOnLinkThreadSafe(sharedLink.get(), message);
+                   sendMessageOnLinkThreadSafe(sharedLink.get(), message);
 
-
-                   float newgimbalPitch = thrust*1000 + 1000;
-
-                   newYawCommand  =  1500 - (yaw * axesScaling)/2;
 
 
                     mavlink_msg_rc_channels_override_pack_chan(_mavlink->getSystemId(),
                                                                    _mavlink->getComponentId(),
                                                                    sharedLink->mavlinkChannel(),
-                                                                   &message,static_cast<uint8_t>(_id),_mavlink->getComponentId(),65535,65535,65535,65535,65535,65535,newYawCommand,newgimbalPitch,65535,65535,65535,65535,65535,65535,65535,65535,65535,65535);
+                                                                   &message,static_cast<uint8_t>(_id),_mavlink->getComponentId(),65535,65535,65535,65535,65535,65535,newgimbalRoll,newgimbalPitch,65535,65535,65535,65535,65535,65535,65535,65535,65535,65535);
 
                         sendMessageOnLinkThreadSafe(sharedLink.get(), message);
 

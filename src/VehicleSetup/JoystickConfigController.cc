@@ -100,13 +100,17 @@ const JoystickConfigController::stateMachineEntry* JoystickConfigController::_ge
     static const char* msgBegin =               "Allow all sticks to center as shown in diagram.\nClick Next to continue";
     static const char* msgThrottleUp =          "Move the Throttle stick all the way up and hold it there...";
     static const char* msgThrottleDown =        "Move the Throttle stick all the way down and hold it there...";
+    static const char* msgGimbalUp =            "Move the Gimbal stick all the way up and hold it there...";
+    static const char* msgGimbalDown =          "Move the Gimbal stick all the way down and hold it there...";
+    static const char* msgGimbalCenter =        "Allow the Gimbal stick to move back to center...";
+    static const char* msgGimbalLeft =          "Move the Gimbal stick all the way Left and hold it there...";
+    static const char* msgGimbalRight =         "Move the Gimbal stick all the way Right and hold it there...";
     static const char* msgYawLeft =             "Move the Yaw stick all the way to the left and hold it there...";
     static const char* msgYawRight =            "Move the Yaw stick all the way to the right and hold it there...";
     static const char* msgRollLeft =            "Move the Roll stick all the way to the left and hold it there...";
     static const char* msgRollRight =           "Move the Roll stick all the way to the right and hold it there...";
     static const char* msgPitchDown =           "Move the Pitch stick all the way down and hold it there...";
     static const char* msgPitchUp =             "Move the Pitch stick all the way up and hold it there...";
-    static const char* msgPitchCenter =         "Allow the Pitch stick to move back to center...";
     static const char* msgComplete =            "All settings have been captured.\nClick Next to enable the joystick.";
 
     static const stateMachineEntry rgStateMachine[] = {
@@ -120,7 +124,11 @@ const JoystickConfigController::stateMachineEntry* JoystickConfigController::_ge
         { Joystick::rollFunction,           msgRollLeft,        _sticksRollLeft,        &JoystickConfigController::_inputStickMin,          nullptr,                                         nullptr, 2 },
         { Joystick::pitchFunction,          msgPitchUp,         _sticksPitchUp,         &JoystickConfigController::_inputStickDetect,       nullptr,                                         nullptr, 3 },
         { Joystick::pitchFunction,          msgPitchDown,       _sticksPitchDown,       &JoystickConfigController::_inputStickMin,          nullptr,                                         nullptr, 3 },
-        { Joystick::pitchFunction,          msgPitchCenter,     _sticksCentered,        &JoystickConfigController::_inputCenterWait,        nullptr,                                         nullptr, 3 },
+        { Joystick::gimbalPitchFunction,    msgGimbalUp,      _sticksGimbalUp,          &JoystickConfigController::_inputStickDetect,       nullptr,                                         nullptr, 4 },
+        { Joystick::gimbalPitchFunction,    msgGimbalDown,    _sticksGimbalDown,        &JoystickConfigController::_inputStickMin,          nullptr,                                         nullptr, 4 },
+        { Joystick::gimbalRollFunction,     msgGimbalRight,    _sticksGimbalRight,      &JoystickConfigController::_inputStickDetect,       nullptr,                                         nullptr, 5 },
+        { Joystick::gimbalRollFunction,     msgGimbalLeft,      _sticksGimbalLeft,      &JoystickConfigController::_inputStickMin,          nullptr,                                         nullptr, 5 },
+        { Joystick::gimbalRollFunction,     msgGimbalCenter,     _sticksCentered,       &JoystickConfigController::_inputCenterWait,        nullptr,                                         nullptr, 5 },
         { Joystick::maxFunction,            msgComplete,        _sticksCentered,        nullptr,                                            &JoystickConfigController::_writeCalibration,    nullptr, -1 },
     };
 
@@ -494,7 +502,7 @@ void JoystickConfigController::_validateCalibration()
             case Joystick::rollFunction:
             case Joystick::pitchFunction:
             case Joystick::gimbalPitchFunction:
-            case Joystick::gimbalYawFunction:
+            case Joystick::gimbalRollFunction:
                 // Make sure trim is within min/max
                 if (info->axisTrim < info->axisMin) {
                     info->axisTrim = info->axisMin;

@@ -180,11 +180,11 @@ Item {
 
             sourceItem: Rectangle {
                 id:         dragHandle
-                width:      ScreenTools.defaultFontPixelHeight * 1.5
+                width:      (ScreenTools.defaultFontPixelHeight * 1.5) / 2
                 height:     width
                 radius:     width / 2
                 color:      "white"
-                opacity:    .90
+                opacity:    .70
             }
         }
     }
@@ -205,7 +205,9 @@ Item {
         MissionItemIndicatorDrag {
             mapControl: _root.mapControl
 
-            onItemCoordinateChanged: mapCircle.radius.rawValue = mapCircle.center.distanceTo(itemCoordinate)
+            onItemCoordinateChanged: {   if (mapCircle.center.distanceTo(itemCoordinate) > 500){mapCircle.radius.rawValue = 500}
+                                         else if (mapCircle.center.distanceTo(itemCoordinate) < 70){ mapCircle.radius.rawValue = 70}
+                   else mapCircle.radius.rawValue = mapCircle.center.distanceTo(itemCoordinate)  }
         }
     }
 
@@ -222,7 +224,7 @@ Item {
             property real circleRadius:         _radius
 
             function calcRadiusDragCoord() {
-                radiusDragCoord = mapCircle.center.atDistanceAndAzimuth(circleRadius, 90)
+                radiusDragCoord = mapCircle.center.atDistanceAndAzimuth(circleRadius, 270)
             }
 
             onCircleCenterCoordChanged: calcRadiusDragCoord()

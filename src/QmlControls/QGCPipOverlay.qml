@@ -60,17 +60,16 @@ Item {
     }
 
     function _initForItems() {
-        var item1IsFull = QGroundControl.loadBoolGlobalSetting(item1IsFullSettingsKey, true)
+        var item1IsFull = true
         if (item1 && item2) {
             item1.pipState.state = item1IsFull ? item1.pipState.fullState : item1.pipState.pipState
             item2.pipState.state = item1IsFull ? item2.pipState.pipState : item2.pipState.fullState
             _fullItem = item1IsFull ? item1 : item2
             _pipOrWindowItem = item1IsFull ? item2 : item1
-        } else {
-            item1.pipState.state = item1.pipState.fullState
-            _fullItem = item1
-            _pipOrWindowItem = null
+            console.log("bothitems")
         }
+        console.log("inside")
+        QGroundControl.saveBoolGlobalSetting(item1IsFullSettingsKey, item1IsFull)
         _setPipIsExpanded(QGroundControl.loadBoolGlobalSetting(_pipExpandedSettingsKey, true))
     }
 
@@ -117,7 +116,7 @@ Item {
         anchors.fill:   parent
         enabled:        _isExpanded
         hoverEnabled:   true
-        onClicked:      _swapPip()
+        onClicked:      { if(QGroundControl.videoManager.streaming){ _swapPip()}}
     }
 
     // MouseArea to drag in order to resize the PiP area
@@ -164,7 +163,7 @@ Item {
         mipmap: true
         anchors.right:  parent.right
         anchors.top:    parent.top
-        visible:        _isExpanded && (ScreenTools.isMobile || pipMouseArea.containsMouse)
+        visible:        _isExpanded && (ScreenTools.isMobile || pipMouseArea.containsMouse) && QGroundControl.videoManager.streaming
         height:         ScreenTools.defaultFontPixelHeight * 2.5
         width:          ScreenTools.defaultFontPixelHeight * 2.5
         sourceSize.height:  height
@@ -214,7 +213,7 @@ Item {
         fillMode:       Image.PreserveAspectFit
         anchors.left:   parent.left
         anchors.bottom: parent.bottom
-        visible:        _isExpanded && (ScreenTools.isMobile || pipMouseArea.containsMouse)
+        visible:        _isExpanded && (ScreenTools.isMobile || pipMouseArea.containsMouse) && QGroundControl.videoManager.streaming
         height:         ScreenTools.defaultFontPixelHeight * 2.5
         width:          ScreenTools.defaultFontPixelHeight * 2.5
         sourceSize.height:  height
@@ -231,7 +230,7 @@ Item {
         height:                 ScreenTools.defaultFontPixelHeight * 2
         width:                  ScreenTools.defaultFontPixelHeight * 2
         radius:                 ScreenTools.defaultFontPixelHeight / 3
-        visible:                !_isExpanded
+        visible:                !_isExpanded && QGroundControl.videoManager.streaming
         color:                  _fullItem.pipState.isDark ? Qt.rgba(0,0,0,0.75) : Qt.rgba(0,0,0,0.5)
         Image {
             width:              parent.width  * 0.75

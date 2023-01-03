@@ -77,7 +77,7 @@ public:
         yawFunction,
         throttleFunction,
         gimbalPitchFunction,
-        gimbalYawFunction,
+        gimbalRollFunction,
         maxFunction
     } AxisFunction_t;
 
@@ -239,16 +239,19 @@ protected:
 
     void    _pitchStep              (double direction);
     void    _yawStep                (double direction);
+    void _nightHawkstreamManualHoldSwitch ();
     void    _nightHawkstreamSwitch  ();
     void    _nightHawksetMode  (double mode);
     void    _nightHawkStillCapture  ();
-    void    _nightHawkRecordChange  (double state);
+    void    _nightHawkRecordChange  ();
     void    _nightHawkZoom          (double state);
 
     double  _localYaw       = 0.0;
     double  _localPitch     = 0.0;
     double  _localZoom      = 0.0;
     double _lastknownStream = 1; //camera starts in VIS 0 = VIS 1 = IR
+    double _lastRecordingState = 1; //camera starts not recording stop = 0 start = 1
+    double _lastknownmode = 2; //camera starts in obs 3 = obs 2 = holdcoord
 
 private:
     virtual bool _open      ()          = 0;
@@ -357,10 +360,9 @@ private:
     static const char* _buttonActionNighthawkObservation;
     static const char* _buttonActionNighthawk2dscan;
     static const char* _buttonActionNighthawknadirscan;
+    static const char* _buttonActionNighthawkHoldRelease;
 
-
-    static const char* _buttonActionNighthawkRecordStart;
-    static const char* _buttonActionNighthawkRecordStop;
+    static const char* _buttonActionNighthawkRecordStartStop;
     static const char* _buttonActionNighthawkstillcapture;
     static const char* _buttonActionNighthawkZoomIn;
     static const char* _buttonActionNighthawkZoomOut;

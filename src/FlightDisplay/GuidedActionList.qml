@@ -58,6 +58,12 @@ Rectangle {
             visible:    guidedController.showChangeAlt
         },
         {
+            title:      guidedController.changeRadiusTitle,
+            text:       guidedController.changeRadiusMessage,
+            action:     guidedController.actionOrbit,
+            visible:    guidedController.showChangeRadius
+        },
+        {
             title:      guidedController.landAbortTitle,
             text:       guidedController.landAbortMessage,
             action:     guidedController.actionLandAbort,

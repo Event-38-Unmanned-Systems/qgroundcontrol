@@ -223,6 +223,10 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
             // MAVLink Status
             uint8_t lastSeq = lastIndex[_message.sysid][_message.compid];
             uint8_t expectedSeq = lastSeq + 1;
+            uint64_t totalSent = totalReceiveCounter[mavlinkChannel] + totalLossCounter[mavlinkChannel];
+            float receiveLossPercent;
+
+            if(_message.compid != MAV_COMP_ID_GIMBAL){
             // Increase receive counter
             totalReceiveCounter[mavlinkChannel]++;
             // Determine what the next expected sequence number is, accounting for
@@ -251,14 +255,15 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
             // And update the last sequence number for this system/component pair
             lastIndex[_message.sysid][_message.compid] = _message.seq;;
             // Calculate new loss ratio
-            uint64_t totalSent = totalReceiveCounter[mavlinkChannel] + totalLossCounter[mavlinkChannel];
-            float receiveLossPercent = static_cast<float>(static_cast<double>(totalLossCounter[mavlinkChannel]) / static_cast<double>(totalSent));
+            totalSent = totalReceiveCounter[mavlinkChannel] + totalLossCounter[mavlinkChannel];
+            receiveLossPercent = static_cast<float>(static_cast<double>(totalLossCounter[mavlinkChannel]) / static_cast<double>(totalSent));
             receiveLossPercent *= 100.0f;
             receiveLossPercent = (receiveLossPercent * 0.5f) + (runningLossPercent[mavlinkChannel] * 0.5f);
             runningLossPercent[mavlinkChannel] = receiveLossPercent;
-
-            //qDebug() << foo << _message.seq << expectedSeq << lastSeq << totalLossCounter[mavlinkChannel] << totalReceiveCounter[mavlinkChannel] << totalSentCounter[mavlinkChannel] << "(" << _message.sysid << _message.compid << ")";
-
+            if (_message.compid == MAV_COMP_ID_GIMBAL){
+            //qDebug() << foo << _message.seq << expectedSeq << lastSeq << totalLossCounter[mavlinkChannel] << totalReceiveCounter[mavlinkChannel] << "(" << _message.sysid << _message.compid << ")";
+            }
+            }
             //-----------------------------------------------------------------
             // MAVLink forwarding
             bool forwardingEnabled = _app->toolbox()->settingsManager()->appSettings()->forwardMavlink()->rawValue().toBool();

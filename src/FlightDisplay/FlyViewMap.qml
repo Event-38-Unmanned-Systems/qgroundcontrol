@@ -358,6 +358,19 @@ FlightMap {
         }
     }
 
+    MapQuickItem {
+        id:             lastCoordinate2
+        visible:        false
+        z:              QGroundControl.zOrderMapItems
+        anchorPoint.x:  sourceItem.anchorPointX
+        anchorPoint.y:  sourceItem.anchorPointY
+        sourceItem: MissionItemIndexLabel {
+            checked:    true
+            index:      -1
+            label:      qsTr("Go here", "Go to location waypoint")
+        }
+    }
+
     // GoTo Location visuals
     MapQuickItem {
         id:             gotoLocationItem
@@ -403,6 +416,7 @@ FlightMap {
         }
 
         function actionConfirmed() {
+            lastCoordinate2.coordinate = gotoLocationItem.coordinate
             // We leave the indicator visible. The handling for onInGuidedModeChanged will hide it.
         }
 
@@ -448,23 +462,32 @@ FlightMap {
         mapControl:     parent
         mapCircle:      _mapCircle
         visible:        false
-
+        centerDragHandleVisible: false
         property alias center:              _mapCircle.center
         property alias clockwiseRotation:   _mapCircle.clockwiseRotation
-        readonly property real defaultRadius: 30
+        readonly property real defaultRadius: 100
+        property alias radius:            _mapCircle.radius
 
         Connections {
             target: QGroundControl.multiVehicleManager
             function onActiveVehicleChanged(activeVehicle) {
                 if (!activeVehicle) {
-                    orbitMapCircle.visible = false
+                    //orbitMapCircle.visible = false
                 }
             }
         }
 
         function show(coord) {
             _mapCircle.radius.rawValue = defaultRadius
-            orbitMapCircle.center = coord
+            gotoLocationItem.show(lastCoordinate2.coordinate)
+            orbitMapCircle.center = gotoLocationItem.coordinate
+            orbitMapCircle.visible = true
+        }
+
+        function showCurrent(){
+            _mapCircle.radius.rawValue = defaultRadius
+            gotoLocationItem.show(lastCoordinate2.coordinate)
+            orbitMapCircle.center = gotoLocationItem.coordinate
             orbitMapCircle.visible = true
         }
 
@@ -473,15 +496,14 @@ FlightMap {
         }
 
         function actionConfirmed() {
-            // Live orbit status is handled by telemetry so we hide here and telemetry will show again.
-            hide()
+           orbitMapCircle.visible = false
         }
 
         function actionCancelled() {
             hide()
         }
 
-        function radius() {
+        function radius2() {
             return _mapCircle.radius.rawValue
         }
 
@@ -490,7 +512,7 @@ FlightMap {
         QGCMapCircle {
             id:                 _mapCircle
             interactive:        true
-            radius.rawValue:    30
+            radius.rawValue:    100
             showRotation:       true
             clockwiseRotation:  true
         }
@@ -578,7 +600,6 @@ FlightMap {
                 visible:        globals.guidedControllerFlyView.showOrbit
 
                 onTriggered: {
-                    orbitMapCircle.show(clickMenu.coord)
                     globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionOrbit, clickMenu.coord, orbitMapCircle)
                 }
             }
@@ -596,7 +617,8 @@ FlightMap {
 
         onClicked: {
             if ((globals.guidedControllerFlyView.showGotoLocation || globals.guidedControllerFlyView.showOrbit || globals.guidedControllerFlyView.showROI)) {
-                orbitMapCircle.hide()
+
+
                 //gotoLocationItem.hide()
                 var clickCoord = _root.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)
                 clickMenu.coord = clickCoord

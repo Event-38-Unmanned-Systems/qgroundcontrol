@@ -16,7 +16,7 @@ import QGroundControl.ScreenTools   1.0
 
 Item {
     id:         _root
-    visible:    QGroundControl.videoManager.hasVideo
+    visible:    QGroundControl.videoManager.streaming
 
     property Item pipState: videoPipState
     QGCPipState {
@@ -54,7 +54,7 @@ Item {
         id:             videoStreaming
         anchors.fill:   parent
         useSmallFont:   _root.pipState.state !== _root.pipState.fullState
-        visible:        QGroundControl.videoManager.isGStreamer
+        visible:        QGroundControl.videoManager.streaming
     }
     //-- UVC Video (USB Camera or Video Device)
     Loader {

@@ -72,6 +72,9 @@ public:
     bool pitchAxisMapped                    () { return _rgFunctionAxisMapping[Joystick::pitchFunction]         != _axisNoAxis; }
     bool yawAxisMapped                      () { return _rgFunctionAxisMapping[Joystick::yawFunction]           != _axisNoAxis; }
     bool throttleAxisMapped                 () { return _rgFunctionAxisMapping[Joystick::throttleFunction]      != _axisNoAxis; }
+    bool gimbalPitchAxisMapped              () { return _rgFunctionAxisMapping[Joystick::gimbalPitchFunction]        != _axisNoAxis; }
+    bool gimbalRollAxisMapped               () { return _rgFunctionAxisMapping[Joystick::gimbalRollFunction]        != _axisNoAxis; }
+
 
     bool rollAxisReversed                   ();
     bool pitchAxisReversed                  ();
@@ -205,6 +208,10 @@ private:
     stateStickPositions _sticksCentered;
     stateStickPositions _sticksThrottleUp;
     stateStickPositions _sticksThrottleDown;
+    stateStickPositions _sticksGimbalUp;
+    stateStickPositions _sticksGimbalDown;
+    stateStickPositions _sticksGimbalLeft;
+    stateStickPositions _sticksGimbalRight;
     stateStickPositions _sticksYawLeft;
     stateStickPositions _sticksYawRight;
     stateStickPositions _sticksRollLeft;

@@ -47,6 +47,7 @@ Item {
     readonly property string pauseTitle:                    qsTr("Pause")
     readonly property string mvPauseTitle:                  qsTr("Pause (MV)")
     readonly property string changeAltTitle:                qsTr("Change Altitude")
+    readonly property string changeRadiusTitle:             qsTr("Change Radius")
     readonly property string orbitTitle:                    qsTr("Orbit")
     readonly property string landAbortTitle:                qsTr("Land Abort")
     readonly property string setWaypointTitle:              qsTr("Set Waypoint")
@@ -67,6 +68,7 @@ Item {
     readonly property string landMessage:                       qsTr("Land vehicle.")
     readonly property string rtlMessage:                        qsTr("Return to the launch position of the vehicle.")
     readonly property string changeAltMessage:                  qsTr("Change the altitude of the vehicle up or down.")
+    readonly property string changeRadiusMessage:               qsTr("Adjust the loiter radius of the vehicle.")
     readonly property string gotoMessage:                       qsTr("Move the vehicle to the specified location.")
              property string setWaypointMessage:                qsTr("Adjust current waypoint to %1.").arg(_actionData)
     readonly property string orbitMessage:                      qsTr("Orbit the vehicle around the specified location.")
@@ -121,6 +123,7 @@ Item {
     property bool showContinueMission:  _guidedActionsEnabled && _missionAvailable && !_missionActive && _vehicleArmed && _vehicleFlying && (_currentMissionIndex < _missionItemCount - 1)
     property bool showPause:            _guidedActionsEnabled && _vehicleArmed && _activeVehicle.pauseVehicleSupported && _vehicleFlying && !_vehiclePaused && !_fixedWingOnApproach && !_vehicleQuadplaneMode && _aboveAlt
     property bool showChangeAlt:        _guidedActionsEnabled && _vehicleFlying && _activeVehicle.guidedModeSupported && _vehicleArmed && !_missionActive && !_vehicleQuadplaneMode && _aboveAlt
+    property bool showChangeRadius:     _guidedActionsEnabled && _vehicleFlying && _activeVehicle.guidedModeSupported && _vehicleArmed && !_missionActive && !_vehicleQuadplaneMode && _aboveAlt && _flightMode === "Guided"
     property bool showOrbit:            _guidedActionsEnabled && _vehicleFlying && __orbitSupported && !_missionActive
     property bool showROI:              _guidedActionsEnabled && _vehicleFlying && __roiSupported && !_missionActive
     property bool showLandAbort:        _guidedActionsEnabled && _vehicleFlying && _fixedWingOnApproach
@@ -351,6 +354,9 @@ Item {
         confirmDialog.hideTrigger = true
         }
         confirmDialog.mapIndicator = mapIndicator
+        if (actionCode === actionOrbit){
+            confirmDialog.mapIndicator = orbitMapCircle
+        }
         confirmDialog.optionText = ""
         _actionData = actionData
         switch (actionCode) {
@@ -443,11 +449,11 @@ Item {
             confirmDialog.message = setWaypointMessage
             break;
         case actionOrbit:
-            confirmDialog.title = orbitTitle
-            confirmDialog.message = orbitMessage
-            confirmDialog.hideTrigger = Qt.binding(function() { return !showOrbit })
-            altitudeSlider.reset()
-            altitudeSlider.visible = true
+            confirmDialog.title = changeRadiusTitle
+            confirmDialog.message = changeRadiusMessage
+            confirmDialog.hideTrigger = Qt.binding(function() { return !showChangeRadius})
+            orbitMapCircle.showCurrent()
+            //orbitMapCircle.visible = true
             break;
         case actionLandAbort:
             confirmDialog.title = landAbortTitle
@@ -546,7 +552,8 @@ Item {
             _activeVehicle.setCurrentMissionSequence(actionData)
             break
         case actionOrbit:
-            _activeVehicle.guidedModeOrbit(orbitMapCircle.center, orbitMapCircle.radius() * (orbitMapCircle.clockwiseRotation ? 1 : -1), _activeVehicle.altitudeAMSL.rawValue + actionAltitudeChange)
+            _activeVehicle.guidedModeOrbit(orbitMapCircle.center, orbitMapCircle.radius2() * (orbitMapCircle.clockwiseRotation ? 1 : -1), _activeVehicle.altitudeAMSL.rawValue + actionAltitudeChange)
+            orbitMapCircle.hide()
             break
         case actionLandAbort:
             _activeVehicle.abortLanding(50)     // hardcoded value for climbOutAltitude that is currently ignored
