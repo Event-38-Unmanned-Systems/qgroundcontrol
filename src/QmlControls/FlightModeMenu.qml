@@ -46,10 +46,17 @@ QGCLabel {
             }
             flightModesMenuItems.length = 0
             // Add new items
+            var menuItem
             for (i = 0; i < currentVehicle.flightModes.length; i++) {
-                var menuItem = flightModeMenuItemComponent.createObject(null, { "text": currentVehicle.flightModes[i] })
+                if (currentVehicle.joystickEnabled || QGroundControl.settingsManager.appSettings.virtualJoystick.rawValue){
+                 menuItem = flightModeMenuItemComponent.createObject(null, { "text": currentVehicle.flightModes[i] })
+                    flightModesMenuItems.push(menuItem)
+                    flightModesMenu.insertItem(i, menuItem)
+                }
+                else if(currentVehicle.flightModes[i] !== "Q Hover" && currentVehicle.flightModes[i] !== "Q Land" && currentVehicle.flightModes[i] !== "Q Loiter" && currentVehicle.flightModes[i] !== "FBW B") { menuItem = flightModeMenuItemComponent.createObject(null, { "text": currentVehicle.flightModes[i] })
                 flightModesMenuItems.push(menuItem)
                 flightModesMenu.insertItem(i, menuItem)
+                }
             }
         }
     }
@@ -57,8 +64,16 @@ QGCLabel {
     Component.onCompleted: _root.updateFlightModesMenu()
 
     Connections {
+        target: globals.activeVehicle
+        onJoystickEnabledChanged: {
+            _root.updateFlightModesMenu()
+        }
+    }
+
+    Connections {
         target:                 QGroundControl.multiVehicleManager
         function onActiveVehicleChanged(activeVehicle) { _root.updateFlightModesMenu() }
+
     }
 
     MouseArea {
