@@ -66,9 +66,7 @@ Item {
             item2.pipState.state = item1IsFull ? item2.pipState.pipState : item2.pipState.fullState
             _fullItem = item1IsFull ? item1 : item2
             _pipOrWindowItem = item1IsFull ? item2 : item1
-            console.log("bothitems")
         }
-        console.log("inside")
         QGroundControl.saveBoolGlobalSetting(item1IsFullSettingsKey, item1IsFull)
         _setPipIsExpanded(QGroundControl.loadBoolGlobalSetting(_pipExpandedSettingsKey, true))
     }

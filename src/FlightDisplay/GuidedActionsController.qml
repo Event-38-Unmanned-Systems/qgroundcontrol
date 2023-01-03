@@ -453,7 +453,7 @@ Item {
             confirmDialog.message = changeRadiusMessage
             confirmDialog.hideTrigger = Qt.binding(function() { return !showChangeRadius})
             orbitMapCircle.showCurrent()
-            //orbitMapCircle.visible = true
+            orbitMapCircle.visible = true
             break;
         case actionLandAbort:
             confirmDialog.title = landAbortTitle
