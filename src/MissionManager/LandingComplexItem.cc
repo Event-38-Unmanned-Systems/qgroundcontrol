@@ -78,7 +78,7 @@ void LandingComplexItem::_init(void)
     }
     _updateTerrainTimer.setInterval(1000);
 
-    if (_missionController->surveyAltitude() > 0){
+    if (_missionController->surveyAltitude() > terrainApproach()->rawMin().toDouble()){
         terrainApproach()->setRawValue(_missionController->surveyAltitude());
     }
     else terrainApproach()->setRawValue(terrainApproach()->rawDefaultValue());
@@ -514,6 +514,12 @@ MissionItem* LandingComplexItem::_createTransitionItem(int seqNum, QObject* pare
 
 MissionItem* LandingComplexItem::_createTerrainApproachItem(int seqNum, QObject* parent)
 {
+    float tempTerAlt =_terrainApproach()->rawValue().toFloat();
+
+    if (tempTerAlt < _terrainApproach()->rawMin().toFloat()){
+       tempTerAlt = _terrainApproach()->rawMin().toFloat();
+    }
+
             return new MissionItem(seqNum,
                                    MAV_CMD_NAV_WAYPOINT,
                                    MAV_FRAME_GLOBAL_TERRAIN_ALT,
@@ -523,7 +529,7 @@ MissionItem* LandingComplexItem::_createTerrainApproachItem(int seqNum, QObject*
                                    qQNaN(),         // Yaw not specified
                                    _finalApproachCoordinate.latitude(),
                                    _finalApproachCoordinate.longitude(),
-                                   _terrainApproach()->rawValue().toFloat()
+                                   tempTerAlt
                                    ,
                                    true,            // autoContinue
                                    false,           // isCurrentItem
@@ -915,6 +921,9 @@ bool LandingComplexItem::_load(const QJsonObject& complexObject, int sequenceNum
     if (complexObject[_jsonAltTerFrameKey].toBool()){
         setLandingAltitudeMode(QGroundControlQmlGlobal::AltitudeModeTerrainFrame);
         _entryAltitudeMode = QGroundControlQmlGlobal::AltitudeModeTerrainFrame;
+    }else {
+        setLandingAltitudeMode(QGroundControlQmlGlobal::AltitudeModeRelative);
+        _entryAltitudeMode = QGroundControlQmlGlobal::AltitudeModeRelative;
     }
     landingAltitude()->setRawValue(coordinate.altitude());
     terrainApproach()->setRawValue(complexObject[_jsonTerrainApproachKey].toDouble());
