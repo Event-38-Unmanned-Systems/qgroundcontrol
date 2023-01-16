@@ -218,7 +218,7 @@ Item {
         }
         _outputState()
         if (showContinueMission) {
-            confirmAction(actionContinueMission)
+            //confirmAction(actionContinueMission)
         }
     }
     onShowRTLChanged: {
