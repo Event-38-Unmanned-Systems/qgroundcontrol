@@ -31,7 +31,10 @@ QGCLabel {
 
         MenuItem {
             enabled: true
-            onTriggered: currentVehicle.flightMode = text
+            //onTriggered: currentVehicle.flightMode = text
+
+            onTriggered: globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionChangeFlightMode, text)
+
         }
     }
 
@@ -53,7 +56,7 @@ QGCLabel {
                     flightModesMenuItems.push(menuItem)
                     flightModesMenu.insertItem(i, menuItem)
                 }
-                else if(currentVehicle.flightModes[i] !== "Q Hover" && currentVehicle.flightModes[i] !== "Q Land" && currentVehicle.flightModes[i] !== "Q Loiter" && currentVehicle.flightModes[i] !== "FBW B") { menuItem = flightModeMenuItemComponent.createObject(null, { "text": currentVehicle.flightModes[i] })
+                else if(currentVehicle.flightModes[i] !== "Cruise" && currentVehicle.flightModes[i] !== "Q Land" && currentVehicle.flightModes[i] !== "Q Loiter") { menuItem = flightModeMenuItemComponent.createObject(null, { "text": currentVehicle.flightModes[i] })
                 flightModesMenuItems.push(menuItem)
                 flightModesMenu.insertItem(i, menuItem)
                 }

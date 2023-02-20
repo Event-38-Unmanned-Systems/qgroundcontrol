@@ -56,6 +56,7 @@ Item {
     readonly property string roiTitle:                      qsTr("ROI")
     readonly property string gimbalRoiTitle:                qsTr("Gimbal ROI")
     readonly property string actionListTitle:               qsTr("Action")
+    readonly property string changeFlightModeTitle:         qsTr("Set Mode")
 
     readonly property string armMessage:                        qsTr("Arm the vehicle.")
     readonly property string forceArmMessage:                   qsTr("WARNING: This will force arming of the vehicle bypassing any safety checks.")
@@ -79,6 +80,7 @@ Item {
     readonly property string vtolTransitionMRMessage:           qsTr("Transition VTOL to multi-rotor flight.")
     readonly property string roiMessage:                        qsTr("Make the specified location a Region Of Interest.")
     readonly property string gimbalRoiMessage:                  qsTr("Point camera at location.")
+    readonly property string changeFlightModeMessage:           qsTr("Set flight mode to ")
 
     readonly property int actionRTL:                        1
     readonly property int actionLand:                       2
@@ -105,6 +107,8 @@ Item {
     readonly property int actionActionList:                 23
     readonly property int actionForceArm:                   24
     readonly property int actionGimbalROI:                  25
+    readonly property int actionChangeFlightMode:           26
+
 
     property var    _activeVehicle:             QGroundControl.multiVehicleManager.activeVehicle
     property bool   _useChecklist:              QGroundControl.settingsManager.appSettings.useChecklist.rawValue && QGroundControl.corePlugin.options.preFlightChecklistUrl.toString().length
@@ -492,6 +496,11 @@ Item {
             confirmDialog.message = gimbalRoiMessage
             confirmDialog.hideTrigger = Qt.binding(function() { return !showGimbalROI })
             break;
+        case actionChangeFlightMode:
+            confirmDialog.title = changeFlightModeTitle
+            confirmDialog.message = changeFlightModeMessage + actionData + "."
+            confirmDialog.hideTrigger = true
+            break;
         case actionActionList:
             actionList.show()
             return
@@ -578,6 +587,9 @@ Item {
             break
         case actionGimbalROI:
             _activeVehicle.nighthawkGimbalROI(actionData)
+            break
+        case actionChangeFlightMode:
+            _activeVehicle.flightMode = actionData
             break
         default:
             console.warn(qsTr("Internal error: unknown actionCode"), actionCode)
