@@ -13,15 +13,44 @@ ColumnLayout {
     spacing: _margin
 
     property var    cameraCalc
-
     property real   _margin:            ScreenTools.defaultFontPixelWidth / 2
     property real   _fieldWidth:        ScreenTools.defaultFontPixelWidth * 10.5
     property var    _vehicle:           QGroundControl.multiVehicleManager.activeVehicle ? QGroundControl.multiVehicleManager.activeVehicle : QGroundControl.multiVehicleManager.offlineEditingVehicle
     property var    _vehicleCameraList: _vehicle ? _vehicle.staticCameraList : []
 
+    // mavlink camera info for changing camera selected
+    property var    _mavlinkCameraManager:                      _vehicle ? _vehicle.cameraManager : null
+    property int    _mavlinkCameraManagerCurCameraIndex:        _mavlinkCameraManager ? _mavlinkCameraManager.currentCamera : -1
+    property bool   _noMavlinkCameras:                          _mavlinkCameraManager ? _mavlinkCameraManager.cameras.count === 0 : true
+    property var    _mavlinkCamera:                             !_noMavlinkCameras ? (_mavlinkCameraManager.cameras.get(_mavlinkCameraManagerCurCameraIndex) && _mavlinkCameraManager.cameras.get(_mavlinkCameraManagerCurCameraIndex).paramComplete ? _mavlinkCameraManager.cameras.get(_mavlinkCameraManagerCurCameraIndex) : null) : null
+
     Component.onCompleted: {
+
+        if (!_noMavlinkCameras && _mavlinkCamera.vendor !== "" && _mavlinkCamera.modelName !== ""){
+            //exceptions for current companion computers sent out to show user friendly interfaces.
+
+            cameraCalc.cameraBrand = _mavlinkCamera.vendor;
+
+            if (_mavlinkCamera.modelName === "ILCE-6100"){
+                cameraCalc.cameraModel = "a6000 20mm";
+            }
+            else if (_mavlinkCamera.modelName === "RX1RM2" ){
+                cameraCalc.cameraModel = "DSC-RX1R II 35mm";
+            }
+            else if (_mavlinkCamera.modelName === "ILCE-7RM4A" ){
+                cameraCalc.cameraModel = "Sony A7R IV 24mm";
+            }
+            else {
+              cameraCalc.cameraModel = _mavlinkCamera.modelName
+            }
+
+            cameraBrandCombo.selectCurrentBrand();
+            cameraModelCombo.selectCurrentModel();
+        }
+        else{
         cameraBrandCombo.selectCurrentBrand()
         cameraModelCombo.selectCurrentModel()
+        }
     }
 
     QGCPalette { id: qgcPal; colorGroupEnabled: true }
