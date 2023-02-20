@@ -142,7 +142,7 @@ Rectangle {
 
                             MissionItemIndexLabel {
                                 anchors.horizontalCenter:   parent.horizontalCenter
-                                anchors.bottom:             parent.bottom
+                                anchors.bottom:             parent.top
                                 small:                      true
                                 checked:                    object.isCurrentItem
                                 label:                      object.abbreviation.charAt(0)
@@ -161,7 +161,7 @@ Rectangle {
 
                             MissionItemIndexLabel {
                                 anchors.horizontalCenter:   parent.horizontalCenter
-                                anchors.bottom:             parent.bottom
+                                anchors.bottom:             parent.top
                                 small:                      true
                                 checked:                    object.isCurrentItem
                                 index:                      object.sequenceNumber
@@ -179,7 +179,7 @@ Rectangle {
 
                             MissionItemIndexLabel {
                                 anchors.horizontalCenter:   parent.horizontalCenter
-                                anchors.bottom:             parent.bottom
+                                anchors.bottom:             parent.top
                                 small:                      true
                                 checked:                    object.isCurrentItem
                                 index:                      object.lastSequenceNumber
