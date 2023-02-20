@@ -76,7 +76,27 @@ Item {
         anchors.fill:       parent
         enabled:            pipState.state === pipState.fullState
         hoverEnabled: true
-        onDoubleClicked:    QGroundControl.videoManager.fullScreen = !QGroundControl.videoManager.fullScreen
+        onDoubleClicked:    {QGroundControl.videoManager.fullScreen = !QGroundControl.videoManager.fullScreen}
+
+        onClicked: {
+                    /* Calculating the position to track on */
+                    var videoWidth
+                    var videoHeight
+                    var videoMargin
+                    var xPos = mouseX
+                    videoHeight = height
+                    videoWidth = (videoHeight * 16.0 ) / 9.0
+                    videoMargin = (width - videoWidth) / 2.0
+                    if(mouseX < (videoMargin + 16))
+                        xPos = videoMargin + 16
+                    else if(mouseX > (videoMargin + videoWidth - 16) )
+                        xPos = (videoMargin + videoWidth - 16)
+                    xPos -= videoMargin
+                    var xScaled = (1280.0 * xPos) / videoWidth
+                    var yScaled = (720.0 * mouseY) / videoHeight
+                    /* Sending the Track On Position command to the TRIP */
+                    _activeVehicle.nightHawktrackOnPosition(xScaled,yScaled,0);
+                }
     }
 
     ProximityRadarVideoView{

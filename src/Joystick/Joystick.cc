@@ -53,7 +53,9 @@ const char* Joystick::_buttonActionStepZoomIn =         QT_TR_NOOP("Step Zoom In
 const char* Joystick::_buttonActionStepZoomOut =        QT_TR_NOOP("Step Zoom Out");
 const char* Joystick::_buttonActionNextStream =         QT_TR_NOOP("Next Video Stream");
 const char* Joystick::_buttonActionNighthawkChangeStream = QT_TR_NOOP("Switch Stream");
+const char* Joystick::_buttonActionNighthawkTrackCoordinate = QT_TR_NOOP("Track Center");
 const char* Joystick::_buttonActionNighthawkHoldCoordinate = QT_TR_NOOP("Hold Coordinate");
+const char* Joystick::_buttonActionNighthawkGRR = QT_TR_NOOP("GRR");
 const char* Joystick::_buttonActionNighthawkObservation = QT_TR_NOOP("Manual Control");
 const char* Joystick::_buttonActionNighthawk2dscan = QT_TR_NOOP("Local Position");
 const char* Joystick::_buttonActionNighthawknadirscan = QT_TR_NOOP("Stow");
@@ -636,10 +638,12 @@ void Joystick::_handleAxis()
             if(_axisCount > 4) {
                 axis = _rgFunctionAxis[gimbalPitchFunction];
                 gimbalPitch = _adjustRange(_rgAxisValues[axis], _rgCalibration[axis],_deadband);
-            }
+                gimbalPitch =  .38*powf(gimbalPitch, 3) + (1+-.38)*gimbalPitch;            }
+
             if(_axisCount > 5) {
                 axis = _rgFunctionAxis[gimbalRollFunction];
                 gimbalRoll = _adjustRange(_rgAxisValues[axis], _rgCalibration[axis],_deadband);
+                gimbalRoll = .38*powf(gimbalRoll,3) + (1+-.38)*gimbalRoll;
 
             }
 
@@ -712,7 +716,9 @@ void Joystick::startPolling(Vehicle* vehicle)
             disconnect(this, &Joystick::centerGimbal,       _activeVehicle, &Vehicle::centerGimbal);
             disconnect(this, &Joystick::gimbalControlValue, _activeVehicle, &Vehicle::gimbalControlValue);
             disconnect(this, &Joystick::nighthawkStreamSwitch, _activeVehicle, &Vehicle::nighthawkStreamSwitch);
+            disconnect(this, &Joystick::nightHawktrackOnPosition, _activeVehicle, &Vehicle::nightHawktrackOnPosition);
             disconnect(this, &Joystick::nighthawksetMode, _activeVehicle, &Vehicle::nighthawksetMode);
+
             disconnect(this, &Joystick::nightHawkStillCapture, _activeVehicle, &Vehicle::nightHawkStillCapture);
             disconnect(this, &Joystick::nightHawkRecordChange, _activeVehicle, &Vehicle::nightHawkRecordChange);
             disconnect(this, &Joystick::emergencyStop,      _activeVehicle, &Vehicle::emergencyStop);
@@ -737,6 +743,7 @@ void Joystick::startPolling(Vehicle* vehicle)
             connect(this, &Joystick::gimbalYawStep,      _activeVehicle, &Vehicle::gimbalYawStep);
             connect(this, &Joystick::centerGimbal,       _activeVehicle, &Vehicle::centerGimbal);
             connect(this, &Joystick::gimbalControlValue, _activeVehicle, &Vehicle::gimbalControlValue);
+            connect(this, &Joystick::nightHawktrackOnPosition, _activeVehicle, &Vehicle::nightHawktrackOnPosition);
             connect(this, &Joystick::nighthawkStreamSwitch, _activeVehicle, &Vehicle::nighthawkStreamSwitch);
             connect(this, &Joystick::nighthawksetMode, _activeVehicle, &Vehicle::nighthawksetMode);
             connect(this, &Joystick::nightHawkRecordChange, _activeVehicle, &Vehicle::nightHawkRecordChange);
@@ -761,6 +768,7 @@ void Joystick::stopPolling(void)
             disconnect(this, &Joystick::gimbalYawStep,      _activeVehicle, &Vehicle::gimbalYawStep);
             disconnect(this, &Joystick::centerGimbal,       _activeVehicle, &Vehicle::centerGimbal);
             disconnect(this, &Joystick::nighthawkStreamSwitch, _activeVehicle, &Vehicle::nighthawkStreamSwitch);
+            disconnect(this, &Joystick::nightHawktrackOnPosition, _activeVehicle, &Vehicle::nightHawktrackOnPosition);
             disconnect(this, &Joystick::nighthawksetMode, _activeVehicle, &Vehicle::nighthawksetMode);
             disconnect(this, &Joystick::nightHawkRecordChange, _activeVehicle, &Vehicle::nightHawkRecordChange);
             disconnect(this, &Joystick::nightHawkStillCapture, _activeVehicle, &Vehicle::nightHawkStillCapture);
@@ -1046,8 +1054,14 @@ void Joystick::_executeButtonAction(const QString& action, bool buttonDown)
     else if(action == _buttonActionNighthawkHoldRelease) {
         if (buttonDown) _nightHawkstreamManualHoldSwitch();
     }
+    else if(action == _buttonActionNighthawkTrackCoordinate) {
+        if (buttonDown) _nightHawktrackOnPosition(640,360,0);
+    }
     else if(action == _buttonActionNighthawkHoldCoordinate) {
         if (buttonDown) _nightHawksetMode(2);
+    }
+    else if(action == _buttonActionNighthawkGRR) {
+        if (buttonDown) _nightHawksetMode(6);
     }
     else if(action == _buttonActionNighthawkObservation) {
         if (buttonDown) _nightHawksetMode(3);
@@ -1149,6 +1163,12 @@ void Joystick::_nightHawksetMode(double mode)
 {
     emit nighthawksetMode(mode);
 }
+
+void Joystick::_nightHawktrackOnPosition(float posX,float posY, int chan)
+{
+        emit nightHawktrackOnPosition(posX,posY,chan);
+}
+
 void Joystick::_nightHawkstreamManualHoldSwitch()
 {
     emit nighthawksetMode(_lastknownmode);
@@ -1241,6 +1261,8 @@ void Joystick::_buildActionList(Vehicle* activeVehicle)
     //nighthawk modes
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkHoldRelease));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkObservation));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkTrackCoordinate));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkGRR));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkHoldCoordinate));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawk2dscan));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawknadirscan));

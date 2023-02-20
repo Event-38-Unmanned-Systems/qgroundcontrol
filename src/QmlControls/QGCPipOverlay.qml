@@ -114,7 +114,28 @@ Item {
         anchors.fill:   parent
         enabled:        _isExpanded
         hoverEnabled:   true
-        onClicked:      { if(QGroundControl.videoManager.streaming){ _swapPip()}}
+
+        onClicked: {
+            if (item1.pipState.state === item1.pipState.fullState){
+                    /* Calculating the position to track on */
+                    var videoWidth
+                    var videoHeight
+                    var videoMargin
+                    var xPos = mouseX
+                    videoHeight = height
+                    videoWidth = (videoHeight * 16.0 ) / 9.0
+                    videoMargin = (width - videoWidth) / 2.0
+                    if(mouseX < (videoMargin + 16))
+                        xPos = videoMargin + 16
+                    else if(mouseX > (videoMargin + videoWidth - 16) )
+                        xPos = (videoMargin + videoWidth - 16)
+                    xPos -= videoMargin
+                    var xScaled = (1280.0 * xPos) / videoWidth
+                    var yScaled = (720.0 * mouseY) / videoHeight
+                    /* Sending the Track On Position command to the TRIP */
+                    _activeVehicle.nightHawktrackOnPosition(xScaled,yScaled,0);
+            }
+        }
     }
 
     // MouseArea to drag in order to resize the PiP area
@@ -127,6 +148,8 @@ Item {
 
         property real initialX:     0
         property real initialWidth: 0
+
+        onClicked:      { if(QGroundControl.videoManager.streaming){ _swapPip()}}
 
         // When we push the mouse button down, we un-anchor the mouse area to prevent a resizing loop
         onPressed: {

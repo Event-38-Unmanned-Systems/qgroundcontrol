@@ -395,7 +395,7 @@ public:
 
     Q_INVOKABLE void preflightCalibration(void);
 
-    Q_INVOKABLE void preflightServoTest(void);
+    Q_INVOKABLE void preflightServoTest(int aileron, int elevator);
 
     /// Clear Messages
     Q_INVOKABLE void clearMessages();
@@ -428,7 +428,7 @@ public:
     Q_INVOKABLE void nighthawksetMode(double mode);
     Q_INVOKABLE void nightHawkStillCapture ();
     Q_INVOKABLE void nightHawkRecordChange (double stream);
-
+    Q_INVOKABLE void nightHawktrackOnPosition(float posX,float posY, int chan);
 
     Q_INVOKABLE void gimbalPitchStep    (int direction);
     Q_INVOKABLE void gimbalYawStep      (int direction);
@@ -1210,7 +1210,9 @@ private:
     float       _loadProgress           = 0.0f;
 
     QMap<QString, QTime> _noisySpokenPrearmMap; ///< Used to prevent PreArm messages from being spoken too often
-    QTime _noisyGCSLongMessage;
+    QTime _noisyGCSLongMessageOn;
+    QTime _noisyGCSLongMessageOff;
+
     bool initfilterTimes = true;
     // Orbit status values
     bool            _orbitActive = false;

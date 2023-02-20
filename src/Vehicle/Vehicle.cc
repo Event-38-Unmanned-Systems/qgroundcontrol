@@ -619,8 +619,10 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
             _compID     = message.compid;
             _messageSeq = message.seq + 1;
         }
-    } else {
+    }
+    else {
         if(_compID == message.compid) {
+
             uint16_t seq_received = static_cast<uint16_t>(message.seq);
             uint16_t packet_lost_count = 0;
             //-- Account for overflow during packet loss
@@ -634,6 +636,18 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
             if(packet_lost_count)
                 emit messagesLostChanged();
         }
+    }    
+    /* Nighthawk currently does not follow proper
+    mavlink protocol so we hackily recognize it by seeing a
+    gimbal existing on network without a camera existing.
+    If a payload is swapped without GCS cycle this also handles
+    Resetting gimbal seen.
+    */
+    if (message.compid == MAV_COMP_ID_GIMBAL){
+        _haveGimbalData = true;
+    }
+    else if (message.compid == MAV_COMP_ID_CAMERA){
+        _haveGimbalData = false;
     }
 
     // Give the plugin a change to adjust the message contents
@@ -871,7 +885,9 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
 
     //init beginning times for filtering noisy messages
     if (initfilterTimes){
-        _noisyGCSLongMessage = QTime::currentTime();
+        _noisyGCSLongMessageOn = QTime::currentTime();
+        _noisyGCSLongMessageOff = QTime::currentTime();
+
         initfilterTimes = false;
     }
 
@@ -934,25 +950,44 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
        messageText = "Airspeed Calibrated";
     }
     //silence noisy GCS failsafe. This is spammed while a failsafe long event happens on ardupilot while waiting for a transition to occur or when a gcs failsafe occurs while in a landing sequence.
-    else if (messageText.contains("Failsafe. Long event on: type=3/reason=5")){
+    else if (messageText.contains("Long event on") || messageText.contains("Throttle failsafe on") || messageText.contains("Short event on")){
 
-        if (_noisyGCSLongMessage.msecsTo(QTime::currentTime()) < (10 * 1000)){
+        if (_noisyGCSLongMessageOn.msecsTo(QTime::currentTime()) < (10 * 1000)){
             readAloud = false;
             skipSpoken = true;
             skipOutput = true;
         }
         else{
-            _noisyGCSLongMessage = QTime::currentTime();
-            messageText = "GCS Failsafe on";
+            _noisyGCSLongMessageOn = QTime::currentTime();
+       if (messageText.contains("reason=5")){
+            messageText = "Control Link Lost";
+        }
+       else if (messageText.contains("reason=3") || messageText.contains("Throttle failsafe on")){
+           messageText = "Joystick Control Lost";
+       }
             readAloud = true;
             skipSpoken = false;
             skipOutput = false;
         }
     }
-    else if (messageText.contains("Failsafe. Long event off: reason=5")){
-        readAloud = true;
-        messageText = "GCS Failsafe off";
+    else if (messageText.contains("Long event off") || messageText.contains("Throttle failsafe off") || messageText.contains("Short event off")){
+
+        if (_noisyGCSLongMessageOff.msecsTo(QTime::currentTime()) < (5 * 1000)){
+            readAloud = false;
+            skipSpoken = true;
+            skipOutput = true;
+        }
+        else{
+        _noisyGCSLongMessageOff = QTime::currentTime();
+        if (messageText.contains("reason=5")){
+             messageText = "Control Link Regained";
+         }
+        else if (messageText.contains("reason=3") || messageText.contains("Throttle failsafe off")){
+            messageText = "Joystick Control Regained";
+        }
+      }
     }
+
     if (_flying && _armed){
         //voice vtol takeoff usually not voiced
     if (messageText.contains("VTOLTakeoff")){
@@ -3377,11 +3412,11 @@ void Vehicle::preflightCalibration(void)
     startCalibration(Vehicle::CalibrationAPMPressureAirspeed);
 }
 
-void Vehicle::preflightServoTest(void)
+void Vehicle::preflightServoTest(int aileron,int elevator)
 {
         if (!_armed){
-        sendJoystickDataThreadSafe(1,-1,0,0,65535,65535,0);
-        }
+        sendJoystickDataThreadSafe(aileron,aileron,0,0,0,0,0);
+       }
 }
 
 
@@ -4043,6 +4078,22 @@ void Vehicle::nightHawkRecordChange(double state)
                 false);
 }
 
+void Vehicle::nightHawktrackOnPosition(float posX,float posY, int chan)
+{
+    sendMavCommand(
+                MAV_COMP_ID_GIMBAL,
+                MAV_CMD_DO_DIGICAM_CONTROL,
+                false,                               // show errors
+                0,
+                7, // 0 Stow 1 Pilot 2 Hold Coordinate 3 Observation 4 Local Position 5 Global Position 6 GRR 7 Tracking 8 EPR 9 Nadir 10 Nadir Scan 11 2D Scan 12 Point to Coordinate 13 Un-stabilized Position
+                posX,
+                posY,
+                0,
+                (float)chan,
+                0,   // MAVLink Roll,Pitch,Yaw
+                false);
+}
+
 void Vehicle::nightHawkStillCapture()
 {
     sendMavCommand(
@@ -4193,25 +4244,44 @@ void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, flo
 
     mavlink_message_t message;
 
-    if (abs(gimbalRoll) < .35){
+    if (abs(gimbalRoll) < .05){
         gimbalRoll = 0;
     }
-    if (abs(gimbalPitch) < .35){
+    else if (abs(gimbalRoll) < .6 && gimbalRoll != 0){
+        gimbalRoll = gimbalRoll/abs(gimbalRoll) * .2 ;
+    }
+    else if (abs(gimbalRoll) < .8 && gimbalRoll != 0){
+        gimbalRoll = gimbalRoll/abs(gimbalRoll) * .4 ;
+    }
+
+    if (abs(gimbalPitch) < .05){
         gimbalPitch = 0;
     }
+    else if (abs(gimbalPitch) < .6 && gimbalPitch != 0){
+        gimbalPitch = gimbalPitch/abs(gimbalPitch) * .2 ;
+    }
+    else if (abs(gimbalPitch) < .8 && gimbalPitch != 0){
+        gimbalPitch = gimbalPitch/abs(gimbalPitch) * .4 ;
+    }
+
     // Incoming values are in the range -1:1
     float axesScaling =         1.0 * 1000.0;
     float newRollCommand =      roll * axesScaling;
     float newPitchCommand  =    pitch * axesScaling;    // Joystick data is reverse of mavlink values
     float newYawCommand    =    yaw * axesScaling;
     float newThrustCommand =    thrust * axesScaling;
-    float newgimbalRoll  =  gimbalRoll * axesScaling;
-    float newgimbalPitch = gimbalPitch * axesScaling;
+
+    float gimbalTrim = 1500;
+    float newgimbalRoll  =  gimbalTrim + (gimbalRoll * axesScaling)/2;
+    float newgimbalPitch =  gimbalTrim + (gimbalPitch * axesScaling)/2;
 
 
-                        qDebug() << "jstick" << roll << pitch << yaw << thrust << gimbalRoll << gimbalPitch;
 
-                        qDebug() << "convrt" << newRollCommand << newPitchCommand << newYawCommand << newThrustCommand << newgimbalRoll << gimbalPitch;
+
+
+                        //qDebug() << "jstick" << roll << pitch << yaw << thrust << gimbalRoll << gimbalPitch;
+
+                        //qDebug() << "convrt" << newRollCommand << newPitchCommand << newYawCommand << newThrustCommand << newgimbalRoll << newgimbalPitch;
 
                         // Send the MANUAL_COMMAND message
                         mavlink_msg_manual_control_pack_chan(_mavlink->getSystemId(),
