@@ -373,8 +373,24 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
         _cameraList.append(QVariant::fromValue(metaData));
 
         metaData = new CameraMetaData(
+                    "Altum-PT",
+                    tr("MicaSense"),
+                    tr("Altum-PT"),
+                    3.84,            // sensorWidth
+                    3.07,            // sendsorHeight
+                    2064,           // imageWidth
+                    1544,            // imageHeight
+                    8,            // focalLength
+                    true,           // landscape
+                    true,          // fixedOrientation
+                    .5,              // minTriggerInterval
+                    tr("Altum-PT"),  // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
+                    this);
+        _cameraList.append(QVariant::fromValue(metaData));
+
+        metaData = new CameraMetaData(
                     "RedEdge",
-                    tr("RedEdge"),
+                    tr("MicaSense"),
                     tr("RedEdge"),
                     4.8,            // sensorWidth
                     3.6,            // sendsorHeight
@@ -386,8 +402,8 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     1.0,              // minTriggerInterval
                     tr("RedEdge"),  // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
                     this);
-        _cameraList.append(QVariant::fromValue(metaData));
 
+        _cameraList.append(QVariant::fromValue(metaData));
         metaData = new CameraMetaData(
                     "Sony a6200 20mm",
                     tr("Sony"),
