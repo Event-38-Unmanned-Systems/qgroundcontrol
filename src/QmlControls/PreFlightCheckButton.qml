@@ -32,6 +32,8 @@ QGCButton {
     property string telemetryTextFailure                    ///< text to show if telemetry check failed (override not allowed)
     property bool   telemetryFailure:               false   ///< true: telemetry check failing, false: telemetry check passing
     property bool   allowTelemetryFailureOverride:  false   ///< true: user can click past telemetry failure
+    property bool   calibrationOverride:            false   ///< true: telemetry check failing, false: telemetry check passing
+
     property bool   passed:                         _manualState === _statePassed && _telemetryState === _statePassed
     property bool   failed:                         _manualState === _stateFailed || _telemetryState === _stateFailed
 
@@ -167,7 +169,7 @@ QGCButton {
     onAllowTelemetryFailureOverrideChanged: _updateTelemetryState()
 
     onClicked: {
-        if (telemetryFailure && !allowTelemetryFailureOverride) {
+        if (telemetryFailure && !allowTelemetryFailureOverride || calibrationOverride) {
             // No way to proceed past this failure
             return
         }

@@ -30,33 +30,48 @@ Item {
     property var    _mavlinkCamera:                             !_noMavlinkCameras ? (_mavlinkCameraManager.cameras.get(_mavlinkCameraManagerCurCameraIndex) && _mavlinkCameraManager.cameras.get(_mavlinkCameraManagerCurCameraIndex).paramComplete ? _mavlinkCameraManager.cameras.get(_mavlinkCameraManagerCurCameraIndex) : null) : null
     property var    _supportedCamera:                           !_noMavlinkCameras ? _mavlinkCamera.vendor !== "" && _mavlinkCamera.modelName !== "" : false
     property bool   capSuccess: false
+
     Timer {
-        id: calibrationTimer
+        id: preflightCalibrationTimer
+        property var myCB
+        property int timesToRun: 5
+        property int timesRun: 0
+        property int delayTime: 1000
+        repeat: true
+    }
+
+    Timer {
+        id: actuatorTimer
+        property var myCB
+        property int timesToRun: 1
+        property int timesRun: 0
+        property int delayTime: 3000
+        repeat: false
     }
 
     Timer {
         id: cameraTimer
-    }
-    function delay2(delayTime,cb)
-    {
-        cameraTimer.interval = delayTime;
-        cameraTimer.repeat = false;
-        cameraTimer.triggered.connect(cb);
-        cameraTimer.start();
+        property var myCB
+        property int timesToRun: 10
+        property int timesRun: 0
+        property int delayTime: 1000
+        repeat: true
     }
 
-    function delay(delayTime,cb)
+
+    function delay(cb,timer)
     {
-        calibrationTimer.interval = delayTime;
-        calibrationTimer.repeat = false;
-        calibrationTimer.triggered.connect(cb);
-        calibrationTimer.start();
+        if (timer.myCB) timer.triggered.disconnect(timer.myCB)
+        timer.myCB = cb
+        timer.interval = timer.delayTime;
+        timer.triggered.connect(timer.myCB);
+        timer.start();
     }
 
     PreFlightCheckModel {
         id:     listModel
 
-        PreFlightCheckGroup {
+       /* PreFlightCheckGroup {
             name: qsTr("Hardware Checks")
 
             PreFlightCheckButton {
@@ -81,7 +96,7 @@ Item {
                 failureSatCount:        9
                 allowOverrideSatCount:  true
             }
-        }
+        } */
 
         PreFlightCheckGroup {
             name: qsTr("Pre-launch Checks")
@@ -115,9 +130,9 @@ Item {
                         }
                                else {
                                     _activeVehicle.preflightServoTest(1,-1);
-                                    delay(3000,function() {
+                                    delay(function() {
                                         _activeVehicle.preflightServoTest(-1,1);
-                                    })
+                                    },actuatorTimer)
                                 }
                             }
                         }
@@ -132,8 +147,45 @@ Item {
             PreFlightCheckButton {
                 name:        qsTr("Calibrate Airspeed")
                 manualText:  qsTr("Start calibration")
-                onPressed: if (_manualState != _statePassed){_activeVehicle.preflightCalibration()}
-            }
+                onPressed: if (_manualState != _statePassed){
+                                   //reset calibration timeout settings
+                                   preflightCalibrationTimer.timesRun = 0
+                                   preflightCalibrationTimer.repeat = true;
+                                   //reset calibration timeout UI overrides
+                                   calibrationOverride = false
+                                   telemetryFailure = false
+                                   //Trying to attempt a calibration. Set to incomplete until feedback received
+                                   _activeVehicle.airspeedCalibrated = false
+                                   //call preflight calibration for vehicle
+                                   _activeVehicle.preflightCalibration()
+
+                                   _telemetryState = _statePending
+                                   telemetryTextFailure = "Calibrating";
+
+                                   delay(function() {
+
+                                   if(_activeVehicle.airspeedCalibrated){
+                                       _telemetryState = _statePassed
+                                       telemetryFailure = false
+                                       preflightCalibrationTimer.repeat = false;
+                                   }
+                                   else if (preflightCalibrationTimer.timesRun >= preflightCalibrationTimer.timesToRun) {
+                                    telemetryFailure = true
+                                    _telemetryState = _stateFailed
+                                    telemetryTextFailure = "Calibration failed. Try again.";
+                                    preflightCalibrationTimer.repeat = false;
+                                   }
+                                   preflightCalibrationTimer.timesRun = preflightCalibrationTimer.timesRun + 1
+                               }, preflightCalibrationTimer)
+
+                               }
+                               else if (_manualState == _statePassed){
+                               calibrationOverride = true
+                               _manualState = _statePending
+                               telemetryFailure = false
+                           }
+                           }
+
             // Check list item group 2 - Final checks before launch
             PreFlightCheckButton {
                 visible: _activeVehicle ? (!_activeVehicle.gimbalData) : true
@@ -212,9 +264,13 @@ Item {
                 }
                 onPressed:   { if (_manualState != _statePassed){
 
-                        if (_supportedCamera){
+                        calibrationOverride = false
+                        telemetryFailure = false
 
-                            telemetryFailure = false
+                        if (_supportedCamera){
+                            //reset calibration timeout settings
+                            cameraTimer.timesRun = 0
+                            cameraTimer.repeat = true;
 
                             if (_mavlinkCamera.storageStatus === QGCCameraControl.STORAGE_READY){
 
@@ -225,16 +281,19 @@ Item {
                                 _telemetryState = _statePending
                                 telemetryTextFailure = "Tests Running";
 
-                                delay2(4000,function() {
-                                if(curcapcount === _activeVehicle.imagesCaptures){
+                                delay(function() {
+                                if(cameraTimer.timesRun >= cameraTimer.timesToRun && curcapcount === _activeVehicle.imagesCaptures){
                                     telemetryFailure = true
                                     telemetryTextFailure = "Capture failed Check Camera";
+                                    cameraTimer.repeat = false
                                 }
-                                else{
+                                else if (curcapcount < _activeVehicle.imagesCaptures){
                                     _telemetryState = _statePassed
                                     telemetryFailure = false
+                                    cameraTimer.repeat = false
                                 }
-                            })
+                                cameraTimer.timesRun = cameraTimer.timesRun + 1
+                            },cameraTimer)
 
                             }
 
@@ -248,10 +307,14 @@ Item {
                         }
                         else { _activeVehicle.triggerSimpleCamera()}
              }
-                    if (_manualState == _statePassed){ telemetryFailure = false;}
+                    if (_manualState == _statePassed){
+                        calibrationOverride = true
+                        _manualState = _statePending
+                        telemetryFailure = false}
            }
 
         }
+
             PreFlightCheckButton {
                 name:        "Wind & weather"
                 manualText:  qsTr("Wind within limits? Lauching into the wind?")

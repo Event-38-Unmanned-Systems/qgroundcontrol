@@ -946,6 +946,7 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
         }
     }
     if (messageText == "Airspeed 1 calibrated"){
+       _airspeedCalibrated = true;
        readAloud = true;
        messageText = "Airspeed Calibrated";
     }
@@ -4305,6 +4306,15 @@ void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, flo
 
 
    // sendMessageOnLinkThreadSafe(sharedLink.get(), message);
+}
+
+bool Vehicle::airspeedCalibrated() const
+{
+    return _airspeedCalibrated;
+}
+void Vehicle::setAirspeedCalibrated(bool calibrated)
+{
+    _airspeedCalibrated = calibrated;
 }
 
 void Vehicle::triggerSimpleCamera()
