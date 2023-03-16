@@ -145,6 +145,13 @@ Rectangle {
                             QGroundControl.multiVehicleManager.gcsHeartBeatEnabled = checked
                         }
                     }
+                    QGCCheckBox {
+                        text:       qsTr("Enable Remote ID")
+                        checked:    QGroundControl.multiVehicleManager.RIDEnabled
+                        onClicked: {
+                            QGroundControl.multiVehicleManager.RIDEnabled = checked
+                        }
+                    }
 
                     QGCCheckBox {
                         text:       qsTr("Only accept MAVs with same protocol version")

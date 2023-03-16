@@ -18,6 +18,7 @@
 #include "QGCCorePlugin.h"
 #include "QGCOptions.h"
 #include "LinkManager.h"
+#include "PositionManager.h"
 
 #if defined (__ios__) || defined(__android__)
 #include "MobileScreenMgr.h"
@@ -28,6 +29,8 @@
 QGC_LOGGING_CATEGORY(MultiVehicleManagerLog, "MultiVehicleManagerLog")
 
 const char* MultiVehicleManager::_gcsHeartbeatEnabledKey = "gcsHeartbeatEnabled";
+const char* MultiVehicleManager::_RIDEnabledKey = "RIDEnabled";
+
 
 MultiVehicleManager::MultiVehicleManager(QGCApplication* app, QGCToolbox* toolbox)
     : QGCTool(app, toolbox)
@@ -44,6 +47,13 @@ MultiVehicleManager::MultiVehicleManager(QGCApplication* app, QGCToolbox* toolbo
     _gcsHeartbeatEnabled = settings.value(_gcsHeartbeatEnabledKey, true).toBool();
     _gcsHeartbeatTimer.setInterval(_gcsHeartbeatRateMSecs);
     _gcsHeartbeatTimer.setSingleShot(false);
+
+    _RIDEnabled = settings.value(_RIDEnabledKey, true).toBool();
+    _RIDTimer.setInterval(_RIDRateMSecs);
+    _RIDTimer.setSingleShot(false);
+
+    _RIDLongTimer.setInterval(_RIDLongRateMSecs);
+    _RIDLongTimer.setSingleShot(false);
 }
 
 void MultiVehicleManager::setToolbox(QGCToolbox *toolbox)
@@ -59,9 +69,16 @@ void MultiVehicleManager::setToolbox(QGCToolbox *toolbox)
 
     connect(_mavlinkProtocol, &MAVLinkProtocol::vehicleHeartbeatInfo, this, &MultiVehicleManager::_vehicleHeartbeatInfo);
     connect(&_gcsHeartbeatTimer, &QTimer::timeout, this, &MultiVehicleManager::_sendGCSHeartbeat);
+    connect(&_RIDTimer, &QTimer::timeout, this, &MultiVehicleManager::_sendRID);
+    connect(&_RIDLongTimer, &QTimer::timeout, this, &MultiVehicleManager::_sendLongRID);
+
 
     if (_gcsHeartbeatEnabled) {
         _gcsHeartbeatTimer.start();
+    }
+    if (_RIDEnabled) {
+        _RIDTimer.start();
+        _RIDLongTimer.start();
     }
 
     _offlineEditingVehicle = new Vehicle(Vehicle::MAV_AUTOPILOT_TRACK, Vehicle::MAV_TYPE_TRACK, _firmwarePluginManager, this);
@@ -367,6 +384,112 @@ void MultiVehicleManager::setGcsHeartbeatEnabled(bool gcsHeartBeatEnabled)
             _gcsHeartbeatTimer.start();
         } else {
             _gcsHeartbeatTimer.stop();
+        }
+    }
+}
+
+void MultiVehicleManager::setRIDEnabled(bool RIDEnabled)
+{
+    if (RIDEnabled != _RIDEnabled) {
+        _RIDEnabled = RIDEnabled;
+        emit RIDEnabledChanged(RIDEnabled);
+
+        QSettings settings;
+        settings.setValue(_RIDEnabledKey, RIDEnabled);
+
+        if (RIDEnabled) {
+            _RIDTimer.start();
+        } else {
+            _RIDTimer.stop();
+        }
+    }
+}
+
+void MultiVehicleManager::_sendRID(void)
+{
+    LinkManager*                    linkManager = qgcApp()->toolbox()->linkManager();
+    QList<SharedLinkInterfacePtr>   sharedLinks = linkManager->links();
+
+
+    QGeoCoordinate gcsPosition = _toolbox->qgcPositionManager()->gcsPosition();
+
+    // time specified in protocol
+    QDateTime timeStart = QDateTime::fromString("2019-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss");
+
+    // Send a heartbeat out on each link
+    for (int i=0; i<sharedLinks.count(); i++) {
+        LinkInterface* link = sharedLinks[i].get();
+        auto linkConfiguration = link->linkConfiguration();
+        if (link->isConnected() && linkConfiguration && !linkConfiguration->isHighLatency()) {
+            mavlink_message_t message;
+
+            if (gcsPosition.isValid()){
+            mavlink_msg_open_drone_id_system_update_pack(_mavlinkProtocol->getSystemId(),
+                                                         _mavlinkProtocol->getComponentId(),
+                                                         &message,
+                                                         0,   //broadcast sysid
+                                                         0,   //broadcast compid
+                                                         gcsPosition.latitude() * 10000000,  //lat
+                                                         gcsPosition.longitude()* 10000000,  //lon
+                                                         gcsPosition.altitude(),  //alt
+                                                         timeStart.secsTo(QDateTime::currentDateTime())); //unix timestamp
+
+            uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+            int len = mavlink_msg_to_send_buffer(buffer, &message);
+            link->writeBytesThreadSafe((const char*)buffer, len);
+
+
+            }
+
+        }
+    }
+}
+
+void MultiVehicleManager::_sendLongRID(void)
+{
+    LinkManager*                    linkManager = qgcApp()->toolbox()->linkManager();
+    QList<SharedLinkInterfacePtr>   sharedLinks = linkManager->links();
+
+
+    QGeoCoordinate gcsPosition = _toolbox->qgcPositionManager()->gcsPosition();
+
+    // time specified in protocol
+    QDateTime timeStart = QDateTime::fromString("2019-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss");
+
+    // Send a heartbeat out on each link
+    for (int i=0; i<sharedLinks.count(); i++) {
+        LinkInterface* link = sharedLinks[i].get();
+        auto linkConfiguration = link->linkConfiguration();
+        if (link->isConnected() && linkConfiguration && !linkConfiguration->isHighLatency()) {
+            mavlink_message_t message;
+
+            if (gcsPosition.isValid()){
+            const uint8_t ID_OR_MAC[] = "0000000000000000000";
+            mavlink_msg_open_drone_id_system_pack(_mavlinkProtocol->getSystemId(),
+                                                         _mavlinkProtocol->getComponentId(),
+                                                         &message,
+                                                         0,   //broadcast sysid
+                                                         0,   //broadcast compid
+                                                         ID_OR_MAC,
+                                                         MAV_ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS,// operator location type
+                                                         MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED, // MAV_ODID_CLASSIFICATION_TYPE Specifies the classification type of the UA.
+                                                         gcsPosition.latitude() * 10000000,  //lat
+                                                         gcsPosition.longitude()* 10000000,  //lon
+                                                         1, //area count
+                                                         0, //area_radius
+                                                         -1000, //area_ceiling
+                                                         -1000, //area_floor
+                                                         MAV_ODID_CATEGORY_EU_UNDECLARED,
+                                                         MAV_ODID_CLASS_EU_UNDECLARED,
+                                                         gcsPosition.altitude(),  //alt
+                                                         timeStart.secsTo(QDateTime::currentDateTime())); //unix timestamp
+
+            uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+            int len = mavlink_msg_to_send_buffer(buffer, &message);
+            link->writeBytesThreadSafe((const char*)buffer, len);
+
+            }
+
         }
     }
 }

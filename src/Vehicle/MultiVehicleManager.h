@@ -20,6 +20,7 @@
 #include "QGCToolbox.h"
 #include "QGCLoggingCategory.h"
 
+
 class FirmwarePluginManager;
 class FollowMe;
 class JoystickManager;
@@ -43,6 +44,8 @@ public:
     Q_PROPERTY(Vehicle*             activeVehicle                   READ activeVehicle                  WRITE setActiveVehicle          NOTIFY activeVehicleChanged)
     Q_PROPERTY(QmlObjectListModel*  vehicles                        READ vehicles                                                       CONSTANT)
     Q_PROPERTY(bool                 gcsHeartBeatEnabled             READ gcsHeartbeatEnabled            WRITE setGcsHeartbeatEnabled    NOTIFY gcsHeartBeatEnabledChanged)
+    Q_PROPERTY(bool                 RIDEnabled                      READ RIDEnabled                     WRITE setRIDEnabled             NOTIFY RIDEnabledChanged)
+
     Q_PROPERTY(Vehicle*             offlineEditingVehicle           READ offlineEditingVehicle                                          CONSTANT)
     Q_PROPERTY(QGeoCoordinate       lastKnownLocation               READ lastKnownLocation                                              NOTIFY lastKnownLocationChanged) //< Current vehicles last know location
 
@@ -66,6 +69,9 @@ public:
     bool gcsHeartbeatEnabled(void) const { return _gcsHeartbeatEnabled; }
     void setGcsHeartbeatEnabled(bool gcsHeartBeatEnabled);
 
+    bool RIDEnabled(void) const { return _RIDEnabled; }
+    void setRIDEnabled(bool RIDEnabled);
+
     Vehicle* offlineEditingVehicle(void) { return _offlineEditingVehicle; }
 
     // Override from QGCTool
@@ -80,6 +86,8 @@ signals:
     void parameterReadyVehicleAvailableChanged(bool parameterReadyVehicleAvailable);
     void activeVehicleChanged           (Vehicle* activeVehicle);
     void gcsHeartBeatEnabledChanged     (bool gcsHeartBeatEnabled);
+    void RIDEnabledChanged              (bool RIDEnabled);
+
     void lastKnownLocationChanged       ();
 #ifndef DOXYGEN_SKIP
     void _deleteVehiclePhase2Signal     (void);
@@ -91,6 +99,9 @@ private slots:
     void _setActiveVehiclePhase2        (void);
     void _vehicleParametersReadyChanged (bool parametersReady);
     void _sendGCSHeartbeat              (void);
+    void _sendRID                       (void);
+    void _sendLongRID                   (void);
+
     void _vehicleHeartbeatInfo          (LinkInterface* link, int vehicleId, int componentId, int vehicleFirmwareType, int vehicleType);
     void _requestProtocolVersion        (unsigned version);
     void _coordinateChanged             (QGeoCoordinate coordinate);
@@ -119,6 +130,14 @@ private:
     bool                _gcsHeartbeatEnabled;           ///< Enabled/disable heartbeat emission
     static const int    _gcsHeartbeatRateMSecs = 1000;  ///< Heartbeat rate
     static const char*  _gcsHeartbeatEnabledKey;
+
+    QTimer              _RIDTimer;             ///< Timer to emit heartbeats
+    bool                _RIDEnabled;           ///< Enabled/disable heartbeat emission
+    static const int    _RIDRateMSecs = 1000;  ///< Heartbeat rate
+    static const char*  _RIDEnabledKey;
+
+    QTimer              _RIDLongTimer;             ///< Timer to emit heartbeats
+    static const int    _RIDLongRateMSecs = 10000;  ///< Heartbeat rate
 };
 
 #endif

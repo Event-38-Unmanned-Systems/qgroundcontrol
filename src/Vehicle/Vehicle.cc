@@ -768,6 +768,9 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     case MAVLINK_MSG_ID_OBSTACLE_DISTANCE:
         _handleObstacleDistance(message);
         break;
+    case MAVLINK_MSG_ID_OPEN_DRONE_ID_ARM_STATUS:
+        _handleDroneIdArmStatus(message);
+        break;
 
     case MAVLINK_MSG_ID_EVENT:
     case MAVLINK_MSG_ID_CURRENT_EVENT_SEQUENCE:
@@ -887,6 +890,8 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
     if (initfilterTimes){
         _noisyGCSLongMessageOn = QTime::currentTime();
         _noisyGCSLongMessageOff = QTime::currentTime();
+        _noisyODIDLocMessage =   QTime::currentTime();
+        _noisyODIDMissingMessage =   QTime::currentTime();
 
         initfilterTimes = false;
     }
@@ -949,6 +954,30 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
        _airspeedCalibrated = true;
        readAloud = true;
        messageText = "Airspeed Calibrated";
+    }
+    if (messageText.contains("ODID: lost transmitter")){
+        if (_noisyODIDMissingMessage.msecsTo(QTime::currentTime()) < (6 * 1000)){
+            readAloud = false;
+            skipSpoken = true;
+            skipOutput = true;
+        }
+        else{
+        _noisyODIDMissingMessage = QTime::currentTime();
+        readAloud = true;
+        messageText = "Remote I.D. Module missing.";
+        }
+    }
+    if (messageText.contains("ODID: lost operator location")){
+        if (_noisyODIDLocMessage.msecsTo(QTime::currentTime()) < (6 * 1000)){
+            readAloud = false;
+            skipSpoken = true;
+            skipOutput = true;
+        }
+        else{
+        _noisyODIDLocMessage = QTime::currentTime();
+        readAloud = true;
+        messageText = "Remote I.D. missing operator location.";
+        }
     }
     //silence noisy GCS failsafe. This is spammed while a failsafe long event happens on ardupilot while waiting for a transition to occur or when a gcs failsafe occurs while in a landing sequence.
     else if (messageText.contains("Long event on") || messageText.contains("Throttle failsafe on") || messageText.contains("Short event on")){
@@ -1627,6 +1656,21 @@ void Vehicle::_handleHomePosition(mavlink_message_t& message)
     _setHomePosition(newHomePosition);
 }
 
+void Vehicle::_handleDroneIdArmStatus(mavlink_message_t& message)
+{
+    mavlink_open_drone_id_arm_status_t didArmStatus;
+
+    mavlink_msg_open_drone_id_arm_status_decode(&message, &didArmStatus);
+
+    _droneIDState = QString(didArmStatus.error);
+
+     emit droneIDStateChanged(_droneIDState);
+
+    qDebug() << _droneIDState;
+
+
+}
+
 void Vehicle::_updateArmed(bool armed)
 {
     if (_armed != armed) {
@@ -1945,12 +1989,12 @@ int Vehicle::motorCount()
     switch (_vehicleType) {
     case MAV_TYPE_HELICOPTER:
         return 1;
-    case MAV_TYPE_VTOL_DUOROTOR:
+    case MAV_TYPE_VTOL_TAILSITTER_DUOROTOR:
         return 2;
     case MAV_TYPE_TRICOPTER:
         return 3;
     case MAV_TYPE_QUADROTOR:
-    case MAV_TYPE_VTOL_QUADROTOR:
+    case MAV_TYPE_VTOL_TAILSITTER:
         return 4;
     case MAV_TYPE_HEXAROTOR:
         return 6;
@@ -2563,12 +2607,12 @@ QString Vehicle::vehicleTypeName() const {
         { MAV_TYPE_FLAPPING_WING,   tr("Flapping wing")},
         { MAV_TYPE_KITE,            tr("Flapping wing")},
         { MAV_TYPE_ONBOARD_CONTROLLER, tr("Onboard companion controller")},
-        { MAV_TYPE_VTOL_DUOROTOR,   tr("Two-rotor VTOL using control surfaces in vertical operation in addition. Tailsitter")},
-        { MAV_TYPE_VTOL_QUADROTOR,  tr("Quad-rotor VTOL using a V-shaped quad config in vertical operation. Tailsitter")},
+        { MAV_TYPE_VTOL_TAILSITTER,   tr("Two-rotor VTOL using control surfaces in vertical operation in addition. Tailsitter")},
+        { MAV_TYPE_VTOL_TAILSITTER_QUADROTOR,  tr("Quad-rotor VTOL using a V-shaped quad config in vertical operation. Tailsitter")},
         { MAV_TYPE_VTOL_TILTROTOR,  tr("Tiltrotor VTOL")},
-        { MAV_TYPE_VTOL_RESERVED2,  tr("VTOL reserved 2")},
-        { MAV_TYPE_VTOL_RESERVED3,  tr("VTOL reserved 3")},
-        { MAV_TYPE_VTOL_RESERVED4,  tr("VTOL reserved 4")},
+        { MAV_TYPE_VTOL_FIXEDROTOR,  tr("VTOL reserved 2")},
+        { MAV_TYPE_VTOL_TAILSITTER,  tr("VTOL reserved 3")},
+        { MAV_TYPE_VTOL_TILTWING,  tr("VTOL reserved 4")},
         { MAV_TYPE_VTOL_RESERVED5,  tr("VTOL reserved 5")},
         { MAV_TYPE_GIMBAL,          tr("Onboard gimbal")},
         { MAV_TYPE_ADSB,            tr("Onboard ADSB peripheral")},
@@ -4324,4 +4368,27 @@ void Vehicle::triggerSimpleCamera()
                    true,                        // show errors
                    0.0, 0.0, 0.0, 0.0,          // param 1-4 unused
                    1.0);                        // trigger camera
+}
+
+void Vehicle::ridSetEmergency()
+{
+
+    SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
+
+    mavlink_message_t message;
+
+    const uint8_t ID_OR_MAC[] = "0000000000000000000";
+    const char status[] = "Pilot Emergency Status";
+
+    mavlink_msg_open_drone_id_self_id_pack(_mavlink->getSystemId(),
+                                           _mavlink->getComponentId(),
+                                           &message,
+                                           0,
+                                           0,
+                                           ID_OR_MAC,
+                                           MAV_ODID_DESC_TYPE_EMERGENCY,
+                                           status);
+
+    sendMessageOnLinkThreadSafe(sharedLink.get(), message);
+
 }

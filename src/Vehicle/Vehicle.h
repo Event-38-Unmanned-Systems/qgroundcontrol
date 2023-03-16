@@ -203,6 +203,8 @@ public:
     Q_PROPERTY(bool                 supportsRadio               READ supportsRadio                                                  CONSTANT)
     Q_PROPERTY(bool               supportsMotorInterference     READ supportsMotorInterference                                      CONSTANT)
     Q_PROPERTY(QString              prearmError                 READ prearmError                WRITE setPrearmError                NOTIFY prearmErrorChanged)
+    Q_PROPERTY(QString              droneIDState                READ droneIDState                                                   NOTIFY droneIDStateChanged)
+
     Q_PROPERTY(int                  motorCount                  READ motorCount                                                     CONSTANT)
     Q_PROPERTY(bool                 coaxialMotors               READ coaxialMotors                                                  CONSTANT)
     Q_PROPERTY(bool                 xConfigMotors               READ xConfigMotors                                                  CONSTANT)
@@ -448,6 +450,9 @@ public:
     /// Trigger camera using MAV_CMD_DO_DIGICAM_CONTROL command
     Q_INVOKABLE void triggerSimpleCamera(void);
 
+    /// Set RID module to selfid Emergency status
+    Q_INVOKABLE void ridSetEmergency(void);
+
 #if !defined(NO_ARDUPILOT_DIALECT)
     Q_INVOKABLE void flashBootloader();
 #endif
@@ -528,6 +533,8 @@ public:
     void setGuidedMode(bool guidedMode);
 
     QString prearmError() const { return _prearmError; }
+    QString droneIDState() const { return _droneIDState; }
+
     void setPrearmError(const QString& prearmError);
 
     QmlObjectListModel* cameraTriggerPoints () { return &_cameraTriggerPoints; }
@@ -868,6 +875,7 @@ signals:
     void guidedModeChanged              (bool guidedMode);
     void vtolInFwdFlightChanged         (bool vtolInFwdFlight);
     void prearmErrorChanged             (const QString& prearmError);
+    void droneIDStateChanged            (const QString& droneIDState);
     void soloFirmwareChanged            (bool soloFirmware);
     void defaultCruiseSpeedChanged      (double cruiseSpeed);
     void defaultHoverSpeedChanged       (double hoverSpeed);
@@ -1003,6 +1011,7 @@ private:
     void _startJoystick                 (bool start);
     void _handlePing                    (LinkInterface* link, mavlink_message_t& message);
     void _handleHomePosition            (mavlink_message_t& message);
+    void _handleDroneIdArmStatus        (mavlink_message_t& message);
     void _handleHeartbeat               (mavlink_message_t& message);
     void _handleRadioStatus             (mavlink_message_t& message);
     void _handleRCChannels              (mavlink_message_t& message);
@@ -1129,6 +1138,8 @@ private:
     QGCCameraManager* _cameraManager = nullptr;
 
     QString             _prearmError;
+    QString             _droneIDState;
+
     QTimer              _prearmErrorTimer;
     static const int    _prearmErrorTimeoutMSecs = 35 * 1000;   ///< Take away prearm error after 35 seconds
 
@@ -1219,6 +1230,8 @@ private:
     QMap<QString, QTime> _noisySpokenPrearmMap; ///< Used to prevent PreArm messages from being spoken too often
     QTime _noisyGCSLongMessageOn;
     QTime _noisyGCSLongMessageOff;
+    QTime _noisyODIDLocMessage;
+    QTime _noisyODIDMissingMessage;
 
     bool initfilterTimes = true;
     // Orbit status values

@@ -71,7 +71,7 @@ Item {
     PreFlightCheckModel {
         id:     listModel
 
-       /* PreFlightCheckGroup {
+        PreFlightCheckGroup {
             name: qsTr("Hardware Checks")
 
             PreFlightCheckButton {
@@ -96,7 +96,7 @@ Item {
                 failureSatCount:        9
                 allowOverrideSatCount:  true
             }
-        } */
+        }
 
         PreFlightCheckGroup {
             name: qsTr("Pre-launch Checks")

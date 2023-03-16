@@ -135,7 +135,8 @@ add_library(MissionManager
 	VisualMissionItem.h
 	VTOLLandingComplexItem.cc
 	VTOLLandingComplexItem.h
-
+        VTOLTakeoffComplexItem.cc
+        VTOLTakeoffComplexItem.h
 	Section.h # shouldn't be listed here, but isn't named properly for AUTOMOC
 
 	${EXTRA_SRC}
