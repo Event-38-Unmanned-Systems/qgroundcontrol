@@ -55,6 +55,8 @@ public:
                             QString mapType);
 
     bool isElevation(int mapId);
+    bool needsSerializingTiles(QString mapId);
+    QByteArray serializeTileForId(QByteArray image, QString mapId);
 
   private:
     int             _timeout;

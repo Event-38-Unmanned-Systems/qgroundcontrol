@@ -51,6 +51,8 @@ public:
     virtual QGCTileSet getTileCount(const int zoom, const double topleftLon,
                                      const double topleftLat, const double bottomRightLon,
                                      const double bottomRightLat) const;
+    virtual bool serializeTilesNeeded() { return false; }
+    virtual QByteArray serializeTile(QByteArray image) { return image; }
 
 protected:
     QString _tileXYToQuadKey(const int tileX, const int tileY, const int levelOfDetail) const;

@@ -21,6 +21,7 @@
 #include "QGCMapEngineManager.h"
 #include "TerrainTile.h"
 
+
 #include <QSettings>
 #include <math.h>
 
@@ -285,11 +286,53 @@ QGCCachedTileSet::_networkReplyFinished()
                 qWarning() << "QGCMapEngineManager::networkReplyFinished() Reply not in list: " << hash;
             }
             qCDebug(QGCCachedTileSetLog) << "Tile fetched" << hash;
+
             QByteArray image = reply->readAll();
-            QString type = getQGCMapEngine()->hashToType(hash);
-            if (type == "Airmap Elevation" ) {
-                image = TerrainTile::serializeFromAirMapJson(image);
+
+
+            // Split out filename from path
+            QString remoteFileName = QFileInfo(reply->url().toString()).fileName();
+            if (remoteFileName.isEmpty()) {
+                qWarning() << "Unabled to parse filename from remote url" << reply->url().toString();
+                remoteFileName = "DownloadedFile";
             }
+
+
+            // Strip out http parameters from remote filename
+            int parameterIndex = remoteFileName.indexOf("?");
+            if (parameterIndex != -1) {
+                remoteFileName  = remoteFileName.left(parameterIndex);
+            }
+
+
+            QFileInfo fi(remoteFileName);
+            QString ext = fi.completeSuffix();
+
+            //need to save ardupilot terrain data zip for extraction
+            if (ext == "hgt.zip"){
+
+            // Determine location to download file to
+            QString downloadFilename = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+
+            downloadFilename += "/"  + remoteFileName;
+
+            if (!downloadFilename.isEmpty()) {
+                // Store downloaded file in download location
+                QFile file(downloadFilename);
+                if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                    file.write(image);
+                    file.close();
+                }
+                }
+
+}
+
+            QString type = getQGCMapEngine()->hashToType(hash);
+
+            // Some providers need the images to be serialized because the response is not directly a image based tile
+                       if (getQGCMapEngine()->urlFactory()->needsSerializingTiles(type)) {
+                           image = getQGCMapEngine()->urlFactory()->serializeTileForId(image, type);
+                       }
             QString format = getQGCMapEngine()->urlFactory()->getImageFormat(type, image);
             if(!format.isEmpty()) {
                 //-- Cache tile

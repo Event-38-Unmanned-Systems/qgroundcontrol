@@ -75,6 +75,7 @@ UrlFactory::UrlFactory() : _timeout(5 * 1000) {
     _providersTable["VWorld Satellite Map"] = new VWorldSatMapProvider(this);
 
     _providersTable["Airmap Elevation"] = new AirmapElevationProvider(this);
+    _providersTable["Ardupilot SRTM1"] = new ApStr1ElevationProvider(this);
 
     _providersTable["Japan-GSI Contour"] = new JapanStdMapProvider(this);
     _providersTable["Japan-GSI Seamless"] = new JapanSeamlessMapProvider(this);
@@ -205,4 +206,13 @@ UrlFactory::getTileCount(int zoom, double topleftLon, double topleftLat, double 
 
 bool UrlFactory::isElevation(int mapId){
     return _providersTable[getTypeFromId(mapId)]->_isElevationProvider();
+}
+
+
+bool UrlFactory::needsSerializingTiles(QString mapId){
+    return _providersTable[mapId]->serializeTilesNeeded();
+}
+
+QByteArray UrlFactory::serializeTileForId(QByteArray image, QString mapId){
+    return _providersTable[mapId]->serializeTile(image);
 }
