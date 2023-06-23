@@ -428,6 +428,7 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 #
 
 HEADERS += \
+    src/Compression/QGCZip.h \
     src/QmlControls/QmlUnitsConversion.h \
     src/Vehicle/VehicleEscStatusFactGroup.h \
     src/api/QGCCorePlugin.h \
@@ -442,6 +443,7 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 }
 
 SOURCES += \
+    src/Compression/QGCZip.cc \
     src/Vehicle/VehicleEscStatusFactGroup.cc \
     src/api/QGCCorePlugin.cc \
     src/api/QGCOptions.cc \
@@ -579,6 +581,8 @@ HEADERS += \
     src/CmdLineOptParser.h \
     src/Compression/QGCLZMA.h \
     src/Compression/QGCZlib.h \
+    src/Compression/ioapi.h \
+    src/Compression/unzip.h \
     src/FirmwarePlugin/PX4/px4_custom_mode.h \
     src/FollowMe/FollowMe.h \
     src/Joystick/Joystick.h \
@@ -829,13 +833,15 @@ SOURCES += \
     src/AnalyzeView/ULogParser.cc \
     src/AnalyzeView/MavlinkConsoleController.cc \
     src/Audio/AudioOutput.cc \
+    src/Compression/QGCZlib.cc \
+    src/Compression/unzip.c \
+    src/Compression/ioapi.c \
     src/Vehicle/Autotune.cpp \
     src/Camera/QGCCameraControl.cc \
     src/Camera/QGCCameraIO.cc \
     src/Camera/QGCCameraManager.cc \
     src/CmdLineOptParser.cc \
     src/Compression/QGCLZMA.cc \
-    src/Compression/QGCZlib.cc \
     src/FollowMe/FollowMe.cc \
     src/Joystick/Joystick.cc \
     src/Joystick/JoystickManager.cc \

@@ -168,7 +168,7 @@ QGCMapEngineManager::startDownload(const QString& name, const QString& mapType)
 
     if (_fetchElevation && !getQGCMapEngine()->urlFactory()->isElevation(mapid)) {
         QString elevationProviderName = qgcApp()->toolbox()->settingsManager()->flightMapSettings()->elevationMapProvider()->rawValue().toString();
-        QGCCachedTileSet* set = new QGCCachedTileSet(elevationProviderName + " Elevation");
+        QGCCachedTileSet* set = new QGCCachedTileSet(name + " Elevation");
         set->setMapTypeStr(elevationProviderName);
         set->setTopleftLat(_topleftLat);
         set->setTopleftLon(_topleftLon);

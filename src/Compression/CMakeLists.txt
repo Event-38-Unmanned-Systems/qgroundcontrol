@@ -4,9 +4,14 @@ set(XZ_EMBEDDED_DIR ${CMAKE_SOURCE_DIR}/libs/xz-embedded)
 add_library(compression
 	QGCLZMA.cc
 	QGCLZMA.h
-	QGCZlib.cc
-	QGCZlib.h
-	
+        QGCZlib.cc
+        QGCZlib.h
+        ioapi.c
+        ioapi.h
+        unzip.c
+        unzip.h
+
+
 	${XZ_EMBEDDED_DIR}/linux/include/linux/xz.h
 	${XZ_EMBEDDED_DIR}/linux/lib/xz/xz_lzma2.h
 	${XZ_EMBEDDED_DIR}/linux/lib/xz/xz_private.h

@@ -20,7 +20,10 @@
 #include "QGCMapTileSet.h"
 #include "QGCMapEngineManager.h"
 #include "TerrainTile.h"
-
+#include "QGCZip.h"
+#include <QFile>
+#include <QtCore/qfileinfo.h>
+#include <QStandardPaths>
 
 #include <QSettings>
 #include <math.h>
@@ -312,9 +315,9 @@ QGCCachedTileSet::_networkReplyFinished()
             if (ext == "hgt.zip"){
 
             // Determine location to download file to
-            QString downloadFilename = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+            QString downloadFilePath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + "/";
 
-            downloadFilename += "/"  + remoteFileName;
+            QString downloadFilename = downloadFilePath + remoteFileName;
 
             if (!downloadFilename.isEmpty()) {
                 // Store downloaded file in download location
@@ -323,6 +326,16 @@ QGCCachedTileSet::_networkReplyFinished()
                     file.write(image);
                     file.close();
                 }
+                  unzFile uf=NULL;
+
+                  QByteArray ba = downloadFilename.toLocal8Bit();
+                  const char* filepathwithName = ba.data();
+
+                  QByteArray ba2 = downloadFilePath.toLocal8Bit();
+                  const char* filepath = ba2.data();
+
+                  uf = unzOpen64((void*)filepathwithName);
+                  QGCZip::do_extract(uf,0,1,filepath);
                 }
 
 }
