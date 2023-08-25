@@ -16,6 +16,7 @@ import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Palette               1.0
 import MAVLink                              1.0
+
 //-------------------------------------------------------------------------
 //-- Battery Indicator
 Item {
@@ -25,8 +26,12 @@ Item {
     width:          batteryIndicatorRow.width
     property var mahRemaining: -5
     property bool showIndicator: true
+    property int cell: 0
+    property int maxMah: 0
+    property bool reCalc: false
 
     property var _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
+
 
     Row {
         id:             batteryIndicatorRow
@@ -77,44 +82,69 @@ Item {
             /*these are estimated averages determined from a 100
             minute endurance flight on the E400 used to determine the starting
             estimated capicity of the flight battery*/
-            function getMahRemaining() {
+
+            function getMahRemaining(cell1,maxMah1) {
+
                 var mahUsed
-            if (battery.voltage.rawValue > 32.6){
+
+                //array containing the volatage used for voltage to MAH conversion for SSLion batteries.
+                var battStageVolt = [4.075 * cell1,3.7325 * cell1,3.5275 * cell1, 3.37 * cell1, 3 * cell1,0]
+                var battStageScaler =[.3445,.2375,.1783,.2395]
+                var battStageMah = [(maxMah1 * battStageScaler[0]),(maxMah1 * battStageScaler[1]),(maxMah1 * battStageScaler[2]),(maxMah1 * battStageScaler[3])]
+                //full
+            if (battery.voltage.rawValue > battStageVolt[0]){
                 //~100% battery over this voltage
                 mahUsed = 0
             }
-            else if (battery.voltage.rawValue >= 29.86){
+            //stage1
+            else if (battery.voltage.rawValue >= battStageVolt[1]){
             //~5512 mah in this range max
-            mahUsed = 5512 * ((32.6 - battery.voltage.rawValue) / (32.6 - 29.86))
+            mahUsed = battStageMah[0] * ((battStageVolt[0] - battery.voltage.rawValue) / (battStageVolt[0] - battStageVolt[1]))
             }
-            else if (battery.voltage.rawValue >= 28.22){
+            //stage2
+            else if (battery.voltage.rawValue >= battStageVolt[2]){
                 //~3800 mah
-                mahUsed = 5512 + (3800  * (29.86 - battery.voltage.rawValue) / (29.86 - 28.22))
+                mahUsed = battStageMah[0] + (battStageMah[1]  * (battStageVolt[1] - battery.voltage.rawValue) / (battStageVolt[1] - battStageVolt[2]))
             }
-            else if (battery.voltage.rawValue >= 26.96){
+            //stage3
+            else if (battery.voltage.rawValue >= battStageVolt[3]){
               //~2854 mah left
-                mahUsed = 5512 + 3800 + (2854  * (28.22 - battery.voltage.rawValue) / (28.22 - 26.96))
+                mahUsed = battStageMah[0] + battStageMah[1] + (battStageMah[2]  * (battStageVolt[2] - battery.voltage.rawValue) / (battStageVolt[2] - battStageVolt[3]))
             }
-            else if (battery.voltage.rawValue >= 24.0){
+            //stage4
+            else if (battery.voltage.rawValue >= battStageVolt[4]){
               //~3832 mah left
-                mahUsed = 5512 + 3800 + 2854 + (3832  * (26.96 - battery.voltage.rawValue) / (26.96 - 24.0))
+                mahUsed = battStageMah[0] + battStageMah[1] + battStageMah[2] + (battStageMah[3]  * (battStageVolt[3] - battery.voltage.rawValue) / (battStageVolt[3] - battStageVolt[4]))
             }
+            //stage5
             else if (battery.voltage.rawValue >= 0){
               //0 mah left
-                mahUsed = 16000
+                mahUsed = maxMah1
             }
-            mahRemaining = 16000 - mahUsed
+            mahRemaining = maxMah1 - mahUsed
             }
 
             function getBatteryPercentageText() {
 
-                if (!isNaN(battery.voltage.rawValue) && mahRemaining === -5){
-                    getMahRemaining()
+                if (!isNaN(battery.voltage.rawValue) && (mahRemaining === -5)){
+                     cell = _activeVehicle.batteryCells
+                     maxMah = _activeVehicle.batteryMAH
+                    getMahRemaining(cell,maxMah)
+                }
+                else if (cell !== _activeVehicle.batteryCells && mahRemaining !== -5){
+                    cell = _activeVehicle.batteryCells
+                    maxMah = _activeVehicle.batteryMAH
+                    getMahRemaining(cell,maxMah)
+                }
+                else if (maxMah !==_activeVehicle.batteryMAH && mahRemaining !== -5){
+                    cell = _activeVehicle.batteryCells
+                    maxMah = _activeVehicle.batteryMAH
+                   getMahRemaining(cell,maxMah)
                 }
                 //handle mod 0 case? Some weird error in here that sometimes
                 //happens when connecting to plane. Makes HUD set to NAN
                 if (!isNaN(battery.mahConsumed.rawValue) && mahRemaining !== -5){
-                       var percent = ((mahRemaining - battery.mahConsumed.rawValue)  / 16000) * 100
+                       var percent = ((mahRemaining - battery.mahConsumed.rawValue)  / _activeVehicle.batteryMAH) * 100
                        if (percent !== 0){
                        percent = percent - (percent % 1)
                        return percent.toString() + battery.percentRemaining.units
@@ -229,7 +259,7 @@ Item {
                                 //QGCLabel { text: "" }
                                 //QGCLabel { text: object.chargeState.enumStringValue;                                        visible: batteryValuesAvailable.chargeStateAvailable }
                                 //QGCLabel { text: object.timeRemainingStr.value;                                             visible: batteryValuesAvailable.timeRemainingAvailable }
-                               // QGCLabel { text: object.percentRemaining.valueString + " " + object.percentRemaining.units }
+                                //QGCLabel { text: object.percentRemaining.valueString + " " + object.percentRemaining.units }
                                 QGCLabel { text: object.voltage.valueString + " " + object.voltage.units }
                                 QGCLabel { text: object.mahConsumed.valueString + " " + object.mahConsumed.units;           visible: batteryValuesAvailable.mahConsumedAvailable }
                                 //QGCLabel { text: object.temperature.valueString + " " + object.temperature.units;           visible: batteryValuesAvailable.temperatureAvailable }

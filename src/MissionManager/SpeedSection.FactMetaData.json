@@ -10,7 +10,7 @@
     "units":            "m/s",
     "min":              14,
     "decimalPlaces":    1,
-    "default":     16
+    "default":     20
 }
 ]
 }

@@ -40,6 +40,21 @@
     "default":      300.0,
     "units":        "m",
     "min":          100.0
+},
+{
+    "name":             "landingJson",
+    "shortDesc": "takeoff json for aircraft",
+    "longDesc":  "takeoff json for aircraft",
+    "type":             "string",
+    "default":     ":/json/E400LandingPattern.FactMetaData.json"
+},
+{
+    "name":             "takeoffJson",
+    "shortDesc": "takeoff json for aircraft",
+    "longDesc":  "takeoff json for aircraft",
+    "type":             "string",
+    "default":     ":/json/E400TakeoffPattern.FactMetaData.json"
 }
 ]
 }
+

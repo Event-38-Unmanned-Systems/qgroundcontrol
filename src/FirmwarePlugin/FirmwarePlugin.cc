@@ -390,6 +390,23 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
         _cameraList.append(QVariant::fromValue(metaData));
 
         metaData = new CameraMetaData(
+                    "RedEdge-P",
+                    tr("MicaSense"),
+                    tr("RedEdge-P"),
+                    5.02,            // sensorWidth
+                    3.75,            // sendsorHeight
+                    1456,           // imageWidth
+                    1088,            // imageHeight
+                    5.5,            // focalLength
+                    true,           // landscape
+                    true,          // fixedOrientation
+                    .4,              // minTriggerInterval
+                    tr("RedEdge-P"),  // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
+                    this);
+
+        _cameraList.append(QVariant::fromValue(metaData));
+
+        metaData = new CameraMetaData(
                     "RedEdge",
                     tr("MicaSense"),
                     tr("RedEdge"),

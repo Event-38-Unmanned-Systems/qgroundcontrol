@@ -27,7 +27,7 @@ const char* VTOLTakeoffComplexItem::jsonComplexItemTypeValue = "VTOLTakeoffPatte
 
 VTOLTakeoffComplexItem::VTOLTakeoffComplexItem(PlanMasterController* masterController, bool flyView)
     : TakeoffComplexItem        (masterController, flyView)
-    , _metaDataMap              (FactMetaData::createMapFromJsonFile(QStringLiteral(":/json/VTOLTakeoffPattern.FactMetaData.json"), this))
+    , _metaDataMap              (FactMetaData::createMapFromJsonFile(jsonname, this))
     , _takeoffDistFact          (settingsGroup, _metaDataMap[takeoffDistName])
     , _vtolAltFact              (settingsGroup, _metaDataMap[vtolAltName])
     , _climboutAltFact          (settingsGroup, _metaDataMap[climboutAltName])
@@ -36,6 +36,7 @@ VTOLTakeoffComplexItem::VTOLTakeoffComplexItem(PlanMasterController* masterContr
     , _useLoiterToAltFact       (settingsGroup, _metaDataMap[useLoiterToAltName])
     , _gradientFact             (settingsGroup, _metaDataMap[gradientName])
     , _loiterRadiusFact         (settingsGroup, _metaDataMap[loiterRadiusName])
+    , _transitionDistanceFact   (settingsGroup, _metaDataMap[transitionDistanceName])
 {
     _editorQml      = "qrc:/qml/VTOLTakeoffPatternEditor.qml";
     _isIncomplete   = false;
@@ -119,7 +120,7 @@ void VTOLTakeoffComplexItem::_updateFlightPathSegmentsDontCallDirectly(void)
     _appendFlightPathSegment(FlightPathSegment::SegmentTypeTakeoff, vtolTakeoffCoordinate(), amslgroundAlt(), vtolTakeoffCoordinate(), amslEntryAlt());
 
 
-   QGeoCoordinate endTransition =_vtolTakeoffCoordinate.atDistanceAndAzimuth(120, _vtolTakeoffCoordinate.azimuthTo(_climboutCoordinate));
+   QGeoCoordinate endTransition =_vtolTakeoffCoordinate.atDistanceAndAzimuth(transitionDistance()->rawMax().toDouble(), _vtolTakeoffCoordinate.azimuthTo(_climboutCoordinate));
 
     _appendFlightPathSegment(FlightPathSegment::SegmentTypeGeneric, vtolTakeoffCoordinate(), amslEntryAlt(), endTransition, amslEntryAlt());
 

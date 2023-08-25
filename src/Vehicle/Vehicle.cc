@@ -95,6 +95,8 @@ const char* Vehicle::_headingToHomeFactName =       "headingToHome";
 const char* Vehicle::_distanceToGCSFactName =       "distanceToGCS";
 const char* Vehicle::_hobbsFactName =               "hobbs";
 const char* Vehicle::_throttlePctFactName =         "throttlePct";
+const char* Vehicle::_loiterRadiusMinFactName =     "loiterRadiusMin";
+const char* Vehicle::_loiterRadiusMaxFactName =     "loiterRadiusMax";
 
 const char* Vehicle::_gpsFactGroupName =                "gps";
 const char* Vehicle::_gps2FactGroupName =               "gps2";
@@ -155,6 +157,8 @@ Vehicle::Vehicle(LinkInterface*             link,
     , _headingToHomeFact            (0, _headingToHomeFactName,     FactMetaData::valueTypeDouble)
     , _distanceToGCSFact            (0, _distanceToGCSFactName,     FactMetaData::valueTypeDouble)
     , _hobbsFact                    (0, _hobbsFactName,             FactMetaData::valueTypeString)
+    , _loiterRadiusMinFact          (0, _loiterRadiusMinFactName,   FactMetaData::valueTypeDouble)
+    , _loiterRadiusMaxFact          (0, _loiterRadiusMaxFactName,   FactMetaData::valueTypeDouble)
     , _throttlePctFact              (0, _throttlePctFactName,       FactMetaData::valueTypeUint16)
     , _gpsFactGroup                 (this)
     , _gps2FactGroup                (this)
@@ -309,6 +313,8 @@ Vehicle::Vehicle(MAV_AUTOPILOT              firmwareType,
     , _headingToHomeFact                (0, _headingToHomeFactName,     FactMetaData::valueTypeDouble)
     , _distanceToGCSFact                (0, _distanceToGCSFactName,     FactMetaData::valueTypeDouble)
     , _hobbsFact                        (0, _hobbsFactName,             FactMetaData::valueTypeString)
+    , _loiterRadiusMinFact              (0, _loiterRadiusMinFactName,   FactMetaData::valueTypeDouble)
+    , _loiterRadiusMaxFact              (0, _loiterRadiusMaxFactName,   FactMetaData::valueTypeDouble)
     , _throttlePctFact                  (0, _throttlePctFactName,       FactMetaData::valueTypeUint16)
     , _gpsFactGroup                     (this)
     , _gps2FactGroup                    (this)
@@ -330,6 +336,7 @@ Vehicle::Vehicle(MAV_AUTOPILOT              firmwareType,
 
     connect(_settingsManager->appSettings()->offlineEditingCruiseSpeed(),   &Fact::rawValueChanged, this, &Vehicle::_offlineCruiseSpeedSettingChanged);
     connect(_settingsManager->appSettings()->offlineEditingHoverSpeed(),    &Fact::rawValueChanged, this, &Vehicle::_offlineHoverSpeedSettingChanged);
+    connect(_settingsManager->appSettings()->offlineEditingVehicleName(),   &Fact::rawValueChanged, this, &Vehicle::_offlineEditingVehicleNameSettingChanged);
 
     _offlineFirmwareTypeSettingChanged(_firmwareType);  // This adds correct terrain capability bit
     _firmwarePlugin->initializeVehicle(this);
@@ -434,7 +441,8 @@ void Vehicle::_commonInit()
 
     _hobbsFact.setRawValue(QVariant(QString("0000:00:00")));
     _addFact(&_hobbsFact,               _hobbsFactName);
-
+    _addFact(&_loiterRadiusMinFact,        _loiterRadiusMinFactName);
+    _addFact(&_loiterRadiusMaxFact,        _loiterRadiusMaxFactName);
     _addFactGroup(&_gpsFactGroup,               _gpsFactGroupName);
     _addFactGroup(&_gps2FactGroup,              _gps2FactGroupName);
     _addFactGroup(&_windFactGroup,              _windFactGroupName);
@@ -544,6 +552,37 @@ void Vehicle::_offlineCruiseSpeedSettingChanged(QVariant value)
 {
     _defaultCruiseSpeed = value.toDouble();
     emit defaultCruiseSpeedChanged(_defaultCruiseSpeed);
+}
+void Vehicle::setDefaultRadius(double min, double max){
+    //_hobbsFact.setRawValue(hobbsMeter());
+    _loiterRadiusMinFact.setRawValue(min);
+    _loiterRadiusMaxFact.setRawValue(max);
+    //loiterRadius.rawMin = min;
+    //loiterRadius.rawMax = max;
+}
+void Vehicle::_offlineEditingVehicleNameSettingChanged(QVariant value)
+{
+
+    //400 defaults
+ if (value == 10){     
+     _settingsManager->appSettings()->offlineEditingCruiseSpeed()->setRawValue(16);
+     _settingsManager->planViewSettings()->takeoffJson()->setRawValue(QStringLiteral(":/json/E400TakeoffPattern.FactMetaData.json"));
+     _settingsManager->planViewSettings()->landingJson()->setRawValue(QStringLiteral(":/json/E400LandingPattern.FactMetaData.json"));
+
+ }
+
+ //455 defaults
+ else if (value == 15){
+     _settingsManager->appSettings()->offlineEditingCruiseSpeed()->setRawValue(17.5);
+     _settingsManager->planViewSettings()->takeoffJson()->setRawValue(QStringLiteral(":/json/E455TakeoffPattern.FactMetaData.json"));
+     _settingsManager->planViewSettings()->landingJson()->setRawValue(QStringLiteral(":/json/E455LandingPattern.FactMetaData.json"));
+ }
+ //default to 400 stats if no vehicle
+ else{
+     _settingsManager->appSettings()->offlineEditingCruiseSpeed()->setRawValue(16);
+     _settingsManager->planViewSettings()->takeoffJson()->setRawValue(QStringLiteral(":/json/E400TakeoffPattern.FactMetaData.json"));
+     _settingsManager->planViewSettings()->landingJson()->setRawValue(QStringLiteral(":/json/E400LandingPattern.FactMetaData.json"));
+ }
 }
 
 void Vehicle::_offlineHoverSpeedSettingChanged(QVariant value)
@@ -2804,13 +2843,13 @@ void Vehicle::_terrainDataReceived(bool success, QList<double> heights){
     sendMavCommand(
                 MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_SET_ROI,
-                false,                               // show errors
-                0,           // Pitch 0 - 90
-                0,                                   // Roll (not used)
-                0,             // Yaw -180 - 180
-                0,                                   // Altitude (not used)
-                gimbalCoordinate.latitude(),                                   // Latitude (not used)
-                gimbalCoordinate.longitude(),                                   // Longitude (not used)
+                false,
+                0,
+                0,
+                0,
+                0,
+                gimbalCoordinate.latitude(),
+                gimbalCoordinate.longitude(),
                 _terrainAltitude,   // MAVLink Roll,Pitch,Yaw
                 false);
 
@@ -4363,6 +4402,7 @@ void Vehicle::setAirspeedCalibrated(bool calibrated)
 
 void Vehicle::triggerSimpleCamera()
 {
+    _batteryCells = 12;
     sendMavCommand(_defaultComponentId,
                    MAV_CMD_DO_DIGICAM_CONTROL,
                    true,                        // show errors

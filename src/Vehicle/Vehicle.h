@@ -261,7 +261,8 @@ public:
     Q_PROPERTY(bool                 requiresGpsFix              READ requiresGpsFix                                                 NOTIFY requiresGpsFixChanged)
     Q_PROPERTY(double               loadProgress                READ loadProgress                                                   NOTIFY loadProgressChanged)
     Q_PROPERTY(bool                 initialConnectComplete      READ isInitialConnectComplete                                       NOTIFY initialConnectComplete)
-
+    Q_PROPERTY(double               batteryCells                READ batteryCells                                                   NOTIFY batterycellsChanged)
+    Q_PROPERTY(double               batteryMAH                  READ batteryMAH                                                     NOTIFY batterymahChanged)
     // The following properties relate to Orbit status
     Q_PROPERTY(bool             orbitActive     READ orbitActive        NOTIFY orbitActiveChanged)
     Q_PROPERTY(QGCMapCircle*    orbitMapCircle  READ orbitMapCircle     CONSTANT)
@@ -306,6 +307,9 @@ public:
     Q_PROPERTY(Fact* headingToHome      READ headingToHome      CONSTANT)
     Q_PROPERTY(Fact* distanceToGCS      READ distanceToGCS      CONSTANT)
     Q_PROPERTY(Fact* hobbs              READ hobbs              CONSTANT)
+    Q_PROPERTY(Fact* loiterRadiusMin    READ loiterRadiusMin    CONSTANT)
+    Q_PROPERTY(Fact* loiterRadiusMax    READ loiterRadiusMax    CONSTANT)
+
     Q_PROPERTY(Fact* throttlePct        READ throttlePct        CONSTANT)
 
     Q_PROPERTY(FactGroup*           gps             READ gpsFactGroup               CONSTANT)
@@ -477,6 +481,8 @@ public:
     bool joystickEnabled            () const;
     void setJoystickEnabled         (bool enabled);
 
+    void setDefaultRadius         (double min,double max);
+
     void sendJoystickDataThreadSafe (float roll, float pitch, float yaw, float thrust,float gimbalRoll,float gimbalPitch, quint16 buttons);
 
     // Property accesors
@@ -503,6 +509,8 @@ public:
     /// Provides access to the Firmware Plugin for this Vehicle
     FirmwarePlugin* firmwarePlugin() { return _firmwarePlugin; }
 
+    double          _batteryCells = 8;
+    double          _batteryMAH = 16000;
 
     QGeoCoordinate homePosition();
 
@@ -603,8 +611,13 @@ public:
     QString         followFlightMode            () const;
     double          defaultCruiseSpeed          () const { return _defaultCruiseSpeed; }
     double          defaultHoverSpeed           () const { return _defaultHoverSpeed; }
+    double          batteryCells                () const { return _batteryCells; }
+    double          batteryMAH                  () const { return _batteryMAH; }
+
+
     QString         firmwareTypeString          () const;
     QString         vehicleTypeString           () const;
+
     int             telemetryRRSSI              () const{ return _telemetryRRSSI; }
     int             telemetryLRSSI              () const{ return _telemetryLRSSI; }
     unsigned int    telemetryRXErrors           () const{ return _telemetryRXErrors; }
@@ -670,6 +683,9 @@ public:
     Fact* headingToHome                     () { return &_headingToHomeFact; }
     Fact* distanceToGCS                     () { return &_distanceToGCSFact; }
     Fact* hobbs                             () { return &_hobbsFact; }
+    Fact* loiterRadiusMin                   () { return &_loiterRadiusMinFact; }
+    Fact* loiterRadiusMax                   () { return &_loiterRadiusMaxFact; }
+
     Fact* throttlePct                       () { return &_throttlePctFact; }
 
     FactGroup* gpsFactGroup                 () { return &_gpsFactGroup; }
@@ -930,6 +946,8 @@ signals:
     void gitHashChanged                 (QString hash);
     void vehicleUIDChanged              ();
     void loadProgressChanged            (float value);
+    void batterycellsChanged            (float value);
+    void batterymahChanged              (float value);
 
     /// New RC channel values coming from RC_CHANNELS message
     ///     @param channelCount Number of available channels, cMaxRcChannels max
@@ -980,6 +998,7 @@ private slots:
     void _handleFlightModeChanged           (const QString& flightMode);
     void _announceArmedChanged              (bool armed);
     void _offlineCruiseSpeedSettingChanged  (QVariant value);
+    void _offlineEditingVehicleNameSettingChanged  (QVariant value);
     void _offlineHoverSpeedSettingChanged   (QVariant value);
     void _handleTextMessage                 (int newCount);
     void _handletextMessageReceived         (UASMessage* message);
@@ -1070,6 +1089,7 @@ private:
 
     MAV_AUTOPILOT       _firmwareType;
     MAV_TYPE            _vehicleType;
+    QString             _vehicleName;
     FirmwarePlugin*     _firmwarePlugin = nullptr;
     QObject*            _firmwarePluginInstanceData = nullptr;
     AutoPilotPlugin*    _autopilotPlugin = nullptr;
@@ -1343,6 +1363,8 @@ private:
     Fact _headingToHomeFact;
     Fact _distanceToGCSFact;
     Fact _hobbsFact;
+    Fact _loiterRadiusMinFact;
+    Fact _loiterRadiusMaxFact;
     Fact _throttlePctFact;
 
     VehicleGPSFactGroup             _gpsFactGroup;
@@ -1395,6 +1417,8 @@ private:
     static const char* _headingToHomeFactName;
     static const char* _distanceToGCSFactName;
     static const char* _hobbsFactName;
+    static const char* _loiterRadiusMinFactName;
+    static const char* _loiterRadiusMaxFactName;
     static const char* _throttlePctFactName;
 
     static const char* _gpsFactGroupName;

@@ -427,8 +427,8 @@ void MultiVehicleManager::_sendRID(void)
             mavlink_msg_open_drone_id_system_update_pack(_mavlinkProtocol->getSystemId(),
                                                          _mavlinkProtocol->getComponentId(),
                                                          &message,
-                                                         0,   //broadcast sysid
-                                                         0,   //broadcast compid
+                                                         1,   // sysid
+                                                         1,   // compid
                                                          gcsPosition.latitude() * 10000000,  //lat
                                                          gcsPosition.longitude()* 10000000,  //lon
                                                          gcsPosition.altitude(),  //alt
@@ -468,8 +468,8 @@ void MultiVehicleManager::_sendLongRID(void)
             mavlink_msg_open_drone_id_system_pack(_mavlinkProtocol->getSystemId(),
                                                          _mavlinkProtocol->getComponentId(),
                                                          &message,
-                                                         0,   //broadcast sysid
-                                                         0,   //broadcast compid
+                                                         1,   // sysid
+                                                         1,   // compid
                                                          ID_OR_MAC,
                                                          MAV_ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS,// operator location type
                                                          MAV_ODID_CLASSIFICATION_TYPE_UNDECLARED, // MAV_ODID_CLASSIFICATION_TYPE Specifies the classification type of the UA.
@@ -489,7 +489,6 @@ void MultiVehicleManager::_sendLongRID(void)
             link->writeBytesThreadSafe((const char*)buffer, len);
 
             }
-
         }
     }
 }

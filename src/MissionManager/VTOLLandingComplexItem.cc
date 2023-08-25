@@ -28,7 +28,7 @@ const char* VTOLLandingComplexItem::glideSlopeName      = "GlideSlope";
 
 VTOLLandingComplexItem::VTOLLandingComplexItem(PlanMasterController* masterController, bool flyView)
     : LandingComplexItem        (masterController, flyView)
-    , _metaDataMap              (FactMetaData::createMapFromJsonFile(QStringLiteral(":/json/VTOLLandingPattern.FactMetaData.json"), this))
+    , _metaDataMap              (FactMetaData::createMapFromJsonFile(jsonname, this))
     , _transitionAltFact        (settingsGroup, _metaDataMap[transitionAltName])
     , _transitionDistanceFact   (settingsGroup, _metaDataMap[transitionDistanceName])
     , _landingDistanceFact      (settingsGroup, _metaDataMap[finalApproachToLandDistanceName])

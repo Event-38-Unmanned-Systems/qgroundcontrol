@@ -133,10 +133,20 @@
     "type":             "string"
 },
 {
-    "name":             "throttlePct",
-    "shortDesc": "Throttle %",
-    "type":             "uint16",
-    "units":            "%"
+    "name":             "loiterRadiusMin",
+    "shortDesc":        "guided loiter radius limits",
+    "type":             "double",
+    "units":            "m",
+    "decimalPlaces":    1,
+    "default":          70.0
+},
+{
+    "name":             "loiterRadiusMax",
+    "shortDesc":        "guided loiter radius limits",
+    "type":             "double",
+    "units":            "m",
+    "decimalPlaces":    1,
+    "default":          500.0
 }
 ]
 }

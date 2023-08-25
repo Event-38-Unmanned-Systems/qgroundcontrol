@@ -32,6 +32,8 @@
 #include "APMHeliComponent.h"
 #include "QGCApplication.h"
 #include "ParameterManager.h"
+#include "QGCApplication.h"
+#include "SettingsManager.h"
 
 #if !defined(NO_SERIAL_LINK) && !defined(__android__)
 #include <QSerialPortInfo>
@@ -59,7 +61,7 @@ CustomAutoPilotPlugin::CustomAutoPilotPlugin(Vehicle* vehicle, QObject* parent)
     , _followComponent          (nullptr)
 #endif
 {
-#if !defined(NO_SERIAL_LINK) && !defined(__android__)
+#if !defined(NO_SERIAL_LINK)
     connect(vehicle->parameterManager(), &ParameterManager::parametersReadyChanged, this, &CustomAutoPilotPlugin::_checkForBadCubeBlack);
 #endif
 }
@@ -159,10 +161,53 @@ QString CustomAutoPilotPlugin::prerequisiteSetup(VehicleComponent* component) co
     return QString();
 }
 
-#if !defined(NO_SERIAL_LINK) && !defined(__android__)
+#if !defined(NO_SERIAL_LINK)
 /// The following code is executed when the Vehicle is parameter ready. It checks for the service bulletin against Cube Blacks.
 void CustomAutoPilotPlugin::_checkForBadCubeBlack(void)
 {
+
+    ParameterManager* paramMgr = _vehicle->parameterManager();
+    AppSettings* appSettings = qgcApp()->toolbox()->settingsManager()->appSettings();
+
+    QString swType("SYSID_SW_TYPE");
+    QString batMAH("BATT_CAPACITY");
+    QString trimARSPD("TRIM_ARSPD_CM");
+
+    if (paramMgr->parameterExists(-1, swType)){
+
+        //get sysid
+        int sysid = paramMgr->getParameter(-1, swType)->rawValue().toInt();
+        //E400
+        if ( sysid == 10) {
+            appSettings->offlineEditingVehicleName()->setRawValue(1); //map name to aircraft on connect
+            appSettings->offlineEditingVehicleName()->setRawValue(10); //map name to aircraft on connect
+            _vehicle->_batteryCells = 8;
+            _vehicle->_batteryMAH = 16000;
+            _vehicle->setDefaultRadius(70,500);
+            qDebug() << "E400";
+        }
+        //E455
+        if (sysid == 15) {
+            appSettings->offlineEditingVehicleName()->setRawValue(1); //map name to aircraft on connect
+            appSettings->offlineEditingVehicleName()->setRawValue(15); //map name to aircraft on connect
+            _vehicle->_batteryCells = 12;
+            _vehicle->_batteryMAH = 30000;
+            _vehicle->setDefaultRadius(120,500);
+            qDebug() << "E455";
+        }
+        //check if battery capacity available
+        if (paramMgr->parameterExists(-1, batMAH)){
+           _vehicle->_batteryMAH  = paramMgr->getParameter(-1, batMAH)->rawValue().toInt();
+        }
+        //check if airspeed trim available
+        if (paramMgr->parameterExists(-1, trimARSPD)){
+        int trimAirspeed = paramMgr->getParameter(-1, trimARSPD)->rawValue().toInt()/100;
+        appSettings->offlineEditingCruiseSpeed()->setRawValue((double)trimAirspeed);
+        emit appSettings->offlineEditingCruiseSpeed()->rawValueChanged((double)trimAirspeed);
+        }
+
+    }
+
     bool cubeBlackFound = false;
 #if 0
     // FIXME: Put back
@@ -177,8 +222,6 @@ void CustomAutoPilotPlugin::_checkForBadCubeBlack(void)
     if (!cubeBlackFound) {
         return;
     }
-
-    ParameterManager* paramMgr = _vehicle->parameterManager();
 
     QString paramAcc3("INS_ACC3_ID");
     QString paramGyr3("INS_GYR3_ID");

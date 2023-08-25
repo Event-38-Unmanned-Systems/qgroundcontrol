@@ -25,6 +25,8 @@ const char* VehicleBatteryFactGroup::_instantPowerFactName          = "instantPo
 const char* VehicleBatteryFactGroup::_timeRemainingFactName         = "timeRemaining";
 const char* VehicleBatteryFactGroup::_timeRemainingStrFactName      = "timeRemainingStr";
 const char* VehicleBatteryFactGroup::_chargeStateFactName           = "chargeState";
+const char* VehicleBatteryFactGroup::_cellsFactName                 = "cells";
+const char* VehicleBatteryFactGroup::_mAhMaxFactName                = "mAhMax";
 
 const char* VehicleBatteryFactGroup::_settingsGroup =                       "Vehicle.battery";
 
@@ -42,6 +44,8 @@ VehicleBatteryFactGroup::VehicleBatteryFactGroup(uint8_t batteryId, QObject* par
     , _timeRemainingStrFact (0, _timeRemainingStrFactName,          FactMetaData::valueTypeString)
     , _chargeStateFact      (0, _chargeStateFactName,               FactMetaData::valueTypeUint8)
     , _instantPowerFact     (0, _instantPowerFactName,              FactMetaData::valueTypeDouble)
+    , _cellsFact            (0, _cellsFactName,                     FactMetaData::valueTypeDouble)
+    , _mAhMaxFact           (0, _mAhMaxFactName,                    FactMetaData::valueTypeDouble)
 {
     _addFact(&_batteryIdFact,               _batteryIdFactName);
     _addFact(&_batteryFunctionFact,         _batteryFunctionFactName);
@@ -55,6 +59,8 @@ VehicleBatteryFactGroup::VehicleBatteryFactGroup(uint8_t batteryId, QObject* par
     _addFact(&_timeRemainingStrFact,        _timeRemainingStrFactName);
     _addFact(&_chargeStateFact,             _chargeStateFactName);
     _addFact(&_instantPowerFact,            _instantPowerFactName);
+    _addFact(&_cellsFact,                   _cellsFactName);
+    _addFact(&_mAhMaxFact,                  _mAhMaxFactName);
 
     _batteryIdFact.setRawValue          (batteryId);
     _batteryFunctionFact.setRawValue    (MAV_BATTERY_FUNCTION_UNKNOWN);
@@ -160,6 +166,8 @@ void VehicleBatteryFactGroup::_handleBatteryStatus(Vehicle* vehicle, mavlink_mes
     group->timeRemaining()->setRawValue     (batteryStatus.time_remaining == 0 ?        qQNaN() : batteryStatus.time_remaining);
     group->chargeState()->setRawValue       (batteryStatus.charge_state);
     group->instantPower()->setRawValue      (totalVoltage * group->current()->rawValue().toDouble());
+    group->cells()->setRawValue             (vehicle->batteryCells());
+    group->mAhMax()->setRawValue            (vehicle->batteryMAH());
     group->_setTelemetryAvailable(true);
 }
 
@@ -182,7 +190,9 @@ VehicleBatteryFactGroup* VehicleBatteryFactGroup::_findOrAddBatteryGroupById(Veh
     }
 
     VehicleBatteryFactGroup* newBatteryGroup = new VehicleBatteryFactGroup(batteryId, batteries);
+
     batteries->append(newBatteryGroup);
+
     vehicle->_addFactGroup(newBatteryGroup, QStringLiteral("%1%2").arg(_batteryFactGroupNamePrefix).arg(batteryId));
 
     return newBatteryGroup;

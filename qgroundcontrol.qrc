@@ -347,6 +347,10 @@
         <file alias="Vehicle/VibrationFact.json">src/Vehicle/VibrationFact.json</file>
         <file alias="Vehicle/WindFact.json">src/Vehicle/WindFact.json</file>
         <file alias="USBBoardInfo.json">src/comm/USBBoardInfo.json</file>
+        <file alias="E455TakeoffPattern.FactMetaData.json">src/MissionManager/E455TakeoffPattern.FactMetaData.json</file>
+        <file alias="E400LandingPattern.FactMetaData.json">src/MissionManager/E400LandingPattern.FactMetaData.json</file>
+        <file alias="E400TakeoffPattern.FactMetaData.json">src/MissionManager/E400TakeoffPattern.FactMetaData.json</file>
+        <file alias="E455LandingPattern.FactMetaData.json">src/MissionManager/E455LandingPattern.FactMetaData.json</file>
     </qresource>
     <qresource prefix="/MockLink">
         <file alias="APMArduSubMockLink.params">src/comm/APMArduSubMockLink.params</file>

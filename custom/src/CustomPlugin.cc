@@ -118,7 +118,7 @@ CustomPlugin::settingsPages()
         _addSettingsEntry(tr("Offline Maps"),"qrc:/qml/OfflineMap.qml",          "qrc:/res/waves.svg");
         _addSettingsEntry(tr("MAVLink"),     "qrc:/qml/MavlinkSettings.qml",     "qrc:/res/waves.svg");
         //_addSettingsEntry(tr("Console"),     "qrc:/qml/QGroundControl/Controls/AppMessages.qml");
-        _addSettingsEntry(tr("Log Review"),   "qrc:/qml/AnalyzeView.qml", "qrc:/qmlimages/Analyze.svg");
+        //_addSettingsEntry(tr("Log Review"),   "qrc:/qml/AnalyzeView.qml", "qrc:/qmlimages/Analyze.svg");
 
 
 #if defined(QT_DEBUG)

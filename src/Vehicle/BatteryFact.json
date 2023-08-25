@@ -85,6 +85,20 @@
     "enumStrings":      "n/a,Ok,Low,Critical,Emergency,Failed,Unhealthy,Charging",
     "enumValues":       "0,1,2,3,4,5,6,7",
     "decimalPlaces":    0
+},
+{
+    "name":             "cells",
+    "shortDesc":        "number of cells",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "default":          8
+},
+{
+    "name":             "mAhMax",
+    "shortDesc":        "mAh at full voltage",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "default":          16000
 }
 ]
 }

@@ -19,10 +19,12 @@ import QGroundControl.Palette       1.0
 import QGroundControl.Controls      1.0
 import QGroundControl.FlightMap     1.0
 
+
+
 /// QGCMapCircle map visuals
 Item {
     id: _root
-
+    property var    _activeVehicle:         QGroundControl.multiVehicleManager.activeVehicle
     property var    mapControl                                                        ///< Map control to place item in
     property var    mapCircle                                                         ///< QGCMapCircle object
     property bool   interactive:              mapCircle ? mapCircle.interactive : 0   /// true: user can manipulate polygon
@@ -205,8 +207,8 @@ Item {
         MissionItemIndicatorDrag {
             mapControl: _root.mapControl
 
-            onItemCoordinateChanged: {   if (mapCircle.center.distanceTo(itemCoordinate) > 500){mapCircle.radius.rawValue = 500}
-                                         else if (mapCircle.center.distanceTo(itemCoordinate) < 70){ mapCircle.radius.rawValue = 70}
+            onItemCoordinateChanged: {   if (mapCircle.center.distanceTo(itemCoordinate) > _activeVehicle.loiterRadiusMax.rawValue){mapCircle.radius.rawValue = _activeVehicle.loiterRadiusMax.rawValue}
+                                         else if (mapCircle.center.distanceTo(itemCoordinate) < _activeVehicle.loiterRadiusMin.rawValue){ mapCircle.radius.rawValue = _activeVehicle.loiterRadiusMin.rawValue}
                    else mapCircle.radius.rawValue = mapCircle.center.distanceTo(itemCoordinate)  }
         }
     }

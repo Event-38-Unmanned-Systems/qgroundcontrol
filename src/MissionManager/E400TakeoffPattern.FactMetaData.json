@@ -79,10 +79,10 @@
     "name":             "transitionDistance",
     "shortDesc":        "ground distance to complete a transition.",
     "type":             "double",
-    "decimalPlaces":    1,
-    "min":             80,
-    "max":             120,
     "units":            "m",
+    "min":             80.0,
+    "decimalPlaces":    1,
+    "max":             120.0,
     "default":          100.0
 }
 ]

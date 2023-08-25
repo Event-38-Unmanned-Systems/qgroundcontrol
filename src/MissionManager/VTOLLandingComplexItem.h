@@ -40,6 +40,7 @@ public:
     void                save                        (QJsonArray&  missionItems) final;
 
     static const QString name;
+    QString jsonname = PlanViewSettings().landingJson()->rawValueString(); //QStringLiteral(":/json/VTOLLandingPattern.FactMetaData.json");
 
     static const char* jsonComplexItemTypeValue;
 

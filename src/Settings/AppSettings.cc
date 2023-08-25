@@ -112,6 +112,7 @@ DECLARE_SETTINGGROUP(App, "")
 
 DECLARE_SETTINGSFACT(AppSettings, offlineEditingFirmwareClass)
 DECLARE_SETTINGSFACT(AppSettings, offlineEditingVehicleClass)
+DECLARE_SETTINGSFACT(AppSettings, offlineEditingVehicleName)
 DECLARE_SETTINGSFACT(AppSettings, offlineEditingCruiseSpeed)
 DECLARE_SETTINGSFACT(AppSettings, offlineEditingHoverSpeed)
 DECLARE_SETTINGSFACT(AppSettings, offlineEditingAscentSpeed)

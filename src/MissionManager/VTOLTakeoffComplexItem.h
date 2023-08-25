@@ -51,7 +51,7 @@ private slots:
 private:
     static TakeoffComplexItem*  _createItem     (PlanMasterController* masterController, bool flyView) { return new VTOLTakeoffComplexItem(masterController, flyView); }
     static bool                 _isValidLandItem(const MissionItem& missionItem);
-
+    QString jsonname = PlanViewSettings().takeoffJson()->rawValueString();
     // Overrides from LandingComplexItem
     const Fact*     _takeoffDist  (void) const final { return &_takeoffDistFact; }
     const Fact*     _vtolAlt              (void) const final { return &_vtolAltFact; }
@@ -61,6 +61,7 @@ private:
     const Fact*     _useLoiterToAlt        (void) const final { return &_useLoiterToAltFact; }
     const Fact*     _gradient        (void) const final { return &_gradientFact;}
     const Fact*     _loiterRadius           (void) const final { return &_loiterRadiusFact; }
+    const Fact*     _transitionDistance           (void) const final { return &_transitionDistanceFact; }
 
     MissionItem*    _createTakeoffItem         (int seqNum, bool altRel, double lat, double lon, double alt, QObject* parent) final;
 
@@ -73,6 +74,7 @@ private:
     Fact            _useLoiterToAltFact;
     Fact            _gradientFact;
     Fact            _loiterRadiusFact;
+    Fact            _transitionDistanceFact;
 
     friend VTOLTakeoffPatternTest;
 };

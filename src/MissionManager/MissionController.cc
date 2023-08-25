@@ -94,9 +94,9 @@ void MissionController::_resetMissionFlightStatus(void)
     _missionFlightStatus.cruiseTime =           0.0;
     _missionFlightStatus.hoverDistance =        0.0;
     _missionFlightStatus.cruiseDistance =       0.0;
-    _missionFlightStatus.cruiseSpeed =          16;
-    _missionFlightStatus.hoverSpeed =           5;
-    _missionFlightStatus.vehicleSpeed =         16;
+    _missionFlightStatus.cruiseSpeed =          _controllerVehicle->defaultCruiseSpeed();
+    _missionFlightStatus.hoverSpeed =           _controllerVehicle->defaultHoverSpeed();
+    _missionFlightStatus.vehicleSpeed =         _controllerVehicle->defaultCruiseSpeed();
     _missionFlightStatus.vehicleYaw =           qQNaN();
     _missionFlightStatus.gimbalYaw =            qQNaN();
     _missionFlightStatus.gimbalPitch =          qQNaN();
@@ -784,12 +784,12 @@ bool MissionController::_loadJsonMissionFileV2(const QJsonObject& json, QmlObjec
     _controllerVehicle->_offlineFirmwareTypeSettingChanged(planFileFirmwareType);
     _controllerVehicle->_offlineVehicleTypeSettingChanged(planFileVehicleType);
 
-    if (json.contains(_jsonCruiseSpeedKey)) {
+    /*if (json.contains(_jsonCruiseSpeedKey)) {
         appSettings->offlineEditingCruiseSpeed()->setRawValue(json[_jsonCruiseSpeedKey].toDouble());
-    }
-    if (json.contains(_jsonHoverSpeedKey)) {
+    }*/
+    /*if (json.contains(_jsonHoverSpeedKey)) {
         appSettings->offlineEditingHoverSpeed()->setRawValue(json[_jsonHoverSpeedKey].toDouble());
-    }
+    }*/
     if (json.contains(_jsonGlobalPlanAltitudeModeKey)) {
         setGlobalAltitudeMode(json[_jsonGlobalPlanAltitudeModeKey].toVariant().value<QGroundControlQmlGlobal::AltMode>());
     }

@@ -46,7 +46,7 @@ Item {
 
     function _calcGlideSlopeHeights() {
 
-        var adjacent = _missionItem.vtolTakeoffCoordinate.distanceTo(_missionItem.climboutCoordinate) - 120;
+        var adjacent = _missionItem.vtolTakeoffCoordinate.distanceTo(_missionItem.climboutCoordinate) - _missionItem.transitionDistance.max;
 
         var opposite = _missionItem.climboutAlt.rawValue - _missionItem.vtolAlt.rawValue
         var angleRadians = Math.atan(opposite / adjacent)
@@ -100,8 +100,8 @@ Item {
 
     function _setTransitionPath() {
 
-            var coord1 = _missionItem.vtolTakeoffCoordinate.atDistanceAndAzimuth(80,_takeoffBearing)
-            var coord2 = _missionItem.vtolTakeoffCoordinate.atDistanceAndAzimuth(120,_takeoffBearing)
+            var coord1 = _missionItem.vtolTakeoffCoordinate.atDistanceAndAzimuth( _missionItem.transitionDistance.min,_takeoffBearing)
+            var coord2 = _missionItem.vtolTakeoffCoordinate.atDistanceAndAzimuth( _missionItem.transitionDistance.max,_takeoffBearing)
 
             _transitionBeginPath = [ _missionItem.vtolTakeoffCoordinate,coord1]
             _transitionFinishPath = [coord1,coord2]
@@ -198,7 +198,7 @@ Item {
             }
 
             function recalc() {
-                var halfDistance = (_missionItem.vtolTakeoffCoordinate.distanceTo(_missionItem.climboutCoordinate)-120) / 2
+                var halfDistance = (_missionItem.vtolTakeoffCoordinate.distanceTo(_missionItem.climboutCoordinate)-_missionItem.transitionDistance.max) / 2
                 var centeredCoordinate = _missionItem.climboutCoordinate.atDistanceAndAzimuth(halfDistance,_takeoffBearing+180)
                 var angleIncrement = _takeoffBearing > 180 ? -90 : 90
                 coordinate = centeredCoordinate.atDistanceAndAzimuth(_landingWidthMeters / 2, _takeoffBearing + angleIncrement)

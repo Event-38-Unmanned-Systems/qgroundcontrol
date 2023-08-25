@@ -33,6 +33,9 @@ public:
     Q_PROPERTY(Fact* timeRemainingStr   READ timeRemainingStr   CONSTANT)
     Q_PROPERTY(Fact* chargeState        READ chargeState        CONSTANT)
     Q_PROPERTY(Fact* instantPower       READ instantPower       CONSTANT)
+    Q_PROPERTY(Fact* cells              READ cells              CONSTANT)
+    Q_PROPERTY(Fact* mAhMax             READ mAhMax            CONSTANT)
+
 
     Fact* id                        () { return &_batteryIdFact; }
     Fact* function                  () { return &_batteryFunctionFact; }
@@ -46,6 +49,8 @@ public:
     Fact* timeRemaining             () { return &_timeRemainingFact; }
     Fact* timeRemainingStr          () { return &_timeRemainingStrFact; }
     Fact* chargeState               () { return &_chargeStateFact; }
+    Fact* cells                     () { return &_cellsFact; }
+    Fact* mAhMax                    () { return &_mAhMaxFact; }
 
     static const char* _batteryIdFactName;
     static const char* _batteryFunctionFactName;
@@ -59,6 +64,8 @@ public:
     static const char* _timeRemainingStrFactName;
     static const char* _chargeStateFactName;
     static const char* _instantPowerFactName;
+    static const char* _cellsFactName;
+    static const char* _mAhMaxFactName;
 
     static const char* _settingsGroup;
 
@@ -89,6 +96,7 @@ private:
     Fact            _timeRemainingStrFact;
     Fact            _chargeStateFact;
     Fact            _instantPowerFact;
-
+    Fact            _cellsFact;
+    Fact            _mAhMaxFact;
     static const char* _batteryFactGroupNamePrefix;
 };

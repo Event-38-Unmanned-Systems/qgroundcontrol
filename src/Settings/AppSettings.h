@@ -28,6 +28,7 @@ public:
 
     DEFINE_SETTINGFACT(offlineEditingFirmwareClass)
     DEFINE_SETTINGFACT(offlineEditingVehicleClass)
+    DEFINE_SETTINGFACT(offlineEditingVehicleName)
     DEFINE_SETTINGFACT(offlineEditingCruiseSpeed)
     DEFINE_SETTINGFACT(offlineEditingHoverSpeed)
     DEFINE_SETTINGFACT(offlineEditingAscentSpeed)

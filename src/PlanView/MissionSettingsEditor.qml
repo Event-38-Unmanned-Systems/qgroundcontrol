@@ -156,7 +156,7 @@ Rectangle {
                 anchors.right:  parent.right
                 text:           qsTr("Vehicle Info")
                 visible:        !_waypointsOnlyMode
-                checked:        false
+                checked:        true
             }
 
             GridLayout {
@@ -179,7 +179,7 @@ Rectangle {
                     visible:                _multipleFirmware && _allowFWVehicleTypeSelection
                 }
                 QGCLabel {
-                    text:       "E400-4.0.9"
+                    text:       "E38-4.0.9"
                     visible:    _multipleFirmware && !_allowFWVehicleTypeSelection
                 }
 
@@ -189,14 +189,30 @@ Rectangle {
                     visible:            _multipleVehicleTypes
                 }
                 FactComboBox {
-                    fact:                   QGroundControl.settingsManager.appSettings.offlineEditingVehicleClass
+                    id: vehicleName
+                    fact:                   QGroundControl.settingsManager.appSettings.offlineEditingVehicleName
                     indexModel:             false
                     Layout.preferredWidth:  _fieldWidth
                     visible:                _multipleVehicleTypes && _allowFWVehicleTypeSelection
                 }
                 QGCLabel {
-                    text:       _controllerVehicle.vehicleTypeString
+                    text:       vehicleName.currentText;
                     visible:    _multipleVehicleTypes && !_allowFWVehicleTypeSelection
+                }
+                QGCLabel {
+                    text:               _vehicleLabel
+                    Layout.fillWidth:   true
+                    visible:            false
+                }
+                FactComboBox {
+                    fact:                   QGroundControl.settingsManager.appSettings.offlineEditingVehicleClass
+                    indexModel:             false
+                    Layout.preferredWidth:  _fieldWidth
+                    visible:                false
+                }
+                QGCLabel {
+                    text:       _controllerVehicle.vehicleTypeString
+                    visible:    false
                 }
 
                 QGCLabel {

@@ -27,6 +27,7 @@ const char* TakeoffComplexItem::loiterClockwiseName             = "loiterClockwi
 const char* TakeoffComplexItem::useLoiterToAltName              = "useLoiterToAlt";
 const char* TakeoffComplexItem::gradientName                    = "gradient";
 const char* TakeoffComplexItem::loiterRadiusName                = "LoiterRadius";
+const char* TakeoffComplexItem::transitionDistanceName          = "transitionDistance";
 
 
 const char* TakeoffComplexItem::_jsonVtolTakeoffCoordinateCoordinateKey = "vtolTakeoffCoordinate";
