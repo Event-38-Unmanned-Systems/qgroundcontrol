@@ -469,6 +469,21 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     "",
                     this);              // parent
         _cameraList.append(QVariant::fromValue(metaData));
+        metaData = new CameraMetaData(
+                   "Cannon EOSR5",
+                    tr("Cannon"),
+                    tr("Cannon EOS R5"),
+                    36,                // sensorWidth
+                    24,                // sensorHeight
+                    8192,               // imageWidth
+                    4608,               // imageHeight
+                    24,                // focalLength
+                    true,               // true: landscape orientation
+                    true,              // true: camera is fixed orientation
+                    1.0,                  // minimum trigger interval
+                    tr("Cannon EOS R5"),   // SHOULD BE BLANK FOR NEWLY ADDED CAMERAS. Deprecated translation from older builds.
+                    this);              // parent
+        _cameraList.append(QVariant::fromValue(metaData));
 
         metaData = new CameraMetaData(
                     "Flir Duo R",
