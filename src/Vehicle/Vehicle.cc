@@ -4402,7 +4402,6 @@ void Vehicle::setAirspeedCalibrated(bool calibrated)
 
 void Vehicle::triggerSimpleCamera()
 {
-    _batteryCells = 12;
     sendMavCommand(_defaultComponentId,
                    MAV_CMD_DO_DIGICAM_CONTROL,
                    true,                        // show errors
