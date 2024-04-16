@@ -18,6 +18,7 @@
 		<file alias="RemoteIDIndicator.qml">../src/ui/toolbar/RemoteIDIndicator.qml</file>
 		<file alias="TelemetryRSSIIndicator.qml">../src/ui/toolbar/TelemetryRSSIIndicator.qml</file>
 		<file alias="VTOLModeIndicator.qml">../src/ui/toolbar/VTOLModeIndicator.qml</file>
+		<file alias="IrisIndicator">../src/ui/toolbar/IrisIndicator.qml</file>
 	</qresource>
 	<qresource prefix="/checklists">
 		<file alias="DefaultChecklist.qml">../src/FlightDisplay/DefaultChecklist.qml</file>

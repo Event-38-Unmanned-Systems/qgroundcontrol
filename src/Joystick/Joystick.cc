@@ -1184,8 +1184,10 @@ void Joystick::_nightHawkstreamSwitch()
 void Joystick::_nightHawkRecordChange()
 {
     emit nightHawkRecordChange(_lastRecordingState);
-    if (_lastRecordingState == 0){ _lastRecordingState = 1;}
-    else _lastRecordingState = 0;
+    if (_lastRecordingState == 0){ _lastRecordingState = 1; qgcApp()->toolbox()->videoManager()->stopRecording();}
+    else{ _lastRecordingState = 0;
+    qgcApp()->toolbox()->videoManager()->startRecording();
+    }
 }
 void Joystick::_nightHawkStillCapture()
 {
