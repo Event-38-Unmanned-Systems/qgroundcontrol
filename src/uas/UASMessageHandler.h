@@ -78,31 +78,40 @@ public:
      * @brief Access to the message list
      */
     const QVector<UASMessage*>& messages() { return _messages; }
+    const QVector<UASMessage*>& cassiaMessages() { return _cassiaMessages; }
+
     /**
      * @brief Clear messages
      */
     void clearMessages();
+    void clearCassiaMessages();
+
     /**
      * @brief Get error message count (Resets count once read)
      */
     int getErrorCount();
+    int getCassiaErrorCount();
+
     /**
      * @brief Get error message count (never reset)
      */
     int getErrorCountTotal();
+    int getCassiaErrorCountTotal();
     /**
      * @brief Get warning message count (Resets count once read)
      */
     int getWarningCount();
+    int getCassiaWarningCount();
     /**
      * @brief Get normal message count (Resets count once read)
      */
     int getNormalCount();
+    int getCassiaNormalCount();
     /**
      * @brief Get latest error message
      */
     QString getLatestError()   { return _latestError; }
-
+    QString getLatestCassiaError()   { return _latestCassiaError; }
     /// Begin to show message which are errors in the toolbar
     void showErrorsInToolbar(void) { _showErrorsInToolbar = true; }
 
@@ -118,6 +127,7 @@ public slots:
      * @param text Message Text
      */
     void handleTextMessage(int uasid, int componentid, int severity, QString text);
+    void handleCassiaMessage(int uasid, int componentid, int severity, QString text);
 
 signals:
     /**
@@ -125,11 +135,14 @@ signals:
      * @param message A pointer to the message. NULL if resetting (new UAS assigned)
      */
     void textMessageReceived(UASMessage* message);
+    void cassiaMessageReceived(UASMessage* message);
+
     /**
      * @brief Sent out when the message count changes
      * @param count The new message count
      */
     void textMessageCountChanged(int count);
+    void cassiaMessageCountChanged(int count);
 
 private slots:
     void _activeVehicleChanged(Vehicle* vehicle);
@@ -139,11 +152,18 @@ private:
     int                     _activeComponent;
     bool                    _multiComp;
     QVector<UASMessage*>    _messages;
+    QVector<UASMessage*>    _cassiaMessages;
+
     QMutex                  _mutex;
     int                     _errorCount;
     int                     _errorCountTotal;
     int                     _warningCount;
     int                     _normalCount;
+    int                     _cassiaErrorCount;
+    int                     _cassiaErrorCountTotal;
+    int                     _cassiaWarningCount;
+    int                     _cassiaNormalCount;
+    QString                 _latestCassiaError;
     QString                 _latestError;
     bool                    _showErrorsInToolbar;
     MultiVehicleManager*    _multiVehicleManager;

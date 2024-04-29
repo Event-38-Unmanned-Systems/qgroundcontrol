@@ -68,6 +68,8 @@ void UASMessageHandler::setToolbox(QGCToolbox *toolbox)
    connect(_multiVehicleManager, &MultiVehicleManager::activeVehicleChanged, this, &UASMessageHandler::_activeVehicleChanged);
    emit textMessageReceived(nullptr);
    emit textMessageCountChanged(0);
+   emit cassiaMessageReceived(nullptr);
+   emit cassiaMessageCountChanged(0);
 }
 
 void UASMessageHandler::clearMessages()
@@ -84,22 +86,137 @@ void UASMessageHandler::clearMessages()
     emit textMessageCountChanged(0);
 }
 
+void UASMessageHandler::clearCassiaMessages()
+{
+    _mutex.lock();
+    while(_cassiaMessages.count()) {
+        delete _cassiaMessages.last();
+        _cassiaMessages.pop_back();
+    }
+    _cassiaErrorCount   = 0;
+    _cassiaWarningCount = 0;
+    _cassiaNormalCount  = 0;
+    _mutex.unlock();
+    emit cassiaMessageCountChanged(0);
+}
+
 void UASMessageHandler::_activeVehicleChanged(Vehicle* vehicle)
 {
     // If we were already attached to an autopilot, disconnect it.
     if (_activeVehicle) {
         disconnect(_activeVehicle, &Vehicle::textMessageReceived, this, &UASMessageHandler::handleTextMessage);
+        disconnect(_activeVehicle, &Vehicle::cassiaMessageReceived, this, &UASMessageHandler::handleCassiaMessage);
+
         _activeVehicle = nullptr;
         clearMessages();
+        clearCassiaMessages();
         emit textMessageReceived(nullptr);
+        emit cassiaMessageReceived(nullptr);
     }
 
     // And now if there's an autopilot to follow, set up the UI.
     if (vehicle) {
         // Connect to the new UAS.
         clearMessages();
+        clearCassiaMessages();
         _activeVehicle = vehicle;
         connect(_activeVehicle, &Vehicle::textMessageReceived, this, &UASMessageHandler::handleTextMessage);
+        connect(_activeVehicle, &Vehicle::cassiaMessageReceived, this, &UASMessageHandler::handleCassiaMessage);
+    }
+}
+
+void UASMessageHandler::handleCassiaMessage(int, int compId, int severity, QString text)
+{
+    // Hack to prevent calibration messages from cluttering things up
+    if (_activeVehicle->px4Firmware() && text.startsWith(QStringLiteral("[cal] "))) {
+        return;
+    }
+
+    // Color the output depending on the message severity. We have 3 distinct cases:
+    // 1: If we have an ERROR or worse, make it bigger, bolder, and highlight it red.
+    // 2: If we have a warning or notice, just make it bold and color it orange.
+    // 3: Otherwise color it the standard color, white.
+
+    _mutex.lock();
+
+    // So first determine the styling based on the severity.
+    QString style;
+    switch (severity)
+    {
+    case MAV_SEVERITY_EMERGENCY:
+    case MAV_SEVERITY_ALERT:
+    case MAV_SEVERITY_CRITICAL:
+    case MAV_SEVERITY_ERROR:
+        style = QString("<#E>");
+        _cassiaErrorCount++;
+        _cassiaErrorCountTotal++;
+        break;
+    case MAV_SEVERITY_NOTICE:
+    case MAV_SEVERITY_WARNING:
+        style = QString("<#I>");
+        _cassiaWarningCount++;
+        break;
+    default:
+        style = QString("<#N>");
+        _cassiaNormalCount++;
+        break;
+    }
+
+    // And determine the text for the severitie
+    QString severityText;
+    switch (severity)
+    {
+    case MAV_SEVERITY_EMERGENCY:
+        severityText = tr(" EMERGENCY:");
+        break;
+    case MAV_SEVERITY_ALERT:
+        severityText = tr(" ALERT:");
+        break;
+    case MAV_SEVERITY_CRITICAL:
+        severityText = tr(" Critical:");
+        break;
+    case MAV_SEVERITY_ERROR:
+        severityText = tr(" Error:");
+        break;
+    case MAV_SEVERITY_WARNING:
+        severityText = tr(" Warning:");
+        break;
+    case MAV_SEVERITY_NOTICE:
+        severityText = tr(" Notice:");
+        break;
+    case MAV_SEVERITY_INFO:
+        severityText = tr(" Info:");
+        break;
+    case MAV_SEVERITY_DEBUG:
+        severityText = tr(" Debug:");
+        break;
+    default:
+        break;
+    }
+
+    // Finally preppend the properly-styled text with a timestamp.
+    QString dateString = QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
+    UASMessage* message = new UASMessage(compId, severity, text);
+    QString compString;
+
+    compString = QString(" COMP:%1").arg(compId);
+
+    message->_setFormatedText(QString("<font style=\"%1\">[%2%3]%4 %5</font><br/>").arg(style).arg(dateString).arg(compString).arg(severityText).arg(text));
+
+    if (message->severityIsError()) {
+        _latestCassiaError = severityText + " " + text;
+    }
+
+    _mutex.unlock();
+
+    emit cassiaMessageReceived(message);
+
+    _cassiaMessages.append(message);
+    int count = _cassiaMessages.count();
+    emit cassiaMessageCountChanged(count);
+
+    if (_showErrorsInToolbar && message->severityIsError()) {
+        _app->showCriticalVehicleMessage(message->getText());
     }
 }
 
@@ -184,9 +301,9 @@ void UASMessageHandler::handleTextMessage(int, int compId, int severity, QString
     QString dateString = QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
     UASMessage* message = new UASMessage(compId, severity, text);
     QString compString;
-    if (_multiComp) {
-        compString = QString(" COMP:%1").arg(compId);
-    }
+
+    compString = QString(" COMP:%1").arg(compId);
+
     message->_setFormatedText(QString("<font style=\"%1\">[%2%3]%4 %5</font><br/>").arg(style).arg(dateString).arg(compString).arg(severityText).arg(text));
 
     if (message->severityIsError()) {
@@ -233,6 +350,37 @@ int UASMessageHandler::getNormalCount() {
     _mutex.lock();
     int c = _normalCount;
     _normalCount = 0;
+    _mutex.unlock();
+    return c;
+}
+
+int UASMessageHandler::getCassiaErrorCountTotal() {
+    _mutex.lock();
+    int c = _cassiaErrorCountTotal;
+    _mutex.unlock();
+    return c;
+}
+
+int UASMessageHandler::getCassiaErrorCount() {
+    _mutex.lock();
+    int c = _cassiaErrorCount;
+    _cassiaErrorCount = 0;
+    _mutex.unlock();
+    return c;
+}
+
+int UASMessageHandler::getCassiaWarningCount() {
+    _mutex.lock();
+    int c = _cassiaWarningCount;
+    _cassiaWarningCount = 0;
+    _mutex.unlock();
+    return c;
+}
+
+int UASMessageHandler::getCassiaNormalCount() {
+    _mutex.lock();
+    int c = _cassiaNormalCount;
+    _cassiaNormalCount = 0;
     _mutex.unlock();
     return c;
 }

@@ -243,6 +243,9 @@ Vehicle::Vehicle(LinkInterface*             link,
     connect(_toolbox->uasMessageHandler(), &UASMessageHandler::textMessageCountChanged,  this, &Vehicle::_handleTextMessage);
     connect(_toolbox->uasMessageHandler(), &UASMessageHandler::textMessageReceived,      this, &Vehicle::_handletextMessageReceived);
 
+    connect(_toolbox->uasMessageHandler(), &UASMessageHandler::cassiaMessageCountChanged,  this, &Vehicle::_handleCassiaTextMessage);
+    connect(_toolbox->uasMessageHandler(), &UASMessageHandler::cassiaMessageReceived,      this, &Vehicle::_handleCassiaTextMessageReceived);
+
     // MAV_TYPE_GENERIC is used by unit test for creating a vehicle which doesn't do the connect sequence. This
     // way we can test the methods that are used within the connect sequence.
     if (!qgcApp()->runningUnitTests() || _vehicleType != MAV_TYPE_GENERIC) {
@@ -560,6 +563,7 @@ void Vehicle::setDefaultRadius(double min, double max){
     //loiterRadius.rawMin = min;
     //loiterRadius.rawMax = max;
 }
+
 void Vehicle::_offlineEditingVehicleNameSettingChanged(QVariant value)
 {
 
@@ -687,6 +691,27 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     }
     else if (message.compid == MAV_COMP_ID_CAMERA){
         _haveGimbalData = false;
+    }
+
+    if(message.compid == 111){
+        //handle cassia heartbeat
+         switch (message.msgid) {
+         case MAVLINK_MSG_ID_HEARTBEAT:
+             _handleCassiaHeartbeat(message);
+             break;
+         }
+    }
+
+    //if we've seen the cassia on the network monitor heartbeat for UI. If no connectivity for > 20s we notifiy operator every 5 seconds.
+    if (_CassiaHeartbeat.isValid()){
+        if (_CassiaHeartbeat.elapsed() > 20000){
+            if (_CassiaNotifyTime.msecsTo(QTime::currentTime()) > (5 * 1000)){
+             qgcApp()->toolbox()->audioOutput()->say(QStringLiteral("Iris heartbeat lost"));
+             _cassiaOperational = false;
+             emit isCassiaOperationalChanged();
+             _CassiaNotifyTime = QTime::currentTime();
+            }
+        }
     }
 
     // Give the plugin a change to adjust the message contents
@@ -843,6 +868,7 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     emit mavlinkMessageReceived(message);
 
     _uas->receiveMessage(message);
+
 }
 
 #if !defined(NO_ARDUPILOT_DIALECT)
@@ -931,7 +957,7 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
         _noisyGCSLongMessageOff = QTime::currentTime();
         _noisyODIDLocMessage =   QTime::currentTime();
         _noisyODIDMissingMessage =   QTime::currentTime();
-
+        _CassiaNotifyTime = QTime::currentTime();
         initfilterTimes = false;
     }
 
@@ -1119,6 +1145,10 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
             messageText = "De-transition started";
         }
 
+    if (compId == 111){
+        emit cassiaMessageReceived(id(), compId, severity, messageText);
+        skipOutput = true;
+    }
     if (!skipOutput){
     emit textMessageReceived(id(), compId, severity, messageText);
     }
@@ -1889,6 +1919,21 @@ void Vehicle::_handleHeartbeat(mavlink_message_t& message)
     }
 }
 
+void Vehicle::_handleCassiaHeartbeat(mavlink_message_t& message)
+{
+
+    _CassiaHeartbeat.start();
+    if (_cassiaOperational == false){
+        _cassiaOperational = true;
+        emit isCassiaOperationalChanged();
+        }
+if (_cassiaDetected == false){
+    _cassiaDetected = true;
+    emit isCassiaDetectedChanged();
+}
+
+}
+
 void Vehicle::_handleRadioStatus(mavlink_message_t& message)
 {
 
@@ -2099,7 +2144,18 @@ QString Vehicle::formattedMessages()
 {
     QString messages;
     for(UASMessage* message: _toolbox->uasMessageHandler()->messages()) {
+        //if (message->getFormatedText().contains(compID,Qt::CaseInsensitive)){
         messages += message->getFormatedText();
+        //}
+    }
+    return messages;
+}
+
+QString Vehicle::formattedCassiaMessages()
+{
+    QString messages;
+    for(UASMessage* cassiaMessage: _toolbox->uasMessageHandler()->cassiaMessages()) {
+        messages += cassiaMessage->getFormatedText();
     }
     return messages;
 }
@@ -2109,10 +2165,88 @@ void Vehicle::clearMessages()
     _toolbox->uasMessageHandler()->clearMessages();
 }
 
+void Vehicle::clearCassiaMessages()
+{
+    _toolbox->uasMessageHandler()->clearCassiaMessages();
+}
+
 void Vehicle::_handletextMessageReceived(UASMessage* message)
 {
     if (message) {
         emit newFormattedMessage(message->getFormatedText());
+    }
+}
+
+void Vehicle::_handleCassiaTextMessageReceived(UASMessage* message)
+{
+    if (message) {
+        emit newCassiaFormattedMessage(message->getFormatedText());
+    }
+}
+
+
+void Vehicle::_handleCassiaTextMessage(int newCount)
+{
+    // Reset?
+    if(!newCount) {
+        _currentCassiaMessageCount = 0;
+        _currentCassiaNormalCount  = 0;
+        _currentCassiaWarningCount = 0;
+        _currentCassiaErrorCount   = 0;
+        _cassiaMessageCount        = 0;
+        _currentCassiaMessageType  = MessageNone;
+        emit newCassiaMessageCountChanged();
+        emit cassiaMessageTypeChanged();
+        emit cassiaMessageCountChanged();
+        return;
+    }
+
+    UASMessageHandler* pMh = _toolbox->uasMessageHandler();
+    MessageType_t type = newCount ? _currentCassiaMessageType : MessageNone;
+    int errorCount     = _currentCassiaErrorCount;
+    int warnCount      = _currentCassiaWarningCount;
+    int normalCount    = _currentCassiaNormalCount;
+    //-- Add current message counts
+    errorCount  += pMh->getCassiaErrorCount();
+    warnCount   += pMh->getCassiaWarningCount();
+    normalCount += pMh->getCassiaNormalCount();
+    //-- See if we have a higher level
+    if(errorCount != _currentCassiaErrorCount) {
+        _currentCassiaErrorCount = errorCount;
+        type = MessageError;
+    }
+    if(warnCount != _currentCassiaWarningCount) {
+        _currentCassiaWarningCount = warnCount;
+        if(_currentCassiaMessageType != MessageError) {
+            type = MessageWarning;
+        }
+    }
+    if(normalCount != _currentCassiaNormalCount) {
+        _currentCassiaNormalCount = normalCount;
+        if(_currentCassiaMessageType != MessageError && _currentCassiaMessageType != MessageWarning) {
+            type = MessageNormal;
+        }
+    }
+    int count = _currentCassiaErrorCount + _currentCassiaWarningCount + _currentCassiaNormalCount;
+    if(count != _currentCassiaMessageCount) {
+        _currentCassiaMessageCount = count;
+        // Display current total new messages count
+        emit newCassiaMessageCountChanged();
+    }
+    if(type != _currentCassiaMessageType) {
+        _currentCassiaMessageType = type;
+        // Update message level
+        emit cassiaMessageTypeChanged();
+    }
+    // Update message count (all messages)
+    if(newCount != _cassiaMessageCount) {
+        _cassiaMessageCount = newCount;
+        emit cassiaMessageCountChanged();
+    }
+    QString errMsg = pMh->getLatestCassiaError();
+    if(errMsg != _latestCassiaError) {
+        _latestCassiaError = errMsg;
+        emit latestCassiaErrorChanged();
     }
 }
 
@@ -2196,6 +2330,24 @@ void Vehicle::resetMessages()
     }
     if(type != _currentMessageType) {
         emit messageTypeChanged();
+    }
+}
+
+void Vehicle::resetCassiaMessages()
+{
+    // Reset Counts
+    int count = _currentCassiaMessageCount;
+    MessageType_t type = _currentCassiaMessageType;
+    _currentCassiaErrorCount   = 0;
+    _currentCassiaWarningCount = 0;
+    _currentCassiaNormalCount  = 0;
+    _currentCassiaMessageCount = 0;
+    _currentCassiaMessageType = MessageNone;
+    if(count != _currentCassiaMessageCount) {
+        emit newCassiaMessageCountChanged();
+    }
+    if(type != _currentCassiaMessageType) {
+        emit cassiaMessageTypeChanged();
     }
 }
 

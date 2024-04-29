@@ -176,9 +176,16 @@ public:
     Q_PROPERTY(bool                 messageTypeNormal           READ messageTypeNormal                                              NOTIFY messageTypeChanged)
     Q_PROPERTY(bool                 messageTypeWarning          READ messageTypeWarning                                             NOTIFY messageTypeChanged)
     Q_PROPERTY(bool                 messageTypeError            READ messageTypeError                                               NOTIFY messageTypeChanged)
+    Q_PROPERTY(bool                 isCassiaDetected            READ isCassiaDetected                                               NOTIFY isCassiaDetectedChanged)
+    Q_PROPERTY(bool                 isCassiaOperational         READ isCassiaOperational                                            NOTIFY isCassiaOperationalChanged)
+    Q_PROPERTY(bool                 cassiaMessageTypeNone       READ cassiaMessageTypeNone                                          NOTIFY cassiaMessageTypeChanged)
+    Q_PROPERTY(bool                 cassiaMessageTypeNormal     READ cassiaMessageTypeNormal                                        NOTIFY cassiaMessageTypeChanged)
+    Q_PROPERTY(bool                 cassiaMessageTypeWarning    READ cassiaMessageTypeWarning                                       NOTIFY cassiaMessageTypeChanged)
+    Q_PROPERTY(bool                 cassiaMessageTypeError      READ cassiaMessageTypeError                                         NOTIFY cassiaMessageTypeChanged)
     Q_PROPERTY(int                  newMessageCount             READ newMessageCount                                                NOTIFY newMessageCountChanged)
     Q_PROPERTY(int                  messageCount                READ messageCount                                                   NOTIFY messageCountChanged)
     Q_PROPERTY(QString              formattedMessages           READ formattedMessages                                              NOTIFY formattedMessagesChanged)
+    Q_PROPERTY(QString              formattedCassiaMessages     READ formattedCassiaMessages                                        NOTIFY formattedCassiaMessagesChanged)
     Q_PROPERTY(QString              latestError                 READ latestError                                                    NOTIFY latestErrorChanged)
     Q_PROPERTY(bool                 joystickEnabled             READ joystickEnabled            WRITE setJoystickEnabled            NOTIFY joystickEnabledChanged)
     Q_PROPERTY(bool                 airspeedCalibrated          READ airspeedCalibrated         WRITE setAirspeedCalibrated         NOTIFY airspeedCalibratedChanged)
@@ -346,6 +353,8 @@ public:
 
     // Called when the message drop-down is invoked to clear current count
     Q_INVOKABLE void resetMessages();
+    Q_INVOKABLE void resetCassiaMessages();
+
 
     Q_INVOKABLE void virtualTabletJoystickValue(double roll, double pitch, double yaw, double thrust);
 
@@ -406,7 +415,7 @@ public:
 
     /// Clear Messages
     Q_INVOKABLE void clearMessages();
-
+    Q_INVOKABLE void clearCassiaMessages();
     Q_INVOKABLE void sendPlan(QString planFile);
 
     /// Used to check if running current version is equal or higher than the one being compared.
@@ -570,13 +579,21 @@ public:
         MessageError
     } MessageType_t;
 
+    bool            isCassiaOperational         () { return _cassiaOperational;}
+    bool            isCassiaDetected            () { return _cassiaDetected;}
+    bool            cassiaMessageTypeNone       () { return _currentCassiaMessageType == MessageNone; }
+    bool            cassiaMessageTypeNormal     () { return _currentCassiaMessageType == MessageNormal; }
+    bool            cassiaMessageTypeWarning    () { return _currentCassiaMessageType == MessageWarning; }
+    bool            cassiaMessageTypeError      () { return _currentCassiaMessageType == MessageError; }
     bool            messageTypeNone             () { return _currentMessageType == MessageNone; }
     bool            messageTypeNormal           () { return _currentMessageType == MessageNormal; }
     bool            messageTypeWarning          () { return _currentMessageType == MessageWarning; }
     bool            messageTypeError            () { return _currentMessageType == MessageError; }
     int             newMessageCount             () const{ return _currentMessageCount; }
-    int             messageCount                () const{ return _messageCount; }
     QString         formattedMessages           ();
+    QString         formattedCassiaMessages     ();
+
+    int             messageCount                () const{ return _messageCount; }
     QString         latestError                 () { return _latestError; }
     float           latitude                    () { return static_cast<float>(_coordinate.latitude()); }
     float           longitude                   () { return static_cast<float>(_coordinate.longitude()); }
@@ -905,17 +922,26 @@ signals:
     void toolIndicatorsChanged          ();
     void modeIndicatorsChanged          ();
     void textMessageReceived            (int uasid, int componentid, int severity, QString text);
+    void cassiaMessageReceived          (int uasid, int componentid, int severity, QString text);
     void calibrationEventReceived       (int uasid, int componentid, int severity, QSharedPointer<events::parser::ParsedEvent> event);
     void checkListStateChanged          ();
     void messagesReceivedChanged        ();
     void messagesSentChanged            ();
     void messagesLostChanged            ();
     void messageTypeChanged             ();
+    void cassiaMessageTypeChanged       ();
+    void isCassiaDetectedChanged        ();
+    void isCassiaOperationalChanged     ();
     void newMessageCountChanged         ();
     void messageCountChanged            ();
+    void newCassiaMessageCountChanged   ();
+    void cassiaMessageCountChanged      ();
     void formattedMessagesChanged       ();
+    void formattedCassiaMessagesChanged ();
     void newFormattedMessage            (QString formattedMessage);
+    void newCassiaFormattedMessage      (QString formattedMessage);
     void latestErrorChanged             ();
+    void latestCassiaErrorChanged       ();
     void longitudeChanged               ();
     void currentConfigChanged           ();
     void flowImageIndexChanged          ();
@@ -1001,7 +1027,9 @@ private slots:
     void _offlineEditingVehicleNameSettingChanged  (QVariant value);
     void _offlineHoverSpeedSettingChanged   (QVariant value);
     void _handleTextMessage                 (int newCount);
+    void _handleCassiaTextMessage           (int newCount);
     void _handletextMessageReceived         (UASMessage* message);
+    void _handleCassiaTextMessageReceived   (UASMessage* message);
     void _imageProtocolImageReady           (void);
     void _prearmErrorTimeout                ();
     void _firstMissionLoadComplete          ();
@@ -1032,6 +1060,7 @@ private:
     void _handleHomePosition            (mavlink_message_t& message);
     void _handleDroneIdArmStatus        (mavlink_message_t& message);
     void _handleHeartbeat               (mavlink_message_t& message);
+    void _handleCassiaHeartbeat         (mavlink_message_t& message);
     void _handleRadioStatus             (mavlink_message_t& message);
     void _handleRCChannels              (mavlink_message_t& message);
     void _handleBatteryStatus           (mavlink_message_t& message);
@@ -1108,6 +1137,19 @@ private:
     QGeoCoordinate  _coordinate;
     QGeoCoordinate  _homePosition;
     QGeoCoordinate  _armedPosition;
+
+
+
+    int             _currentCassiaMessageCount = 0;
+    int             _cassiaMessageCount = 0;
+    int             _currentCassiaErrorCount = 0;
+    int             _currentCassiaWarningCount = 0;
+    int             _currentCassiaNormalCount = 0;
+    bool            _cassiaOperational = false;
+    bool            _cassiaDetected = false;
+    MessageType_t   _currentCassiaMessageType = MessageNone;
+    QString         _latestCassiaError;
+
 
     UASInterface*   _mav = nullptr;
     int             _currentMessageCount = 0;
@@ -1252,6 +1294,8 @@ private:
     QTime _noisyGCSLongMessageOff;
     QTime _noisyODIDLocMessage;
     QTime _noisyODIDMissingMessage;
+    QTime _CassiaNotifyTime;
+    QElapsedTimer _CassiaHeartbeat;
 
     bool initfilterTimes = true;
     // Orbit status values
