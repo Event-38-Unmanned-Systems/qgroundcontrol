@@ -57,14 +57,6 @@ Item {
                 color:          qgcPal.window
                 border.color:   qgcPal.text
 
-                MouseArea {
-                    id: remoteIDStatusMouseArea
-                    anchors.fill:       parent
-
-                    onDoubleClicked:    {_activeVehicle.ridSetEmergency(); emergencyDeclared = true;}
-
-                }
-
 
                 ColumnLayout {
                     id:                 mainLayout
@@ -72,17 +64,6 @@ Item {
                     anchors.top:        parent.top
                     anchors.right:      parent.right
                     spacing:            ScreenTools.defaultFontPixelHeight
-
-                    QGCLabel {
-                        Layout.alignment:   Qt.AlignCenter
-                        text:               qsTr("Remote ID.")
-                        font.family:        ScreenTools.demiboldFontFamily
-                    }
-                    QGCLabel {
-                        Layout.alignment:   Qt.AlignCenter
-                        text:               qsTr("Double Press to declare emergency.")
-                        font.family:        ScreenTools.demiboldFontFamily
-                    }
 
                     RowLayout {
                         spacing: ScreenTools.defaultFontPixelWidth
@@ -93,8 +74,10 @@ Item {
                                 ColumnLayout {
                                     spacing: 0
 
-                                    QGCLabel { text: qsTr("Remote ID Status:") }
+                                    QGCLabel { text: qsTr("Remote ID:")
+                                               font.bold: true}
                                     QGCLabel { text: qsTr("Emergency State:");
+                                               font.bold: true
                                                visible: emergencyDeclared}
 
                                 }
@@ -108,8 +91,20 @@ Item {
                                                visible: emergencyDeclared}
                                   }
                                 }
+
+                        }
+
+                    RowLayout{
+                        QGCButton {
+                            Layout.alignment:   Qt.AlignHCenter
+                            text:               qsTr("   Press and hold\nto declare emergency.")
+                            onPressAndHold: {_activeVehicle.ridSetEmergency(); emergencyDeclared = true;}
+
                         }
                     }
+                    }
+
+
                 }
             }
     }
