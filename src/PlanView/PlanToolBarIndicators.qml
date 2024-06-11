@@ -244,19 +244,20 @@ Item {
         QGCButton {
             id:          uploadButton
             text:        _controllerDirty ? qsTr("Upload Required") : qsTr("Upload")
+            _showHighlight:      _controllerDirty
             enabled:     !_controllerSyncInProgress
             visible:     !_controllerOffline && !_controllerSyncInProgress && !uploadCompleteText.visible
             primary:     _controllerDirty
             onClicked:   _planMasterController.upload()
 
             PropertyAnimation on opacity {
-                easing.type:    Easing.OutQuart
-                from:           0.5
+                easing.type:    Easing.OutQuint
+                from:           .50
                 to:             1
                 loops:          Animation.Infinite
                 running:        _controllerDirty && !_controllerSyncInProgress
                 alwaysRunToEnd: true
-                duration:       2000
+                duration:       1000
             }
         }
     }
