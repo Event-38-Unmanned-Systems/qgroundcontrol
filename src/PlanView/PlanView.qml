@@ -736,9 +736,6 @@ Item {
         Item {
             anchors.fill:           rightPanel
             anchors.topMargin:      _toolsMargin
-            DeadMouseArea {
-                anchors.fill:   parent
-            }
             Column {
                 id:                 rightControls
                 spacing:            ScreenTools.defaultFontPixelHeight * 0.5
@@ -809,11 +806,77 @@ Item {
                     visible:    (!planControlColapsed || !_airspaceEnabled) && QGroundControl.corePlugin.options.enablePlanViewSelector
                     Component.onCompleted: currentIndex = 0
                     QGCTabButton {
-                        text:       qsTr("Mission")
+                        Text{
+                        id: mainText1
+                        text: qsTr("Mission")
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        font.pointSize: ScreenTools.defaultFontPointSize
+                        font.family:    ScreenTools.normalFontFamily
+                        color: "black"
+                        }
+
+                        Text{
+                        id: subText1
+                        text: qsTr("«")
+                        rotation: 90
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        font.pointSize: ScreenTools.defaultFontPointSize * 3
+                        font.family:    ScreenTools.normalFontFamily
+                        color: "black"
+                        }
+                        onClicked: {
+                            subText.text = qsTr("»")
+                            geofenceItemEditor.visible = false
+                            if (_editingLayer === 1 && missionItemEditor.visible == true){
+                                       subText1.text = qsTr("»")
+                                       missionItemEditor.visible = false
+                                       rightPanel.visible = false;}
+                                   else {
+                                       subText1.text = qsTr("«")
+                                       missionItemEditor.visible = true
+                                       rightPanel.visible = true
+                                   }
+                        }
                     }
                     QGCTabButton {
-                        text:       qsTr("Fence")
-                        enabled:    _geoFenceController.supported
+                        Text{
+                        id: mainText
+                        text: qsTr("Fence")
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.left: parent.left
+                        font.pointSize: ScreenTools.defaultFontPointSize
+                        font.family:    ScreenTools.normalFontFamily
+                        color: "black"
+                        }
+
+                        Text{
+                        id: subText
+                        text: qsTr("»")
+                        rotation: 90
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        font.pointSize: ScreenTools.defaultFontPointSize * 3
+                        font.family:    ScreenTools.normalFontFamily
+                        color: "black"
+                        }
+                        enabled: _geoFenceController.supported
+
+                        onClicked: {
+                            subText1.text = qsTr("»")
+                            missionItemEditor.visible = false;
+                            if ( _editingLayer === 2 && geofenceItemEditor.visible == true && subText.text !== qsTr("»")){
+                                       subText.text = qsTr("»")
+                                       geofenceItemEditor.visible = false
+                                       rightPanel.visible = false}
+
+                                   else {
+                                       subText.text = qsTr("«")
+                                       geofenceItemEditor.visible = true
+                                       rightPanel.visible = true
+                                   }
+                        }
                     }
               /*      QGCTabButton {
                         text:       qsTr("Rally")
@@ -865,6 +928,7 @@ Item {
             }
             // GeoFence Editor
             GeoFenceEditor {
+                id:                    geofenceItemEditor
                 anchors.top:            rightControls.bottom
                 anchors.topMargin:      ScreenTools.defaultFontPixelHeight * 0.25
                 anchors.bottom:         parent.bottom
@@ -1228,8 +1292,13 @@ Item {
                     visible:            !QGroundControl.corePlugin.options.disableVehicleConnection
                     onClicked: {
                         dropPanel.hide()
+                        if (globals.activeVehicle.flightMode === "Auto"){
+                        mainWindow.showCriticalVehicleMessage("Can not clear mission while in Auto flight mode");
+                        }
+                        else{
                         mainWindow.showComponentDialog(clearVehicleMissionDialog, text, mainWindow.showDialogDefaultWidth, StandardButton.Yes | StandardButton.Cancel)
-                    }
+                        }
+                        }
                 }
             }
         }
