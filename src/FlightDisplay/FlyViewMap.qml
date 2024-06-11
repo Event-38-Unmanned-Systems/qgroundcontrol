@@ -347,17 +347,37 @@ FlightMap {
             z:              QGroundControl.zOrderTopMost
         }
     }
-
+    property bool inGotoFlightMode: _activeVehicle ? _activeVehicle.flightMode === _activeVehicle.gotoFlightMode : false
     MapQuickItem {
-        id:             lastCoordinate2
-        visible:        false
+        id:             activeGoToLocation
+        visible:        inGotoFlightMode
         z:              QGroundControl.zOrderMapItems
         anchorPoint.x:  sourceItem.anchorPointX
         anchorPoint.y:  sourceItem.anchorPointY
         sourceItem: MissionItemIndexLabel {
             checked:    true
             index:      -1
-            label:      qsTr("Go here", "Go to location waypoint")
+            label:      qsTr("T", "Target location")
+        }
+
+        Connections {
+            target: globals.activeVehicle
+            function onTargetPositionChanged(){
+                if (inGotoFlightMode){
+                    activeGoToLocation.coordinate = _activeVehicle.targetPosition;
+                    activeGoToLocation.visible = true
+                }
+                else{activeGoToLocation.coordinate = _activeVehicle.targetPosition;
+                    activeGoToLocation.visible = false}
+        }
+        }
+        Connections {
+            target: QGroundControl.multiVehicleManager
+            function onActiveVehicleChanged(activeVehicle) {
+                if (!activeVehicle) {
+                    activeGoToLocation.visible = false
+                }
+            }
         }
     }
 
@@ -372,19 +392,6 @@ FlightMap {
             checked:    true
             index:      -1
             label:      qsTr("Go here", "Go to location waypoint")
-        }
-
-        property bool inGotoFlightMode: _activeVehicle ? _activeVehicle.flightMode === _activeVehicle.gotoFlightMode : false
-
-        onInGotoFlightModeChanged: {
-            if (!inGotoFlightMode && gotoLocationItem.visible) {
-                // Hide goto indicator when vehicle falls out of guided mode
-                gotoLocationItem.visible = false
-            }
-            if (inGotoFlightMode){
-                gotoLocationItem.visible = true
-            }
-
         }
 
         Connections {
@@ -406,8 +413,7 @@ FlightMap {
         }
 
         function actionConfirmed() {
-            lastCoordinate2.coordinate = gotoLocationItem.coordinate
-            // We leave the indicator visible. The handling for onInGuidedModeChanged will hide it.
+            hide()
         }
 
         function actionCancelled() {
@@ -469,15 +475,13 @@ FlightMap {
 
         function show(coord) {
             _mapCircle.radius.rawValue = defaultRadius
-            gotoLocationItem.show(lastCoordinate2.coordinate)
-            orbitMapCircle.center = gotoLocationItem.coordinate
+            orbitMapCircle.center = activeGoToLocation.coordinate
             orbitMapCircle.visible = true
         }
 
         function showCurrent(){
             _mapCircle.radius.rawValue = defaultRadius
-            gotoLocationItem.show(lastCoordinate2.coordinate)
-            orbitMapCircle.center = gotoLocationItem.coordinate
+            orbitMapCircle.center = activeGoToLocation.coordinate
             orbitMapCircle.visible = true
         }
 
@@ -607,7 +611,6 @@ FlightMap {
 
         onClicked: {
             if ((globals.guidedControllerFlyView.showGotoLocation || globals.guidedControllerFlyView.showOrbit || globals.guidedControllerFlyView.showROI)) {
-
 
                 //gotoLocationItem.hide()
                 var clickCoord = _root.toCoordinate(Qt.point(mouse.x, mouse.y), false /* clipToViewPort */)

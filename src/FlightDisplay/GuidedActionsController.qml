@@ -354,6 +354,7 @@ Item {
         closeAll()
         confirmDialog.action = actionCode
         confirmDialog.actionData = actionData
+        orbitMapCircle.hide()
         if (actionCode !== actionGoto){
         confirmDialog.hideTrigger = true
         }
