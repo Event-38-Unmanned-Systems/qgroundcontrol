@@ -396,6 +396,10 @@ VisualMissionItem* MissionController::insertTakeoffItem(QGeoCoordinate /*coordin
 
 VisualMissionItem* MissionController::insertComplexTakeoffItem(QGeoCoordinate coordinate, int visualItemIndex, bool makeCurrentItem)
 {
+
+    if(!qgcApp()->toolbox()->multiVehicleManager()->activeVehicle()){
+    _settingsItem->setInitialHomePosition(coordinate);
+    }
     VTOLTakeoffComplexItem* vtolTakeoff = qobject_cast<VTOLTakeoffComplexItem*>(insertComplexMissionItem(VTOLTakeoffComplexItem::name, coordinate, visualItemIndex, makeCurrentItem));
     return vtolTakeoff;
 }

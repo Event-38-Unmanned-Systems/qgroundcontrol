@@ -58,6 +58,7 @@
         <file alias="remote-id.svg">resources/remote-id.svg</file>
         <file alias="Iris-Green.png">src/ui/toolbar/Images/Iris-Green.png</file>
         <file alias="Iris-Red.png">src/ui/toolbar/Images/Iris-Red.png</file>
+        <file alias="NightHawk.png">src/ui/toolbar/Images/Nighthawk.png</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">resources/firmware/3drradio.png</file>

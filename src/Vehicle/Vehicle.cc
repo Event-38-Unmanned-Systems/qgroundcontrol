@@ -365,8 +365,8 @@ void Vehicle::_commonInit()
     _firmwarePlugin = _firmwarePluginManager->firmwarePluginForAutopilot(_firmwareType, _vehicleType);
 
     connect(_firmwarePlugin, &FirmwarePlugin::toolIndicatorsChanged, this, &Vehicle::toolIndicatorsChanged);
+    connect(qgcApp()->toolbox()->multiVehicleManager(), &MultiVehicleManager::RIDEnabledChanged, this, &Vehicle::toolIndicatorsChanged);
     connect(_firmwarePlugin, &FirmwarePlugin::modeIndicatorsChanged, this, &Vehicle::modeIndicatorsChanged);
-
     connect(this, &Vehicle::coordinateChanged,      this, &Vehicle::_updateDistanceHeadingToHome);
     connect(this, &Vehicle::coordinateChanged,      this, &Vehicle::_updateDistanceToGCS);
     connect(this, &Vehicle::homePositionChanged,    this, &Vehicle::_updateDistanceHeadingToHome);
@@ -686,8 +686,9 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     If a payload is swapped without GCS cycle this also handles
     Resetting gimbal seen.
     */
-    if (message.compid == MAV_COMP_ID_GIMBAL){
+    if (message.compid == MAV_COMP_ID_GIMBAL && !_haveGimbalData){
         _haveGimbalData = true;
+        emit toolIndicatorsChanged();
     }
     else if (message.compid == MAV_COMP_ID_CAMERA){
         _haveGimbalData = false;
@@ -704,7 +705,7 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
 
     //if we've seen the cassia on the network monitor heartbeat for UI. If no connectivity for > 20s we notifiy operator every 5 seconds.
     if (_CassiaHeartbeat.isValid()){
-        if (_CassiaHeartbeat.elapsed() > 20000){
+        if (_CassiaHeartbeat.elapsed() > 10000){
             if (_CassiaNotifyTime.msecsTo(QTime::currentTime()) > (5 * 1000)){
              qgcApp()->toolbox()->audioOutput()->say(QStringLiteral("Iris heartbeat lost"));
              _cassiaOperational = false;
@@ -834,6 +835,9 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
         break;
     case MAVLINK_MSG_ID_OPEN_DRONE_ID_ARM_STATUS:
         _handleDroneIdArmStatus(message);
+        break;
+    case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT: //
+        _handlePositionTargetGlobalInt(message);
         break;
 
     case MAVLINK_MSG_ID_EVENT:
@@ -1133,7 +1137,12 @@ void Vehicle::_chunkedStatusTextCompleted(uint8_t compId)
         readAloud = true;
         messageText = "Battery at critical level";
     }
+    else if (messageText.contains("Angle assist")){
+        readAloud = true;
+        messageText = "Quad angle assist active. Operator take action,";
     }
+    }
+
     if (readAloud) {
         if (!skipSpoken) {
             qgcApp()->toolbox()->audioOutput()->say(messageText);
@@ -1740,6 +1749,20 @@ void Vehicle::_handleDroneIdArmStatus(mavlink_message_t& message)
 
 }
 
+void Vehicle::_handlePositionTargetGlobalInt(mavlink_message_t& message)
+{
+    mavlink_position_target_global_int_t location;
+
+    mavlink_msg_position_target_global_int_decode(&message, &location);
+
+    QGeoCoordinate newtargetPosition (location.lat_int / 10000000.0,
+                                    location.lon_int / 10000000.0,
+                                    location.alt);
+    _targetPosition = newtargetPosition;
+
+    emit targetPositionChanged();
+}
+
 void Vehicle::_updateArmed(bool armed)
 {
     if (_armed != armed) {
@@ -1926,10 +1949,13 @@ void Vehicle::_handleCassiaHeartbeat(mavlink_message_t& message)
     if (_cassiaOperational == false){
         _cassiaOperational = true;
         emit isCassiaOperationalChanged();
+        qgcApp()->toolbox()->audioOutput()->say(QStringLiteral("Iris heartbeat regained"));
         }
+
 if (_cassiaDetected == false){
     _cassiaDetected = true;
     emit isCassiaDetectedChanged();
+    emit toolIndicatorsChanged();
 }
 
 }
@@ -3935,7 +3961,19 @@ QString Vehicle::vehicleImageCompass() const
 const QVariantList& Vehicle::toolIndicators()
 {
     if(_firmwarePlugin) {
-        return _firmwarePlugin->toolIndicators(this);
+
+        Indicator =_firmwarePlugin->toolIndicators(this);
+
+        if (qgcApp()->toolbox()->multiVehicleManager()->RIDEnabled()){
+            Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/RemoteIDIndicator.qml")));
+        }
+        if (isCassiaDetected()){
+            Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/IrisIndicator.qml")));
+        }
+        if (_haveGimbalData){
+            Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/NextVisionIndicator.qml")));
+        }
+        return Indicator;
     }
     static QVariantList emptyList;
     return emptyList;
@@ -4335,8 +4373,39 @@ void Vehicle::nightHawkStillCapture()
     sendMavCommand(
                 MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
+                false,
+                11,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                false);
+}
+void Vehicle::nightHawksetPallet(int pallet)
+{
+    sendMavCommand(
+                MAV_COMP_ID_GIMBAL,
+                MAV_CMD_DO_DIGICAM_CONTROL,
+                false,
+                15,
+                pallet,
+                0,
+                0,
+                0,
+                0,
+                0,
+                false);
+}
+
+void Vehicle::nightHawkfccCalibration()
+{
+    sendMavCommand(
+                MAV_COMP_ID_GIMBAL,
+                MAV_CMD_DO_DIGICAM_CONTROL,
                 false,                               // show errors
-                1,           // Pitch 0 - 90
+                11,           // Pitch 0 - 90
                 0,                                   // Roll (not used)
                 0,             // Yaw -180 - 180
                 0,                                   // Altitude (not used)

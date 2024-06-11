@@ -334,6 +334,13 @@
     "longDesc":  "Host name to forward mavlink to. i.e: localhost:14445",
     "type":             "string",
     "default":     "localhost:14445"
+},{
+"name":             "nextVisionModes",
+"shortDesc":        "Specify whether the camera should take photos or video",
+"type":             "uint32",
+"enumStrings":      "White Hot,Color    ",
+"enumValues":       "0,2",
+"default":     0
 }
 ]
 }

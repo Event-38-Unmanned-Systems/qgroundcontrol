@@ -162,6 +162,7 @@ public:
     Q_PROPERTY(QGeoCoordinate       coordinate                  READ coordinate                                                     NOTIFY coordinateChanged)
     Q_PROPERTY(QGeoCoordinate       homePosition                READ homePosition                                                   NOTIFY homePositionChanged)
     Q_PROPERTY(QGeoCoordinate       armedPosition               READ armedPosition                                                  NOTIFY armedPositionChanged)
+    Q_PROPERTY(QGeoCoordinate       targetPosition              READ targetPosition                                                 NOTIFY targetPositionChanged)
     Q_PROPERTY(bool                 armed                       READ armed                      WRITE setArmedShowError             NOTIFY armedChanged)
     Q_PROPERTY(bool                 autoDisarm                  READ autoDisarm                                                     NOTIFY autoDisarmChanged)
     Q_PROPERTY(bool                 flightModeSetAvailable      READ flightModeSetAvailable                                         CONSTANT)
@@ -443,6 +444,9 @@ public:
     Q_INVOKABLE void nighthawkStreamSwitch (double stream);
     Q_INVOKABLE void nighthawksetMode(double mode);
     Q_INVOKABLE void nightHawkStillCapture ();
+    Q_INVOKABLE void nightHawksetPallet (int Pallet);
+    Q_INVOKABLE void nightHawkfccCalibration ();
+
     Q_INVOKABLE void nightHawkRecordChange (double stream);
     Q_INVOKABLE void nightHawktrackOnPosition(float posX,float posY, int chan);
 
@@ -482,7 +486,7 @@ public:
 
     QGeoCoordinate coordinate() { return _coordinate; }
     QGeoCoordinate armedPosition    () { return _armedPosition; }
-
+    QGeoCoordinate targetPosition    () { return _targetPosition; }
     void updateFlightDistance(double distance);
     bool airspeedCalibrated         () const;
     void setAirspeedCalibrated      (bool calibrated);
@@ -901,6 +905,7 @@ signals:
     void mavlinkMessageReceived         (const mavlink_message_t& message);
     void homePositionChanged            (const QGeoCoordinate& homePosition);
     void armedPositionChanged();
+    void targetPositionChanged();
     void armedChanged                   (bool armed);
     void flightModeChanged              (const QString& flightMode);
     void flyingChanged                  (bool flying);
@@ -1051,6 +1056,7 @@ private slots:
     void _gotProgressUpdate                 (float progressValue);
 
 private:
+    QVariantList Indicator;
     TerrainAtCoordinateQuery*   _currentTerrainAtCoordinateQuery    = nullptr;
     void _joystickChanged               (Joystick* joystick);
     void _loadSettings                  ();
@@ -1059,6 +1065,7 @@ private:
     void _handlePing                    (LinkInterface* link, mavlink_message_t& message);
     void _handleHomePosition            (mavlink_message_t& message);
     void _handleDroneIdArmStatus        (mavlink_message_t& message);
+    void _handlePositionTargetGlobalInt (mavlink_message_t& message);
     void _handleHeartbeat               (mavlink_message_t& message);
     void _handleCassiaHeartbeat         (mavlink_message_t& message);
     void _handleRadioStatus             (mavlink_message_t& message);
@@ -1137,6 +1144,7 @@ private:
     QGeoCoordinate  _coordinate;
     QGeoCoordinate  _homePosition;
     QGeoCoordinate  _armedPosition;
+    QGeoCoordinate  _targetPosition;
 
 
 

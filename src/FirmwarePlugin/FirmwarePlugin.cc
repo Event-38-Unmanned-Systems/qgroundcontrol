@@ -318,8 +318,6 @@ const QVariantList& FirmwarePlugin::toolIndicators(const Vehicle*)
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/TelemetryRSSIIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/RCRSSIIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/BatteryIndicator.qml")),
-            QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/RemoteIDIndicator.qml")),
-            QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/IrisIndicator.qml")),
         });
     }
     return _toolIndicatorList;
@@ -398,7 +396,7 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
                     3.75,            // sendsorHeight
                     1456,           // imageWidth
                     1088,            // imageHeight
-                    5.5,            // focalLength
+                    6,            // focalLength
                     true,           // landscape
                     true,          // fixedOrientation
                     .4,              // minTriggerInterval
