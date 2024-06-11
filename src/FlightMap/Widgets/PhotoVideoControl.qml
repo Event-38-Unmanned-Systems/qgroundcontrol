@@ -34,7 +34,7 @@ Rectangle {
     // The following properties relate to a simple camera
     property var    _flyViewSettings:                           QGroundControl.settingsManager.flyViewSettings
     property bool   _simpleCameraAvailable:                     !_mavlinkCamera && _activeVehicle && _flyViewSettings.showSimpleCameraControl.rawValue
-    property bool   _onlySimpleCameraAvailable:                 !_anyVideoStreamAvailable && _simpleCameraAvailable
+    property bool   _onlySimpleCameraAvailable:                 _simpleCameraAvailable //!_anyVideoStreamAvailable &&
     property bool   _simpleCameraIsShootingInCurrentMode:       _onlySimpleCameraAvailable && !_simplePhotoCaptureIsIdle
 
     // The following properties relate to a simple video stream
@@ -78,7 +78,7 @@ Rectangle {
 
     property bool   _anyVideoStreamAvailable:                   _videoStreamManager.hasVideo
     property string _cameraName:                                _mavlinkCamera ? _mavlinkCameraName : ""
-    property bool   _showModeIndicator:                         _mavlinkCamera ? _mavlinkCameraHasModes : _videoStreamManager.hasVideo
+    property bool   _showModeIndicator:                         false //_mavlinkCamera ? _mavlinkCameraHasModes : _videoStreamManager.hasVideo
     property bool   _modeIndicatorPhotoMode:                    _mavlinkCamera ? _mavlinkCameraInPhotoMode : _videoStreamInPhotoMode || _onlySimpleCameraAvailable
     property bool   _allowsPhotoWhileRecording:                  _mavlinkCamera ? _mavlinkCameraAllowsPhotoWhileRecording : _videoStreamAllowsPhotoWhileRecording
     property bool   _switchToPhotoModeAllowed:                  !_modeIndicatorPhotoMode && (_mavlinkCamera ? !_mavlinkCameraIsShooting : true)
@@ -234,12 +234,13 @@ Rectangle {
             spacing:            0
             visible:            _showModeIndicator && !_mavlinkCamera && _simpleCameraAvailable && _videoStreamInPhotoMode
 
-            QGCRadioButton {
+            /*QGCRadioButton {
                 id:             videoGrabRadio
                 font.pointSize: ScreenTools.smallFontPointSize
                 text:           qsTr("Video Grab")
-            }
+            }*/
             QGCRadioButton {
+                visible: false
                 font.pointSize: ScreenTools.smallFontPointSize
                 text:           qsTr("Camera Trigger")
                 checked:        true
