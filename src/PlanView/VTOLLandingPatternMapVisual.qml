@@ -199,6 +199,7 @@ Item {
                 var centeredCoordinate = _missionItem.transitionCoordinate.atDistanceAndAzimuth(halfDistance, _landingAreaBearing)
                 var angleIncrement = _landingAreaBearing > 180 ? -90 : 90
                 coordinate = centeredCoordinate.atDistanceAndAzimuth(_landingWidthMeters / 2, _landingAreaBearing + angleIncrement)
+                _calcGlideSlopeHeights();
             }
 
             Component.onCompleted: recalc()

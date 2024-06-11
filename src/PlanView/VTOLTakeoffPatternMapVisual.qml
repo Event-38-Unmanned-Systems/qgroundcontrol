@@ -202,6 +202,7 @@ Item {
                 var centeredCoordinate = _missionItem.climboutCoordinate.atDistanceAndAzimuth(halfDistance,_takeoffBearing+180)
                 var angleIncrement = _takeoffBearing > 180 ? -90 : 90
                 coordinate = centeredCoordinate.atDistanceAndAzimuth(_landingWidthMeters / 2, _takeoffBearing + angleIncrement)
+                _calcGlideSlopeHeights();
             }
 
             Component.onCompleted: recalc()
