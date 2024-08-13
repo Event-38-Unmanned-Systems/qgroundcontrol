@@ -3,6 +3,7 @@
 [![Releases](https://img.shields.io/github/release/mavlink/QGroundControl.svg)](https://github.com/mavlink/QGroundControl/releases)
 [![Travis Build Status](https://travis-ci.org/mavlink/qgroundcontrol.svg?branch=master)](https://travis-ci.org/mavlink/qgroundcontrol)
 [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/crxcm4qayejuvh6c/branch/master?svg=true)](https://ci.appveyor.com/project/mavlink/qgroundcontrol)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FEvent-38-Unmanned-Systems%2Fqgroundcontrol.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FEvent-38-Unmanned-Systems%2Fqgroundcontrol?ref=badge_shield)
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mavlink/qgroundcontrol?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -23,3 +24,7 @@ Key Links:
 * [Discussion/Support](https://docs.qgroundcontrol.com/en/Support/Support.html)
 * [Contributing](https://dev.qgroundcontrol.com/en/contribute/)
 * [License](https://github.com/mavlink/qgroundcontrol/blob/master/COPYING.md)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FEvent-38-Unmanned-Systems%2Fqgroundcontrol.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FEvent-38-Unmanned-Systems%2Fqgroundcontrol?ref=badge_large)
