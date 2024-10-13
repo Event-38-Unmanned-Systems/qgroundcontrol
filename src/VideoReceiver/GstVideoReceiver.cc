@@ -683,8 +683,8 @@ GstVideoReceiver::_handleEOS(void)
     }
 }
 
-static gboolean
-_filterParserCaps(GstElement* bin, GstPad* pad, GstElement* element, GstQuery* query, gpointer data)
+gboolean
+GstVideoReceiver::_filterParserCaps(GstElement* bin, GstPad* pad, GstElement* element, GstQuery* query, gpointer data)
 {
     Q_UNUSED(bin)
     Q_UNUSED(pad)
@@ -707,18 +707,21 @@ _filterParserCaps(GstElement* bin, GstPad* pad, GstElement* element, GstQuery* q
 
     GstCaps* filter;
 
-    if (sinkCaps == nullptr && (filter = gst_caps_from_string("video/x-h264")) != nullptr) {
-        if (gst_caps_can_intersect(srcCaps, filter)) {
-            sinkCaps = gst_caps_from_string("video/x-h264,stream-format=avc");
-        }
+    GstStructure* structure;
 
-        gst_caps_unref(filter);
-        filter = nullptr;
-    } else if (sinkCaps == nullptr && (filter = gst_caps_from_string("video/x-h265")) != nullptr) {
+    structure = gst_caps_get_structure(srcCaps, 0);
+    if(gst_structure_has_name(structure, "video/x-h265")){
+        filter = gst_caps_from_string("video/x-h265");
         if (gst_caps_can_intersect(srcCaps, filter)) {
             sinkCaps = gst_caps_from_string("video/x-h265,stream-format=hvc1");
         }
-
+        gst_caps_unref(filter);
+        filter = nullptr;
+    } else if(gst_structure_has_name(structure, "video/x-h264")){
+        filter = gst_caps_from_string("video/x-h264");
+        if (gst_caps_can_intersect(srcCaps, filter)) {
+            sinkCaps = gst_caps_from_string("video/x-h264,stream-format=avc");
+        }
         gst_caps_unref(filter);
         filter = nullptr;
     }
