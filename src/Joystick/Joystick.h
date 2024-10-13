@@ -117,7 +117,7 @@ public:
     Q_INVOKABLE bool    getButtonRepeat     (int button);
     Q_INVOKABLE void    setButtonAction     (int button, const QString& action);
     Q_INVOKABLE QString getButtonAction     (int button);
-
+    Q_INVOKABLE void  _nightHawkRecordChange();
     // Property accessors
 
     QString     name                () { return _name; }
@@ -240,12 +240,11 @@ protected:
 
     void    _pitchStep              (double direction);
     void    _yawStep                (double direction);
-    void _nightHawkstreamManualHoldSwitch ();
+    void    _nightHawkstreamManualHoldSwitch ();
     void    _nightHawkstreamSwitch  ();
     void    _nightHawksetMode  (double mode);
     void    _nightHawktrackOnPosition(float posX,float posY, int chan);
     void    _nightHawkStillCapture  ();
-    void    _nightHawkRecordChange  ();
     void    _nightHawkZoom          (double state);
 
     double  _localYaw       = 0.0;

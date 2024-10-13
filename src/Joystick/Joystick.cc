@@ -638,13 +638,19 @@ void Joystick::_handleAxis()
             if(_axisCount > 4) {
                 axis = _rgFunctionAxis[gimbalPitchFunction];
                 gimbalPitch = _adjustRange(_rgAxisValues[axis], _rgCalibration[axis],_deadband);
-                gimbalPitch =  .38*powf(gimbalPitch, 3) + (1+-.38)*gimbalPitch;            }
+                //gimbalPitch =  .18*powf(gimbalPitch, 3) + (1+-.18)*gimbalPitch;
+                if ( _exponential < -0.01f) {
+                gimbalPitch =   -_exponential*powf(gimbalPitch,  3) + (1+_exponential)*gimbalPitch;
+                }
+            }
 
             if(_axisCount > 5) {
                 axis = _rgFunctionAxis[gimbalRollFunction];
                 gimbalRoll = _adjustRange(_rgAxisValues[axis], _rgCalibration[axis],_deadband);
-                gimbalRoll = .38*powf(gimbalRoll,3) + (1+-.38)*gimbalRoll;
-
+                //gimbalRoll = .18*powf(gimbalRoll,3) + (1+-.18)*gimbalRoll;
+                if ( _exponential < -0.01f){
+                gimbalRoll =   -_exponential*powf(gimbalRoll,  3) + (1+_exponential)*gimbalRoll;
+            }
             }
 
             if (_accumulator) {
@@ -674,6 +680,7 @@ void Joystick::_handleAxis()
                 roll =  -_exponential*powf(roll, 3) + (1+_exponential)*roll;
                 pitch = -_exponential*powf(pitch,3) + (1+_exponential)*pitch;
                 yaw =   -_exponential*powf(yaw,  3) + (1+_exponential)*yaw;
+
             }
 
             // Adjust throttle to 0:1 range
