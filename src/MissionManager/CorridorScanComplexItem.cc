@@ -331,6 +331,13 @@ void CorridorScanComplexItem::_rebuildTransectsPhase1(void)
                 QList<TransectStyleComplexItem::CoordInfo_t> reversedVertices;
                 for (const TransectStyleComplexItem::CoordInfo_t& vertex: _transects[i]) {
                     reversedVertices.prepend(vertex);
+
+                    //flip entry and exit coordinates
+                    if (reversedVertices.first().coordType == CoordTypeSurveyEntry) {
+                        reversedVertices.first().coordType = CoordTypeSurveyExit;
+                    } else if (reversedVertices.first().coordType == CoordTypeSurveyExit) {
+                        reversedVertices.first().coordType = CoordTypeSurveyEntry;
+                    }
                 }
                 _transects[i] = reversedVertices;
             }
@@ -346,6 +353,13 @@ void CorridorScanComplexItem::_rebuildTransectsPhase1(void)
                 QList<TransectStyleComplexItem::CoordInfo_t> reversedVertices;
                 for (int j=transectVertices.count()-1; j>=0; j--) {
                     reversedVertices.append(transectVertices[j]);
+                    // as we are flying the transect reversed, we also need to swap entry and exit coordinate types
+                    if (reversedVertices.last().coordType == CoordTypeSurveyEntry) {
+                        reversedVertices.last().coordType = CoordTypeSurveyExit;
+                    } else if (reversedVertices.last().coordType == CoordTypeSurveyExit) {
+                        reversedVertices.last().coordType = CoordTypeSurveyEntry;
+                    }
+
                 }
                 transectVertices = reversedVertices;
             } else {
