@@ -445,6 +445,8 @@ public:
     Q_INVOKABLE void nighthawksetMode(double mode);
     Q_INVOKABLE void nightHawkStillCapture ();
     Q_INVOKABLE void nightHawksetPallet (int Pallet);
+    Q_INVOKABLE void nightHawkInvertPallet ();
+
     Q_INVOKABLE void nightHawkfccCalibration ();
 
     Q_INVOKABLE void nightHawkRecordChange (double stream);
@@ -1270,7 +1272,7 @@ private:
     bool                _haveGimbalData = false;
     bool                _isROIEnabled   = false;
     Joystick*           _activeJoystick = nullptr;
-
+    int                 palletInvert    = 1;
     bool _checkLatestStableFWDone = false;
     int _firmwareMajorVersion = versionNotSetValue;
     int _firmwareMinorVersion = versionNotSetValue;

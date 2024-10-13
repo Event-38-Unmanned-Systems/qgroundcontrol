@@ -338,8 +338,8 @@
 "name":             "nextVisionModes",
 "shortDesc":        "Specify whether the camera should take photos or video",
 "type":             "uint32",
-"enumStrings":      "White Hot,Color    ",
-"enumValues":       "0,2",
+"enumStrings":      "Grey Scale,Color",
+"enumValues":       "0,1",
 "default":     0
 }
 ]

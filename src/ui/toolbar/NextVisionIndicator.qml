@@ -79,7 +79,7 @@ Item {
                                             columnSpacing:  _margins
                                             rowSpacing:     _margins
                                             columns:        2
-                                            QGCLabel { text: qsTr("Camera Pallet:")
+                                            QGCLabel { text: qsTr("Camera Palette:")
                                                                    font.bold: true}
                                                         FactComboBox {
                                                             fact:                   QGroundControl.settingsManager.appSettings.nextVisionModes
@@ -90,10 +90,24 @@ Item {
                                                             }
                                                         }
 
-                                            QGCLabel { text: qsTr("FCC Calibration:")
+                                                        QGCLabel { text: qsTr("Invert Palette:")
+                                                                               font.bold: true}
+                                                        QGCButton {
+                                                            Layout.alignment:   Qt.AlignHCenter
+                                                            text:               qsTr("Invert")
+                                                            onClicked: {_activeVehicle.nightHawkInvertPallet();}
+                                                        }
+
+                                            QGCLabel { text: qsTr("Flat Field Correction:")
                                                        font.bold: true}
 
-                                            Image {
+                                            QGCButton {
+                                                Layout.alignment:   Qt.AlignHCenter
+                                                text:               qsTr("Calibrate")
+                                                onClicked: {_activeVehicle.nightHawkfccCalibration();}
+
+                                            }
+                                            /*Image {
                                                 height:                 35
                                                 width:                  35
                                                 source: "/InstrumentValueIcons/refresh.svg"
@@ -104,7 +118,7 @@ Item {
                                                 fillMode:               Image.PreserveAspectFit
                                                 sourceSize.height:      height
                                                 Layout.alignment:       Qt.AlignVCenter | Qt.AlignHCenter
-                                            }
+                                            }*/
                                         } // GridLayout
                                     } // Column
                     }

@@ -4374,7 +4374,7 @@ void Vehicle::nightHawkStillCapture()
                 MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
                 false,
-                11,
+                1,
                 0,
                 0,
                 0,
@@ -4384,8 +4384,7 @@ void Vehicle::nightHawkStillCapture()
                 false);
 }
 void Vehicle::nightHawksetPallet(int pallet)
-{
-    sendMavCommand(
+{           sendMavCommand(
                 MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
                 false,
@@ -4397,6 +4396,27 @@ void Vehicle::nightHawksetPallet(int pallet)
                 0,
                 0,
                 false);
+}
+
+void Vehicle::nightHawkInvertPallet()
+{
+
+    sendMavCommand(
+                MAV_COMP_ID_GIMBAL,
+                MAV_CMD_DO_DIGICAM_CONTROL,
+                false,
+                8,
+                palletInvert,
+                0,
+                0,
+                0,
+                0,
+                0,
+                false);
+    if (palletInvert == 1){
+        palletInvert = 0;
+    }
+    else palletInvert = 1;
 }
 
 void Vehicle::nightHawkfccCalibration()
