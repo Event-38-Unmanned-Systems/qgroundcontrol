@@ -90,7 +90,8 @@ T.ComboBox {
         }
 
         background: Rectangle {
-            color:                  control.currentIndex === index ? _qgcPal.buttonHighlight : _qgcPal.button
+            radius:            ScreenTools.defaultFontPixelWidth
+            color:                  control.currentIndex === index ? _qgcPal.button : _qgcPal.button
         }
 
         highlighted:                control.highlightedIndex === index
@@ -122,6 +123,7 @@ T.ComboBox {
     }
 
     background: Rectangle {
+        radius:            ScreenTools.defaultFontPixelWidth
         implicitWidth:  ScreenTools.implicitComboBoxWidth
         implicitHeight: ScreenTools.implicitComboBoxHeight
         color:          _qgcPal.window
@@ -143,6 +145,7 @@ T.ComboBox {
             highlightMoveDuration:  0
 
             Rectangle {
+                radius:         ScreenTools.defaultFontPixelWidth
                 z:              10
                 width:          parent.width
                 height:         parent.height
@@ -154,7 +157,8 @@ T.ComboBox {
         }
 
         background: Rectangle {
-            color: control.palette.window
+            radius:            ScreenTools.defaultFontPixelWidth
+            color: _qgcPal.button
         }
     }
 }

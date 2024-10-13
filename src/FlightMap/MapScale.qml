@@ -24,7 +24,7 @@ Item {
     property var    mapControl                      ///< Map control for which this scale control is being used
     property bool   terrainButtonVisible:   false
     property alias  terrainButtonChecked:   terrainButton.checked
-    property bool   zoomButtonsVisible:     true
+    property bool   zoomButtonsVisible:     false
     property bool   buttonsOnLeft:          true    ///< Buttons to left/right of scale bar
 
     signal terrainButtonClicked

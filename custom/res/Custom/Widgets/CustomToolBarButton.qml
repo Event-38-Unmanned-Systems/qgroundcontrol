@@ -21,6 +21,7 @@ Button {
     autoExclusive:                  true
 
     background: Rectangle {
+        radius: ScreenTools.defaultFontPixelWidth
         anchors.fill:               parent
         color:                      qgcPal.buttonHighlight
         visible:                    (mouseArea.pressed || button.checked)

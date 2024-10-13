@@ -801,6 +801,9 @@ Item {
                 //-------------------------------------------------------
                 // Mission Controls (Expanded)
                 QGCTabBar {
+                    background: Rectangle {
+                        color: "transparent"
+                    }
                     id:         layerTabBar
                     width:      parent.width
                     visible:    (!planControlColapsed || !_airspaceEnabled) && QGroundControl.corePlugin.options.enablePlanViewSelector
@@ -811,7 +814,8 @@ Item {
                         text: qsTr("Mission")
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
-                        font.pointSize: ScreenTools.defaultFontPointSize
+                        anchors.leftMargin:      ScreenTools.defaultFontPixelHeight * 0.25
+                        font.pointSize: ScreenTools.mediumFontPointSize
                         font.family:    ScreenTools.normalFontFamily
                         color: "black"
                         }
@@ -846,7 +850,8 @@ Item {
                         text: qsTr("Fence")
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.left: parent.left
-                        font.pointSize: ScreenTools.defaultFontPointSize
+                        anchors.leftMargin:      ScreenTools.defaultFontPixelHeight * 0.25
+                        font.pointSize: ScreenTools.mediumFontPointSize
                         font.family:    ScreenTools.normalFontFamily
                         color: "black"
                         }

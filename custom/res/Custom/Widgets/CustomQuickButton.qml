@@ -37,7 +37,7 @@ Button {
         anchors.fill:           control
         QGCColoredImage {
             source:             iconSource
-            color:              (mouseArea.pressed || control.checked) ? qgcPal.buttonHighlightText : qgcPal.buttonText
+            color:              (mouseArea.pressed || control.checked) ? qgcPal.buttonText : qgcPal.buttonText
             width:              control.width * iconRatio
             height:             width
             anchors.centerIn:   parent

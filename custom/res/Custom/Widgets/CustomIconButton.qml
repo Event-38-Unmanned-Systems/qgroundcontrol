@@ -35,6 +35,7 @@ Button {
             Repeater {
                 model: [1,2,3]
                 Rectangle {
+                    radius: ScreenTools.defaultFontPixelWidth
                     height:         ScreenTools.defaultFontPixelHeight
                     width:          ScreenTools.defaultFontPixelWidth * 0.25
                     color:          qgcPal.text

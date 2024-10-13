@@ -25,6 +25,7 @@ Button {
     property real _nameWidth:   nameLabel.contentWidth
 
     background: Rectangle {
+        radius: ScreenTools.defaultFontPixelWidth
         anchors.fill:   parent
         color:          checked ? qgcPal.buttonHighlight : qgcPal.button
     }

@@ -19,6 +19,7 @@ GroupBox {
     QGCPalette { id: qgcPal; colorGroupEnabled: enabled }
 
     background: Rectangle {
+        radius:            ScreenTools.defaultFontPixelWidth
         y:      control.topPadding - control.padding
         width:  parent.width
         height: parent.height - control.topPadding + control.padding

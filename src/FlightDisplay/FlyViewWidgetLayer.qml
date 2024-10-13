@@ -123,14 +123,14 @@ Item {
         id:                     photoVideoControl
         anchors.margins:        _toolsMargin
         anchors.right:          parent.right
-        width:                  _rightPanelWidth * .8
+        width:                  _rightPanelWidth * .5
         state:                  _verticalCenter ? "verticalCenter" : "topAnchor"
         states: [
             State {
                 name: "verticalCenter"
                 AnchorChanges {
                     target:                 photoVideoControl
-                    anchors.top:            undefined
+                    anchors.bottom:            undefined
                     anchors.verticalCenter: _root.verticalCenter
                 }
             },
@@ -139,7 +139,7 @@ Item {
                 AnchorChanges {
                     target:                 photoVideoControl
                     anchors.verticalCenter: undefined
-                    anchors.top:            instrumentPanel.bottom
+                    anchors.bottom:            _root.bottom
                 }
             }
         ]
@@ -232,10 +232,10 @@ Item {
 
         property bool _virtualJoystickEnabled: QGroundControl.settingsManager.appSettings.virtualJoystick.rawValue
     }
-
+    //mwright
     FlyViewToolStrip {
         id:                     toolStrip
-        anchors.leftMargin:     _toolsMargin + parentToolInsets.leftEdgeCenterInset
+        //anchors.leftMargin:     _toolsMargin + parentToolInsets.leftEdgeCenterInset
         anchors.topMargin:      _toolsMargin + parentToolInsets.topEdgeLeftInset
         anchors.left:           parent.left
         anchors.top:            parent.top
@@ -264,8 +264,8 @@ Item {
     MapScale {
         id:                 mapScale
         anchors.margins:    _toolsMargin
-        anchors.left:       toolStrip.right
-        anchors.top:        parent.top
+        anchors.right:       parent.right
+        anchors.bottom:        parent.bottom
         mapControl:         _mapControl
         buttonsOnLeft:      false
         visible:            !ScreenTools.isTinyScreen && QGroundControl.corePlugin.options.flyView.showMapScale && mapControl.pipState.state === mapControl.pipState.fullState

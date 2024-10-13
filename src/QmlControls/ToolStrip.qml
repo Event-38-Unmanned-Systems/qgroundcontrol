@@ -17,7 +17,7 @@ import QGroundControl.Controls      1.0
 
 Rectangle {
     id:         _root
-    color:      qgcPal.toolbarBackground
+    color: "transparent"
     width:      _idealWidth < repeater.contentWidth ? repeater.contentWidth : _idealWidth
     height:     Math.min(maxHeight, toolStripColumn.height + (flickable.anchors.margins * 2))
     radius:     ScreenTools.defaultFontPixelWidth / 2
@@ -43,7 +43,7 @@ Rectangle {
     signal dropped(int index)
 
     DeadMouseArea {
-        anchors.fill: parent
+        //anchors.fill: parent
     }
 
     QGCFlickable {
@@ -61,7 +61,7 @@ Rectangle {
             id:             toolStripColumn
             anchors.left:   parent.left
             anchors.right:  parent.right
-            spacing:        ScreenTools.defaultFontPixelWidth * 0.25
+            spacing:        ScreenTools.defaultFontPixelWidth * 0.45
 
             QGCLabel {
                 id:                     titleLabel
@@ -80,7 +80,7 @@ Rectangle {
                     anchors.left:       toolStripColumn.left
                     anchors.right:      toolStripColumn.right
                     height:             width
-                    radius:             ScreenTools.defaultFontPixelWidth / 2
+                    radius:             180//ScreenTools.defaultFontPixelWidth / 2
                     fontPointSize:      ScreenTools.smallFontPointSize
                     toolStripAction:    modelData
                     dropPanel:          _dropPanel

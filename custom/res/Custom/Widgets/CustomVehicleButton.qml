@@ -80,6 +80,7 @@ Button {
                     color:          button.checked ? qgcPal.buttonHighlightText : qgcPal.buttonText
                 }
                 Rectangle {
+                    radius: ScreenTools.defaultFontPixelWidth
                     height:         ScreenTools.defaultFontPixelHeight * 0.5
                     width:          ScreenTools.defaultFontPixelWidth  * 3
                     color:          Qt.rgba(0,0,0,0)

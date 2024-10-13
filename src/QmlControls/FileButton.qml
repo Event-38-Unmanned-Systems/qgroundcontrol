@@ -6,6 +6,7 @@ import QGroundControl.ScreenTools   1.0
 
 /// File Button controls used by QGCFileDialog control
 Rectangle {
+    radius: ScreenTools.defaultFontPixelWidth
     implicitWidth:  ScreenTools.implicitButtonWidth
     implicitHeight: ScreenTools.implicitButtonHeight
     color:          highlight ? qgcPal.buttonHighlight : qgcPal.button

@@ -60,12 +60,14 @@ TextField {
             property bool showHelp: control.showHelp && control.activeFocus
 
             Rectangle {
+                radius:            ScreenTools.defaultFontPixelWidth
                 anchors.fill:           parent
                 anchors.bottomMargin:   -1
                 color:                  "#44ffffff"
             }
 
             Rectangle {
+                radius:            ScreenTools.defaultFontPixelWidth
                 anchors.fill:           parent
                 border.width:           enabled ? 1 : 0
                 border.color:           root.activeFocus ? "#47b" : "#999"
@@ -104,6 +106,7 @@ TextField {
                 }
 
                 Rectangle {
+                    radius:            ScreenTools.defaultFontPixelWidth
                     Layout.margins:     2
                     Layout.leftMargin:  0
                     Layout.rightMargin: 1

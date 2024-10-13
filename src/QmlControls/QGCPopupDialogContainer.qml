@@ -40,6 +40,7 @@ Popup {
 
     background: Item {
         Rectangle {
+           // radius: ScreenTools.defaultFontPixelWidth
             anchors.left:   parent.left
             anchors.top:    parent.top
             width:          _frameSize
@@ -49,6 +50,7 @@ Popup {
         }
 
         Rectangle {
+           // radius: ScreenTools.defaultFontPixelWidth
             anchors.right:  parent.right
             anchors.top:    parent.top
             width:          _frameSize
@@ -58,6 +60,7 @@ Popup {
         }
 
         Rectangle {
+           // radius: ScreenTools.defaultFontPixelWidth
             anchors.left:   parent.left
             anchors.bottom: parent.bottom
             width:          _frameSize
@@ -67,6 +70,7 @@ Popup {
         }
 
         Rectangle {
+            //radius: ScreenTools.defaultFontPixelWidth
             anchors.right:  parent.right
             anchors.bottom: parent.bottom
             width:          _frameSize
@@ -76,6 +80,7 @@ Popup {
         }
 
         Rectangle {
+            radius: ScreenTools.defaultFontPixelWidth
             anchors.margins:    _root.padding
             anchors.fill:       parent
             color:              _pal.window
@@ -170,6 +175,7 @@ Popup {
     }
 
     Rectangle {
+        radius: ScreenTools.defaultFontPixelWidth
         width:  titleRowLayout.width
         height: titleRowLayout.height
         color:  qgcPal.windowShade

@@ -59,6 +59,8 @@
         <file alias="Iris-Green.png">../src/ui/toolbar/Images/Iris-Green.png</file>
         <file alias="Iris-Red.png">../src/ui/toolbar/Images/Iris-Red.png</file>
         <file alias="NightHawk.png">res/Images/Nighthawk.png</file>
+        <file alias="cameraRotation.svg">res/Images/cameraRotation.svg</file>
+        <file alias="videoRotation.svg">res/Images/videoRotation.svg</file>
     </qresource>
     <qresource prefix="/res/firmware">
         <file alias="3drradio.png">../resources/firmware/3drradio.png</file>

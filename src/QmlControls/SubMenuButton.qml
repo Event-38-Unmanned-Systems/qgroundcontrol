@@ -36,6 +36,7 @@ Button {
         property bool showHighlight: control.pressed | control.checked
 
         background: Rectangle {
+            radius: ScreenTools.defaultFontPixelWidth
             id:     innerRect
             color:  showHighlight ? qgcPal.buttonHighlight : qgcPal.windowShade
 

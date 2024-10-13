@@ -19,6 +19,7 @@ Button {
     autoExclusive:      true
 
     background: Rectangle {
+        radius:            ScreenTools.defaultFontPixelWidth
         anchors.fill:   parent
         color:          _showHighlight ? qgcPal.buttonHighlight : qgcPal.button
         border.width:   _showBorder ? 1: 0
