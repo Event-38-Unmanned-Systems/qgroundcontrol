@@ -35,9 +35,10 @@ Item {
     property color  _indicatorsColor:       qgcPal.text
     property bool   _isVehicleGps:          _activeVehicle ? _activeVehicle.gps.count.rawValue > 1 && _activeVehicle.gps.hdop.rawValue < 1.4 : false
     property string _altitude:              _activeVehicle ? (isNaN(_activeVehicle.altitudeRelative.value) ? "0.0" : _activeVehicle.altitudeRelative.value.toFixed(1)) + ' ' + _activeVehicle.altitudeRelative.units : "0.0"
+    property string _altitudeMSL:              _activeVehicle ? (isNaN(_activeVehicle.altitudeAMSL.value) ? "0.0" : _activeVehicle.altitudeAMSL.value.toFixed(1)) + ' ' + _activeVehicle.altitudeRelative.units : "0.0"
     property string _distanceStr:           isNaN(_distance) ? "0" : _distance.toFixed(0) + ' ' + QGroundControl.unitsConversion.appSettingsHorizontalDistanceUnitsString
     property real   _heading:               _activeVehicle   ? _activeVehicle.heading.rawValue : 0
-    property real   _distance:              _activeVehicle ? _activeVehicle.distanceToHome.rawValue : 0
+    property real   _distance:              _activeVehicle ? _activeVehicle.distanceToHome.value : 0
     property string _messageTitle:          ""
     property string _messageText:           ""
     property real   _toolsMargin:           ScreenTools.defaultFontPixelWidth * 0.75
@@ -77,13 +78,13 @@ Item {
             id:                     vehicleStatusGrid
             columnSpacing:          ScreenTools.defaultFontPixelWidth  * 1.5
             rowSpacing:             ScreenTools.defaultFontPixelHeight * 0.5
-            columns:                5
+            columns:                7
             anchors.centerIn:       parent
 
             //-- Compass
             Item {
                 Layout.rowSpan:         3
-                Layout.column:          4
+                Layout.column:          6
                 Layout.minimumWidth:    parent.height * 1.25
                 Layout.fillHeight:      true
                 Layout.fillWidth:       true
@@ -148,6 +149,49 @@ Item {
                 }
             }
             //-- Second Row
+            //-- Air Speed
+            /*QGCColoredImage {
+                height:                 _indicatorsHeight
+                width:                  height
+                source:                 "/custom/img/horizontal_speed.svg"
+                fillMode:               Image.PreserveAspectFit
+                sourceSize.height:      height
+                Layout.alignment:       Qt.AlignVCenter | Qt.AlignHCenter
+                color:                  qgcPal.text
+            }*/
+            QGCLabel {
+                text:                   "ASPD"
+                color:                  qgcPal.text
+                font.pointSize:         ScreenTools.smallFontPointSize
+                Layout.fillWidth:       true
+                Layout.minimumWidth:    indicatorValueWidth
+                horizontalAlignment:    firstLabel.horizontalAlignment
+            }
+            QGCLabel {
+                text:                   _activeVehicle ? _activeVehicle.airSpeed.value.toFixed(1) + ' ' + _activeVehicle.groundSpeed.units : "0.0"
+                color:                  _indicatorsColor
+                font.pointSize:         ScreenTools.smallFontPointSize
+                Layout.fillWidth:       true
+                Layout.minimumWidth:    indicatorValueWidth
+                horizontalAlignment:    firstLabel.horizontalAlignment
+            }
+            //-- Ground Speed
+            QGCLabel {
+                text:                   "GSPD"
+                color:                  qgcPal.text
+                font.pointSize:         ScreenTools.smallFontPointSize
+                Layout.fillWidth:       true
+                Layout.minimumWidth:    indicatorValueWidth
+                horizontalAlignment:    firstLabel.horizontalAlignment
+            }
+            QGCLabel {
+                text:                   _activeVehicle ? _activeVehicle.groundSpeed.value.toFixed(1) + ' ' + _activeVehicle.groundSpeed.units : "0.0"
+                color:                  _indicatorsColor
+                font.pointSize:         ScreenTools.smallFontPointSize
+                Layout.fillWidth:       true
+                Layout.minimumWidth:    indicatorValueWidth
+                horizontalAlignment:    firstLabel.horizontalAlignment
+            }
             //-- Chronometer
             QGCColoredImage {
                 height:                 _indicatorsHeight
@@ -171,34 +215,32 @@ Item {
                 Layout.minimumWidth:    indicatorValueWidth
                 horizontalAlignment:    Text.AlignLeft
             }
-            //-- Air Speed
-            QGCColoredImage {
-                height:                 _indicatorsHeight
-                width:                  height
-                source:                 "/custom/img/horizontal_speed.svg"
-                fillMode:               Image.PreserveAspectFit
-                sourceSize.height:      height
-                Layout.alignment:       Qt.AlignVCenter | Qt.AlignHCenter
+            //-- ASL ALT
+            QGCLabel {
+                text:                   "AMSL"
                 color:                  qgcPal.text
+                font.pointSize:         ScreenTools.smallFontPointSize
+                Layout.fillWidth:       true
+                Layout.minimumWidth:    indicatorValueWidth
+                horizontalAlignment:    firstLabel.horizontalAlignment
             }
             QGCLabel {
-                text:                   _activeVehicle ? _activeVehicle.airSpeed.value.toFixed(1) + ' ' + _activeVehicle.groundSpeed.units : "0.0"
+                text:                   _altitudeMSL
                 color:                  _indicatorsColor
                 font.pointSize:         ScreenTools.smallFontPointSize
                 Layout.fillWidth:       true
                 Layout.minimumWidth:    indicatorValueWidth
                 horizontalAlignment:    firstLabel.horizontalAlignment
             }
-            //-- Altitude
-            QGCColoredImage {
-                height:                 _indicatorsHeight
-                width:                  height
-                source:                 "/custom/img/altitude.svg"
-                fillMode:               Image.PreserveAspectFit
-                sourceSize.height:      height
-                Layout.alignment:       Qt.AlignVCenter | Qt.AlignHCenter
-                color:                  qgcPal.text
 
+            //-- ASL ALT
+            QGCLabel {
+                text:                   "AREL"
+                color:                  qgcPal.text
+                font.pointSize:         ScreenTools.smallFontPointSize
+                Layout.fillWidth:       true
+                Layout.minimumWidth:    indicatorValueWidth
+                horizontalAlignment:    firstLabel.horizontalAlignment
             }
             QGCLabel {
                 text:                   _altitude
@@ -208,7 +250,6 @@ Item {
                 Layout.minimumWidth:    indicatorValueWidth
                 horizontalAlignment:    firstLabel.horizontalAlignment
             }
-
             //-- Distance
             QGCColoredImage {
                 height:                 _indicatorsHeight
@@ -218,7 +259,6 @@ Item {
                 sourceSize.height:      height
                 Layout.alignment:       Qt.AlignVCenter | Qt.AlignHCenter
                 color:                  qgcPal.text
-
             }
             QGCLabel {
                 text:                   _distance ? _distanceStr : "0"
