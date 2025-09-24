@@ -813,7 +813,7 @@ void SimpleMissionItem::_setDefaultsForCommand(void)
         _missionItem.setParam2(0);
     } else if ((uiInfo && uiInfo->isLandCommand()) || command == MAV_CMD_DO_SET_ROI_LOCATION) {
         _altitudeFact.setRawValue(0);
-        _missionItem.setParam7(0);
+        //_missionItem.setParam7(0);
     }
 
     _missionItem.setAutoContinue(true);
