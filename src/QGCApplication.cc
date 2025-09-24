@@ -264,6 +264,7 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
 #ifdef DAILY_BUILD
         // This gives daily builds their own separate settings space. Allowing you to use daily and stable builds
         // side by side without daily screwing up your stable settings.
+        //release version here
         applicationName = QStringLiteral("%1 Daily").arg(QGC_APPLICATION_NAME);
 #else
         applicationName = QGC_APPLICATION_NAME;
@@ -285,6 +286,9 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
         qWarning() << "Setings location is not writable";
     }
 #endif
+
+    qWarning() << "video location is not writeable";
+
     // The setting will delete all settings on this boot
     fClearSettingsOptions |= settings.contains(_deleteAllSettingsKey);
 

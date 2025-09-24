@@ -43,7 +43,7 @@ Item {
     Rectangle {
         anchors.fill:    parent
         radius:         _radius
-        color:          transparent
+        color:          Qt.rgba(0,0,0,0)
     }
 
     QGCFlickable {
