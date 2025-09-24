@@ -22,7 +22,7 @@ Item {
     width:          joystickRow.width * 1.1
     anchors.top:    parent.top
     anchors.bottom: parent.bottom
-    visible:        globals.activeVehicle ? globals.activeVehicle.sub : false
+    visible:        globals.activeVehicle
 
 
     Component {
@@ -65,6 +65,29 @@ Item {
                     QGCLabel {
                         text:  globals.activeVehicle && globals.activeVehicle.joystickEnabled ? qsTr("Yes") : qsTr("No")
                         color: globals.activeVehicle && globals.activeVehicle.joystickEnabled ? qgcPal.buttonText : "red"
+                    }
+
+                    QGCButton {
+                        Layout.alignment:   Qt.AlignHCenter
+                        text:               qsTr("Enable Control")
+                        onClicked: {
+                            globals.activeVehicle.joystickEnabled = true
+
+                            QGroundControl.multiVehicleManager.gcsHeartBeatEnabled = true
+                            QGroundControl.multiVehicleManager.RIDEnabled = true
+                            QGroundControl.mavlinkSystemID = 255
+                        }
+
+                    }
+                    QGCButton {
+                        Layout.alignment:   Qt.AlignHCenter
+                        text:               qsTr("Disable Control")
+                        onClicked: {
+                            globals.activeVehicle.joystickEnabled = false
+                            QGroundControl.multiVehicleManager.gcsHeartBeatEnabled = false
+                            QGroundControl.multiVehicleManager.RIDEnabled = false
+                            QGroundControl.mavlinkSystemID = 254
+                        }
                     }
                 }
             }
