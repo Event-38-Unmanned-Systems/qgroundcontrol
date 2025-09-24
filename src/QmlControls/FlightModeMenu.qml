@@ -56,7 +56,7 @@ QGCLabel {
                     flightModesMenuItems.push(menuItem)
                     flightModesMenu.insertItem(i, menuItem)
                 }
-                else if(currentVehicle.flightModes[i] !== "Cruise" && currentVehicle.flightModes[i] !== "Q Land" && currentVehicle.flightModes[i] !== "Q Loiter") { menuItem = flightModeMenuItemComponent.createObject(null, { "text": currentVehicle.flightModes[i] })
+                else if(currentVehicle.flightModes[i] !== "Cruise" && currentVehicle.flightModes[i] !== "Q Land" &&currentVehicle.flightModes[i] !== "Q Hover" && currentVehicle.flightModes[i] !== "Q Loiter") { menuItem = flightModeMenuItemComponent.createObject(null, { "text": currentVehicle.flightModes[i] })
                 flightModesMenuItems.push(menuItem)
                 flightModesMenu.insertItem(i, menuItem)
                 }
