@@ -80,6 +80,7 @@ public:
         gimbalRollFunction,
         maxFunction
     } AxisFunction_t;
+    bool    _gimbalJS       = true;
 
     typedef enum {
         ThrottleModeCenterZero,
@@ -112,6 +113,7 @@ public:
     Q_PROPERTY(float    exponential             READ exponential            WRITE setExponential        NOTIFY exponentialChanged)
     Q_PROPERTY(bool     accumulator             READ accumulator            WRITE setAccumulator        NOTIFY accumulatorChanged)
     Q_PROPERTY(bool     circleCorrection        READ circleCorrection       WRITE setCircleCorrection   NOTIFY circleCorrectionChanged)
+    Q_PROPERTY(bool     gimbalJS                READ gimbalJS               WRITE setgimbalJS           NOTIFY gimbalJSChanged)
 
     Q_INVOKABLE void    setButtonRepeat     (int button, bool repeat);
     Q_INVOKABLE bool    getButtonRepeat     (int button);
@@ -164,6 +166,9 @@ public:
     bool  deadband          () const;
     void  setDeadband       (bool accu);
 
+    bool  gimbalJS  () const;
+    void  setgimbalJS(bool gimbalJS);
+
     bool  circleCorrection  () const;
     void  setCircleCorrection(bool circleCorrection);
 
@@ -196,6 +201,7 @@ signals:
     void accumulatorChanged         (bool accumulator);
     void enabledChanged             (bool enabled);
     void circleCorrectionChanged    (bool circleCorrection);
+    void gimbalJSChanged            (bool gimbalJS);
     void axisValues                 (float roll, float pitch, float yaw, float throttle);
 
     void axisFrequencyHzChanged     ();
@@ -336,6 +342,7 @@ private:
     static const char* _accumulatorSettingsKey;
     static const char* _deadbandSettingsKey;
     static const char* _circleCorrectionSettingsKey;
+    static const char* _gimbalJSSettingsKey;
     static const char* _axisFrequencySettingsKey;
     static const char* _buttonFrequencySettingsKey;
     static const char* _txModeSettingsKey;

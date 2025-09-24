@@ -32,6 +32,7 @@ const char* Joystick::_exponentialSettingsKey =         "Exponential";
 const char* Joystick::_accumulatorSettingsKey =         "Accumulator";
 const char* Joystick::_deadbandSettingsKey =            "Deadband";
 const char* Joystick::_circleCorrectionSettingsKey =    "Circle_Correction";
+const char* Joystick::_gimbalJSSettingsKey =            "gimbalJS";
 const char* Joystick::_axisFrequencySettingsKey =       "AxisFrequency";
 const char* Joystick::_buttonFrequencySettingsKey =     "ButtonFrequency";
 const char* Joystick::_txModeSettingsKey =              nullptr;
@@ -197,7 +198,7 @@ void Joystick::_setDefaultCalibration(void) {
     _throttleMode       = ThrottleModeDownZero;
     _calibrated         = true;
     _circleCorrection   = false;
-
+    _gimbalJS           = true;
     _saveSettings();
 }
 
@@ -258,7 +259,7 @@ void Joystick::_loadSettings()
     _axisFrequencyHz    = settings.value(_axisFrequencySettingsKey,     _defaultAxisFrequencyHz).toFloat();
     _buttonFrequencyHz  = settings.value(_buttonFrequencySettingsKey,   _defaultButtonFrequencyHz).toFloat();
     _circleCorrection   = settings.value(_circleCorrectionSettingsKey,  false).toBool();
-    _negativeThrust     = settings.value(_negativeThrustSettingsKey,    false).toBool();
+    _gimbalJS           = settings.value(_gimbalJSSettingsKey,    true).toBool();
 
 
     _throttleMode   = static_cast<ThrottleMode_t>(settings.value(_throttleModeSettingsKey, ThrottleModeDownZero).toInt(&convertOk));
@@ -365,8 +366,9 @@ void Joystick::_saveSettings()
     settings.setValue(_throttleModeSettingsKey,     _throttleMode);
     settings.setValue(_negativeThrustSettingsKey,   _negativeThrust);
     settings.setValue(_circleCorrectionSettingsKey, _circleCorrection);
+    settings.setValue(_gimbalJSSettingsKey, _gimbalJS);
 
-    qCDebug(JoystickLog) << "_saveSettings calibrated:throttlemode:deadband:txmode" << _calibrated << _throttleMode << _deadband << _circleCorrection << _transmitterMode;
+    qCDebug(JoystickLog) << "_saveSettings calibrated:throttlemode:deadband:txmode:gimbalJS:" << _calibrated << _throttleMode << _deadband << _circleCorrection << _transmitterMode << _gimbalJS;
 
     QString minTpl      ("Axis%1Min");
     QString maxTpl      ("Axis%1Max");
@@ -982,6 +984,18 @@ void Joystick::setCircleCorrection(bool circleCorrection)
     _circleCorrection = circleCorrection;
     _saveSettings();
     emit circleCorrectionChanged(_circleCorrection);
+}
+
+bool Joystick::gimbalJS() const
+{
+    return _gimbalJS;
+}
+
+void Joystick::setgimbalJS(bool gimbalJS)
+{
+    _gimbalJS = gimbalJS;
+    _saveSettings();
+    emit gimbalJSChanged(_gimbalJS);
 }
 
 void Joystick::setAxisFrequency(float val)

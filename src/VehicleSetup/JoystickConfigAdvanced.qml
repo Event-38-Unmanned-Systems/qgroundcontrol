@@ -158,6 +158,24 @@ Item {
             visible:            advancedSettings.checked
         }
         //-----------------------------------------------------------------
+        //-- Enable gimbal Joystick
+        QGCLabel {
+            text:               qsTr("Enable gimbal joystick")
+            Layout.alignment:   Qt.AlignVCenter
+            visible:            advancedSettings.checked
+        }
+        QGCCheckBox {
+            checked:            globals.activeVehicle.joystickMode !== 0
+            enabled:            advancedSettings.checked
+            Component.onCompleted: {
+                checked = _activeJoystick.gimbalJS
+            }
+            onClicked: {
+                _activeJoystick.gimbalJS = checked
+            }
+            visible:            advancedSettings.checked
+        }
+        //-----------------------------------------------------------------
         //-- Deadband
         QGCLabel {
             text:               qsTr("Deadbands")

@@ -113,7 +113,25 @@ const JoystickConfigController::stateMachineEntry* JoystickConfigController::_ge
     static const char* msgPitchUp =             "Move the Pitch stick all the way up and hold it there...";
     static const char* msgComplete =            "All settings have been captured.\nClick Next to enable the joystick.";
 
+    if (!_activeJoystick->_gimbalJS){
     static const stateMachineEntry rgStateMachine[] = {
+        //Function
+        { Joystick::maxFunction,            msgBegin,           _sticksCentered,        &JoystickConfigController::_inputCenterWaitBegin,   &JoystickConfigController::_saveAllTrims,        nullptr, 0 },
+        { Joystick::throttleFunction,       msgThrottleUp,      _sticksThrottleUp,      &JoystickConfigController::_inputStickDetect,       nullptr,                                         nullptr, 0 },
+        { Joystick::throttleFunction,       msgThrottleDown,    _sticksThrottleDown,    &JoystickConfigController::_inputStickMin,          nullptr,                                         nullptr, 0 },
+        { Joystick::yawFunction,            msgYawRight,        _sticksYawRight,        &JoystickConfigController::_inputStickDetect,       nullptr,                                         nullptr, 1 },
+        { Joystick::yawFunction,            msgYawLeft,         _sticksYawLeft,         &JoystickConfigController::_inputStickMin,          nullptr,                                         nullptr, 1 },
+        { Joystick::rollFunction,           msgRollRight,       _sticksRollRight,       &JoystickConfigController::_inputStickDetect,       nullptr,                                         nullptr, 2 },
+        { Joystick::rollFunction,           msgRollLeft,        _sticksRollLeft,        &JoystickConfigController::_inputStickMin,          nullptr,                                         nullptr, 2 },
+        { Joystick::pitchFunction,          msgPitchUp,         _sticksPitchUp,         &JoystickConfigController::_inputStickDetect,       nullptr,                                         nullptr, 3 },
+        { Joystick::pitchFunction,          msgPitchDown,       _sticksPitchDown,       &JoystickConfigController::_inputStickMin,          nullptr,                                         nullptr, 3 },
+        { Joystick::maxFunction,            msgComplete,        _sticksCentered,        nullptr,                                            &JoystickConfigController::_writeCalibration,    nullptr, -1 },
+    };
+    Q_ASSERT(step >= 0 && step < static_cast<int>((sizeof(rgStateMachine) / sizeof(rgStateMachine[0]))));
+
+    return &rgStateMachine[step];
+}
+    static const stateMachineEntry rgStateMachineGimbal[] = {
         //Function
         { Joystick::maxFunction,            msgBegin,           _sticksCentered,        &JoystickConfigController::_inputCenterWaitBegin,   &JoystickConfigController::_saveAllTrims,        nullptr, 0 },
         { Joystick::throttleFunction,       msgThrottleUp,      _sticksThrottleUp,      &JoystickConfigController::_inputStickDetect,       nullptr,                                         nullptr, 0 },
@@ -131,9 +149,10 @@ const JoystickConfigController::stateMachineEntry* JoystickConfigController::_ge
         { Joystick::gimbalRollFunction,     msgGimbalCenter,     _sticksCentered,       &JoystickConfigController::_inputCenterWait,        nullptr,                                         nullptr, 5 },
         { Joystick::maxFunction,            msgComplete,        _sticksCentered,        nullptr,                                            &JoystickConfigController::_writeCalibration,    nullptr, -1 },
     };
+    Q_ASSERT(step >= 0 && step < static_cast<int>((sizeof(rgStateMachineGimbal) / sizeof(rgStateMachineGimbal[0]))));
 
-    Q_ASSERT(step >= 0 && step < static_cast<int>((sizeof(rgStateMachine) / sizeof(rgStateMachine[0]))));
-    return &rgStateMachine[step];
+    return &rgStateMachineGimbal[step];
+
 }
 
 void JoystickConfigController::_advanceState()
