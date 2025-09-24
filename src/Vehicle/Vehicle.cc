@@ -4316,7 +4316,7 @@ void Vehicle::nighthawksetMode(double mode)
                 0,
                 0,
                 0,   // MAVLink Roll,Pitch,Yaw
-                false);
+                true);
 }
 
 void Vehicle::nighthawkStreamSwitch(double stream)
@@ -4333,7 +4333,7 @@ void Vehicle::nighthawkStreamSwitch(double stream)
                 0,                                   // Latitude (not used)
                 0,                                   // Longitude (not used)
                 0,   // MAVLink Roll,Pitch,Yaw
-                false);
+                true);
 }
 void Vehicle::nightHawkRecordChange(double state)
 {
@@ -4349,7 +4349,7 @@ void Vehicle::nightHawkRecordChange(double state)
                 0,
                 0,
                 0,
-                false);
+                true);
 }
 
 void Vehicle::nightHawktrackOnPosition(float posX,float posY, int chan)
@@ -4365,7 +4365,7 @@ void Vehicle::nightHawktrackOnPosition(float posX,float posY, int chan)
                 0,
                 (float)chan,
                 0,   // MAVLink Roll,Pitch,Yaw
-                false);
+                true);
 }
 
 void Vehicle::nightHawkStillCapture()
@@ -4381,7 +4381,7 @@ void Vehicle::nightHawkStillCapture()
                 0,
                 0,
                 0,
-                false);
+                true);
 }
 void Vehicle::nightHawksetPallet(int pallet)
 {           sendMavCommand(
@@ -4395,7 +4395,7 @@ void Vehicle::nightHawksetPallet(int pallet)
                 0,
                 0,
                 0,
-                false);
+                true);
 }
 
 void Vehicle::nightHawkInvertPallet()
@@ -4412,7 +4412,7 @@ void Vehicle::nightHawkInvertPallet()
                 0,
                 0,
                 0,
-                false);
+                true);
     if (palletInvert == 1){
         palletInvert = 0;
     }
@@ -4432,7 +4432,7 @@ void Vehicle::nightHawkfccCalibration()
                 0,                                   // Latitude (not used)
                 0,                                   // Longitude (not used)
                 0,   // MAVLink Roll,Pitch,Yaw
-                false);
+                true);
 }
 
 void Vehicle::gimbalPitchStep(int direction)
