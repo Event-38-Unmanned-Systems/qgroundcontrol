@@ -193,8 +193,8 @@ bool VideoSettings::streamConfigured(void)
     }
     //-- If UDP, check if port is set
     if(vSource == videoSourceUDPH264 || vSource == videoSourceUDPH265) {
-        qCDebug(VideoManagerLog) << "Testing configuration for UDP Stream:" << udpPort()->rawValue().toInt();
-        return udpPort()->rawValue().toInt() != 0;
+        qCDebug(VideoManagerLog) << "Testing configuration for UDP Stream:" << tcpUrl()->rawValue().toString();
+        return !udpPort()->rawValue().toString().isEmpty();
     }
     //-- If RTSP, check for URL
     if(vSource == videoSourceRTSP) {
@@ -208,8 +208,10 @@ bool VideoSettings::streamConfigured(void)
     }
     //-- If MPEG-TS, check if port is set
     if(vSource == videoSourceMPEGTS) {
-        qCDebug(VideoManagerLog) << "Testing configuration for MPEG-TS Stream:" << udpPort()->rawValue().toInt();
-        return udpPort()->rawValue().toInt() != 0;
+        qCDebug(VideoManagerLog) << "Testing configuration for MPEG-TS Stream:" << udpPort()->rawValue().toString();
+        return !udpPort()->rawValue().toString().isEmpty();
+        //qCDebug(VideoManagerLog) << "Testing configuration for MPEG-TS Stream:" << udpPort()->rawValue().toInt();
+        //return udpPort()->rawValue().toInt() != 0;
     }
     return false;
 }

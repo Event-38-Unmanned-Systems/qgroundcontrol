@@ -645,12 +645,12 @@ VideoManager::_updateSettings(unsigned id)
                                         id,
                                         pInfo->uri().contains("udp://")
                                             ? pInfo->uri() // Specced case
-                                            : QStringLiteral("udp://0.0.0.0:%1").arg(pInfo->uri())))) {
+                                            : QStringLiteral("udp://%1").arg(pInfo->uri())))) {
                             _toolbox->settingsManager()->videoSettings()->videoSource()->setRawValue(VideoSettings::videoSourceUDPH264);
                         }
                         break;
                     case VIDEO_STREAM_TYPE_MPEG_TS_H264:
-                        if ((settingsChanged |= _updateVideoUri(id, QStringLiteral("mpegts://0.0.0.0:%1").arg(pInfo->uri())))) {
+                        if ((settingsChanged |= _updateVideoUri(id, QStringLiteral("mpegts://%1").arg(pInfo->uri())))) {
                             _toolbox->settingsManager()->videoSettings()->videoSource()->setRawValue(VideoSettings::videoSourceMPEGTS);
                         }
                         break;
@@ -669,10 +669,10 @@ VideoManager::_updateSettings(unsigned id)
                             settingsChanged |= _updateVideoUri(id, pTinfo->uri());
                             break;
                         case VIDEO_STREAM_TYPE_RTPUDP:
-                            settingsChanged |= _updateVideoUri(id, QStringLiteral("udp://0.0.0.0:%1").arg(pTinfo->uri()));
+                            settingsChanged |= _updateVideoUri(id, QStringLiteral("udp://%1").arg(pTinfo->uri()));
                             break;
                         case VIDEO_STREAM_TYPE_MPEG_TS_H264:
-                            settingsChanged |= _updateVideoUri(id, QStringLiteral("mpegts://0.0.0.0:%1").arg(pTinfo->uri()));
+                            settingsChanged |= _updateVideoUri(id, QStringLiteral("mpegts://%1").arg(pTinfo->uri()));
                             break;
                         default:
                             settingsChanged |= _updateVideoUri(id, pTinfo->uri());
@@ -685,11 +685,11 @@ VideoManager::_updateSettings(unsigned id)
     }
     QString source = _videoSettings->videoSource()->rawValue().toString();
     if (source == VideoSettings::videoSourceUDPH264)
-        settingsChanged |= _updateVideoUri(0, QStringLiteral("udp://0.0.0.0:%1").arg(_videoSettings->udpPort()->rawValue().toInt()));
+        settingsChanged |= _updateVideoUri(0, QStringLiteral("udp://%1").arg(_videoSettings->udpPort()->rawValue().toString()));
     else if (source == VideoSettings::videoSourceUDPH265)
-        settingsChanged |= _updateVideoUri(0, QStringLiteral("udp265://0.0.0.0:%1").arg(_videoSettings->udpPort()->rawValue().toInt()));
+        settingsChanged |= _updateVideoUri(0, QStringLiteral("udp265://%1").arg(_videoSettings->udpPort()->rawValue().toString()));
     else if (source == VideoSettings::videoSourceMPEGTS)
-        settingsChanged |= _updateVideoUri(0, QStringLiteral("mpegts://0.0.0.0:%1").arg(_videoSettings->udpPort()->rawValue().toInt()));
+        settingsChanged |= _updateVideoUri(0, QStringLiteral("mpegts://%1").arg(_videoSettings->udpPort()->rawValue().toString()));
     else if (source == VideoSettings::videoSourceRTSP)
         settingsChanged |= _updateVideoUri(0, _videoSettings->rtspUrl()->rawValue().toString());
     else if (source == VideoSettings::videoSourceTCP)
