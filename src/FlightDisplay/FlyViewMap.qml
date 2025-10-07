@@ -384,8 +384,6 @@ FlightMap {
         id:             gotoCoordinateItem
         visible:        false
         z:              QGroundControl.zOrderMapItems
-        anchorPoint.x:  sourceItem.anchorPointX
-        anchorPoint.y:  sourceItem.anchorPointY
     }
 
     // GoTo Location visuals
