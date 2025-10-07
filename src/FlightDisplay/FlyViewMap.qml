@@ -380,6 +380,13 @@ FlightMap {
             }
         }
     }
+    MapQuickItem {
+        id:             gotoCoordinateItem
+        visible:        false
+        z:              QGroundControl.zOrderMapItems
+        anchorPoint.x:  sourceItem.anchorPointX
+        anchorPoint.y:  sourceItem.anchorPointY
+    }
 
     // GoTo Location visuals
     MapQuickItem {
@@ -391,7 +398,7 @@ FlightMap {
         sourceItem: MissionItemIndexLabel {
             checked:    true
             index:      -1
-            label:      qsTr("Go here", "Go to location waypoint")
+            label:      qsTr("fly here", "fly to location waypoint")
         }
 
         Connections {
@@ -418,6 +425,29 @@ FlightMap {
 
         function actionCancelled() {
             hide()
+        }
+    }
+
+    Component {
+        id: specifyFlyToCoordinateDialog
+        EditPositionDialog {
+            coordinate:    gotoCoordinateItem.coordinate
+            onCoordinateChanged:    { gotoCoordinateItem.coordinate = coordinate
+                gotoLocationItem.show(gotoCoordinateItem.coordinate)
+                globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionGoto, gotoCoordinateItem.coordinate, gotoLocationItem)
+            }
+        }
+    }
+
+    Component {
+        id: specifyGimbalPositionDialog
+        EditPositionDialog {
+            coordinate:    roiItem.coordinate
+            onCoordinateChanged:    { roiItem.coordinate = coordinate
+                roiItem.show(roiItem.coordinate)
+                globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionGimbalROI, roiItem.coordinate, roiItem)
+                roiItem.show(roiItem.coordinate)
+            }
         }
     }
 
@@ -570,12 +600,22 @@ FlightMap {
             id: clickMenu
             property var coord
             QGCMenuItem {
-                text:           qsTr("Go to location")
+                text:           qsTr("fly to location")
                 visible:        globals.guidedControllerFlyView.showGotoLocation
 
                 onTriggered: {
                     gotoLocationItem.show(clickMenu.coord)
                     globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionGoto, clickMenu.coord, gotoLocationItem)
+                }
+            }
+            //fly to coordinate update
+            QGCMenuItem {
+                text:           qsTr("fly to coordinate")
+                visible:        globals.guidedControllerFlyView.showGotoLocation
+
+                onTriggered: {
+                    gotoCoordinateItem.coordinate = QtPositioning.coordinate(0,0)
+                    mainWindow.showComponentDialog(specifyFlyToCoordinateDialog, qsTr("Specify Fly To Coordinate"), mainWindow.showDialogDefaultWidth, StandardButton.Close)
                 }
             }
             QGCMenuItem {
@@ -585,7 +625,18 @@ FlightMap {
                 onTriggered: {
                     roiItem.show(clickMenu.coord)
                     globals.guidedControllerFlyView.confirmAction(globals.guidedControllerFlyView.actionGimbalROI, clickMenu.coord, roiItem)
+                    roiItem.show(clickMenu.coord)
                 }
+
+            }
+            QGCMenuItem {
+                text:           qsTr("Point camera at coordinate")
+                visible:        globals.guidedControllerFlyView.showGimbalROI
+
+                onTriggered: {
+                    mainWindow.showComponentDialog(specifyGimbalPositionDialog, qsTr("Specify Point To Coordinate"), mainWindow.showDialogDefaultWidth, StandardButton.Close)
+                }
+
 
             }
 

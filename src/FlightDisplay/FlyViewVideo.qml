@@ -95,7 +95,7 @@ Item {
                     var xScaled = (1280.0 * xPos) / videoWidth
                     var yScaled = (720.0 * mouseY) / videoHeight
                     /* Sending the Track On Position command to the TRIP */
-                    _activeVehicle.nightHawktrackOnPosition(xScaled,yScaled,0);
+                    _activeVehicle.nextVisionTrackOnPosition(xScaled,yScaled,0);
                 }
     }
 
