@@ -86,7 +86,7 @@ Item {
                                                             indexModel:         false
                                                             Layout.fillWidth:   true
                                                             onActivated: {
-                                                                _activeVehicle.nightHawksetPallet(currentIndex);
+                                                                _activeVehicle.nextVisionsetPallet(currentIndex);
                                                             }
                                                         }
 
@@ -95,7 +95,7 @@ Item {
                                                         QGCButton {
                                                             Layout.alignment:   Qt.AlignHCenter
                                                             text:               qsTr("Invert")
-                                                            onClicked: {_activeVehicle.nightHawkInvertPallet();}
+                                                            onClicked: {_activeVehicle.nextVisionInvertPallet();}
                                                         }
 
                                             QGCLabel { text: qsTr("Flat Field Correction:")
@@ -104,7 +104,7 @@ Item {
                                             QGCButton {
                                                 Layout.alignment:   Qt.AlignHCenter
                                                 text:               qsTr("Calibrate")
-                                                onClicked: {_activeVehicle.nightHawkfccCalibration();}
+                                                onClicked: {_activeVehicle.nextVisionfccCalibration();}
 
                                             }
                                             /*Image {
@@ -113,7 +113,7 @@ Item {
                                                 source: "/InstrumentValueIcons/refresh.svg"
                                                 MouseArea {
                                                     anchors.fill: parent;
-                                                    onClicked: {_activeVehicle.nightHawkfccCalibration();}
+                                                    onClicked: {_activeVehicle.nextVisionfccCalibration();}
                                                 }
                                                 fillMode:               Image.PreserveAspectFit
                                                 sourceSize.height:      height

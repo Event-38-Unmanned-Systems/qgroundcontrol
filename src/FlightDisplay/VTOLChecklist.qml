@@ -303,7 +303,7 @@ Item {
                             }
                         }
                         else if (_activeVehicle.gimbalData){
-                            _activeVehicle.nighthawksetMode(0);
+                            _activeVehicle.nextVisionsetMode(0);
                         }
                         else { _activeVehicle.triggerSimpleCamera()}
              }

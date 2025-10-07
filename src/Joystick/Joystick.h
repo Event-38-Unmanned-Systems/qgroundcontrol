@@ -119,7 +119,7 @@ public:
     Q_INVOKABLE bool    getButtonRepeat     (int button);
     Q_INVOKABLE void    setButtonAction     (int button, const QString& action);
     Q_INVOKABLE QString getButtonAction     (int button);
-    Q_INVOKABLE void  _nightHawkRecordChange();
+    Q_INVOKABLE void  _nextVisionRecordChange();
     // Property accessors
 
     QString     name                () { return _name; }
@@ -219,11 +219,11 @@ signals:
     void gimbalYawStep              (int direction);
     void centerGimbal               ();
     void gimbalControlValue         (double pitch, double yaw,double zoom);
-    void nighthawkStreamSwitch      (double stream);
-    void nighthawksetMode           (double mode);
-    void nightHawktrackOnPosition(float posX,float posY, int chan);
-    void nightHawkStillCapture      ();
-    void nightHawkRecordChange      (double stream);
+    void nextVisionStreamSwitch      (double stream);
+    void nextVisionsetMode           (double mode);
+    void nextVisionTrackOnPosition(float posX,float posY, int chan);
+    void nextVisionStillCapture      ();
+    void nextVisionRecordChange      (double stream);
 
     void setArmed                   (bool arm);
     void setVtolInFwdFlight         (bool set);
@@ -246,12 +246,11 @@ protected:
 
     void    _pitchStep              (double direction);
     void    _yawStep                (double direction);
-    void    _nightHawkstreamManualHoldSwitch ();
-    void    _nightHawkstreamSwitch  ();
-    void    _nightHawksetMode  (double mode);
-    void    _nightHawktrackOnPosition(float posX,float posY, int chan);
-    void    _nightHawkStillCapture  ();
-    void    _nightHawkZoom          (double state);
+    void    _nextVisionstreamSwitch  ();
+    void    _nextVisionsetMode  (double mode);
+    void    _nextVisionTrackOnPosition(float posX,float posY, int chan);
+    void    _nextVisionStillCapture  ();
+    void    _nextVisionZoom          (double state);
 
     double  _localYaw       = 0.0;
     double  _localPitch     = 0.0;
@@ -363,19 +362,18 @@ private:
     static const char* _buttonActionContinuousZoomIn;
     static const char* _buttonActionContinuousZoomOut;
     static const char* _buttonActionNextStream;
-    static const char* _buttonActionNighthawkChangeStream;
-    static const char* _buttonActionNighthawkTrackCoordinate;
-    static const char* _buttonActionNighthawkGRR;
-    static const char* _buttonActionNighthawkHoldCoordinate;
-    static const char* _buttonActionNighthawkObservation;
-    static const char* _buttonActionNighthawk2dscan;
-    static const char* _buttonActionNighthawknadirscan;
-    static const char* _buttonActionNighthawkHoldRelease;
+    static const char* _buttonActionnextVisionChangeStream;
+    static const char* _buttonActionnextVisionTrackCoordinate;
+    static const char* _buttonActionnextVisionGRR;
+    static const char* _buttonActionnextVisionHoldCoordinate;
+    static const char* _buttonActionnextVisionnadirscan;
+    static const char* _buttonActionnextVisionAreaTrack;
+    static const char* _buttonActionnextVisionStow;
 
-    static const char* _buttonActionNighthawkRecordStartStop;
-    static const char* _buttonActionNighthawkstillcapture;
-    static const char* _buttonActionNighthawkZoomIn;
-    static const char* _buttonActionNighthawkZoomOut;
+    static const char* _buttonActionnextVisionRecordStartStop;
+    static const char* _buttonActionnextVisionstillcapture;
+    static const char* _buttonActionnextVisionZoomIn;
+    static const char* _buttonActionnextVisionZoomOut;
 
 
     static const char* _buttonActionPreviousStream;

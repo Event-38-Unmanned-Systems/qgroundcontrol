@@ -587,7 +587,7 @@ Item {
             _activeVehicle.guidedModeROI(actionData)
             break
         case actionGimbalROI:
-            _activeVehicle.nighthawkGimbalROI(actionData)
+            _activeVehicle.nextVisionGimbalROI(actionData)
             break
         case actionChangeFlightMode:
             _activeVehicle.flightMode = actionData

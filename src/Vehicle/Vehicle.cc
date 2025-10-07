@@ -680,7 +680,7 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
                 emit messagesLostChanged();
         }
     }    
-    /* Nighthawk currently does not follow proper
+    /* nextVision currently does not follow proper
     mavlink protocol so we hackily recognize it by seeing a
     gimbal existing on network without a camera existing.
     If a payload is swapped without GCS cycle this also handles
@@ -3035,7 +3035,7 @@ void Vehicle::_terrainDataReceived(bool success, QList<double> heights){
 
 }
 
-void Vehicle::nighthawkGimbalROI(const QGeoCoordinate& centerCoord)
+void Vehicle::nextVisionGimbalROI(const QGeoCoordinate& centerCoord)
 {   gimbalCoordinate = centerCoord;
     _currentTerrainAtCoordinateQuery = new TerrainAtCoordinateQuery(true /* autoDelet */);
     connect(_currentTerrainAtCoordinateQuery, &TerrainAtCoordinateQuery::terrainDataReceived, this, &Vehicle::_terrainDataReceived);
@@ -3303,7 +3303,7 @@ void Vehicle::_sendMavCommandFromList(int index, bool sendGimbal)
 {
     MavCommandListEntry_t commandEntry = _mavCommandList[index];
 
-    //hack until gimbal is fixed by nextvision
+    //hack until gimbal is fixed by nextVision
     if (sendGimbal){
        _tempId = _id;
     }
@@ -3971,7 +3971,7 @@ const QVariantList& Vehicle::toolIndicators()
             Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/IrisIndicator.qml")));
         }
         if (_haveGimbalData){
-            Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/NextVisionIndicator.qml")));
+            Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/nextVisionIndicator.qml")));
         }
         return Indicator;
     }
@@ -4303,7 +4303,7 @@ void Vehicle::gimbalControlValue(double pitch, double yaw, double zoom)
                 true);
 }
 
-void Vehicle::nighthawksetMode(double mode)
+void Vehicle::nextVisionsetMode(double mode)
 {
     sendMavCommand(
                 MAV_COMP_ID_GIMBAL,
@@ -4319,7 +4319,7 @@ void Vehicle::nighthawksetMode(double mode)
                 true);
 }
 
-void Vehicle::nighthawkStreamSwitch(double stream)
+void Vehicle::nextVisionStreamSwitch(double stream)
 {
     //qDebug() << "Gimbal:" << pitch << yaw;
     sendMavCommand(
@@ -4335,14 +4335,14 @@ void Vehicle::nighthawkStreamSwitch(double stream)
                 0,   // MAVLink Roll,Pitch,Yaw
                 true);
 }
-void Vehicle::nightHawkRecordChange(double state)
+void Vehicle::nextVisionRecordChange(double state)
 {
     //qDebug() << "Gimbal:" << pitch << yaw;
     sendMavCommand(
                 MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
                 false,                               // show errors
-                2,           // nighthawk set record state
+                2,           // nextVision set record state
                 state,       // 0 diable 1 enable
                 0,
                 0,
@@ -4352,7 +4352,7 @@ void Vehicle::nightHawkRecordChange(double state)
                 true);
 }
 
-void Vehicle::nightHawktrackOnPosition(float posX,float posY, int chan)
+void Vehicle::nextVisionTrackOnPosition(float posX,float posY, int chan)
 {
     sendMavCommand(
                 MAV_COMP_ID_GIMBAL,
@@ -4368,7 +4368,7 @@ void Vehicle::nightHawktrackOnPosition(float posX,float posY, int chan)
                 true);
 }
 
-void Vehicle::nightHawkStillCapture()
+void Vehicle::nextVisionStillCapture()
 {
     sendMavCommand(
                 MAV_COMP_ID_GIMBAL,
@@ -4383,7 +4383,7 @@ void Vehicle::nightHawkStillCapture()
                 0,
                 true);
 }
-void Vehicle::nightHawksetPallet(int pallet)
+void Vehicle::nextVisionsetPallet(int pallet)
 {           sendMavCommand(
                 MAV_COMP_ID_GIMBAL,
                 MAV_CMD_DO_DIGICAM_CONTROL,
@@ -4398,7 +4398,7 @@ void Vehicle::nightHawksetPallet(int pallet)
                 true);
 }
 
-void Vehicle::nightHawkInvertPallet()
+void Vehicle::nextVisionInvertPallet()
 {
 
     sendMavCommand(
@@ -4419,7 +4419,7 @@ void Vehicle::nightHawkInvertPallet()
     else palletInvert = 1;
 }
 
-void Vehicle::nightHawkfccCalibration()
+void Vehicle::nextVisionfccCalibration()
 {
     sendMavCommand(
                 MAV_COMP_ID_GIMBAL,

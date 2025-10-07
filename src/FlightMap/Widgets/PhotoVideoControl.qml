@@ -121,12 +121,12 @@ Rectangle {
         if (_activeVehicle.gimbalData){
             if   (_nvCameraMode == 1){
                 _simplePhotoCaptureIsIdle = false
-                _activeJoystick._nightHawkRecordChange()
+                _activeJoystick._nextVisionRecordChange()
                 simplePhotoCaptureTimer.start()
             }  
             if (_nvCameraMode == 2){
                 _simplePhotoCaptureIsIdle = false
-               _activeVehicle.nightHawkStillCapture()
+               _activeVehicle.nextVisionStillCapture()
                 simplePhotoCaptureTimer.start()
             }       
         }
@@ -203,12 +203,12 @@ Rectangle {
                 QGCButton {
                             Layout.fillWidth:   true
                             text:               qsTr("EO")
-                            onClicked:          _activeVehicle.nighthawkStreamSwitch(0)
+                            onClicked:          _activeVehicle.nextVisionStreamSwitch(0)
                 }
                 QGCButton {
                             Layout.fillWidth:   true
                             text:               qsTr("IR ")
-                            onClicked:          _activeVehicle.nighthawkStreamSwitch(1)
+                            onClicked:          _activeVehicle.nextVisionStreamSwitch(1)
                 }
 
         }

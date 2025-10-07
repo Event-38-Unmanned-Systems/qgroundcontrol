@@ -53,20 +53,21 @@ const char* Joystick::_buttonActionContinuousZoomOut =  QT_TR_NOOP("Continuous Z
 const char* Joystick::_buttonActionStepZoomIn =         QT_TR_NOOP("Step Zoom In");
 const char* Joystick::_buttonActionStepZoomOut =        QT_TR_NOOP("Step Zoom Out");
 const char* Joystick::_buttonActionNextStream =         QT_TR_NOOP("Next Video Stream");
-const char* Joystick::_buttonActionNighthawkChangeStream = QT_TR_NOOP("Switch Stream");
-const char* Joystick::_buttonActionNighthawkTrackCoordinate = QT_TR_NOOP("Track Center");
-const char* Joystick::_buttonActionNighthawkHoldCoordinate = QT_TR_NOOP("Hold Coordinate");
-const char* Joystick::_buttonActionNighthawkGRR = QT_TR_NOOP("GRR");
-const char* Joystick::_buttonActionNighthawkObservation = QT_TR_NOOP("Manual Control");
-const char* Joystick::_buttonActionNighthawk2dscan = QT_TR_NOOP("Local Position");
-const char* Joystick::_buttonActionNighthawknadirscan = QT_TR_NOOP("Stow");
-const char* Joystick::_buttonActionNighthawkHoldRelease = QT_TR_NOOP("Lock/release coordinate");
 
 
-const char* Joystick::_buttonActionNighthawkRecordStartStop = QT_TR_NOOP("Start/Stop Recording");
-const char* Joystick::_buttonActionNighthawkstillcapture = QT_TR_NOOP("Still Capture");
-const char* Joystick::_buttonActionNighthawkZoomIn = QT_TR_NOOP("Zoom In");
-const char* Joystick::_buttonActionNighthawkZoomOut = QT_TR_NOOP("Zoom Out");
+const char* Joystick::_buttonActionnextVisionChangeStream = QT_TR_NOOP("Switch Stream");
+const char* Joystick::_buttonActionnextVisionTrackCoordinate = QT_TR_NOOP("Track Center");
+const char* Joystick::_buttonActionnextVisionHoldCoordinate = QT_TR_NOOP("Hold Coordinate");
+const char* Joystick::_buttonActionnextVisionGRR = QT_TR_NOOP("GRR");
+const char* Joystick::_buttonActionnextVisionStow = QT_TR_NOOP("Stow");
+const char* Joystick::_buttonActionnextVisionnadirscan = QT_TR_NOOP("Nadir Scan");
+const char* Joystick::_buttonActionnextVisionAreaTrack = QT_TR_NOOP("Scene");
+
+const char* Joystick::_buttonActionnextVisionRecordStartStop = QT_TR_NOOP("Start/Stop Recording");
+const char* Joystick::_buttonActionnextVisionstillcapture = QT_TR_NOOP("Still Capture");
+
+const char* Joystick::_buttonActionnextVisionZoomIn = QT_TR_NOOP("Zoom In");
+const char* Joystick::_buttonActionnextVisionZoomOut = QT_TR_NOOP("Zoom Out");
 
 
 
@@ -724,12 +725,12 @@ void Joystick::startPolling(Vehicle* vehicle)
             disconnect(this, &Joystick::gimbalYawStep,      _activeVehicle, &Vehicle::gimbalYawStep);
             disconnect(this, &Joystick::centerGimbal,       _activeVehicle, &Vehicle::centerGimbal);
             disconnect(this, &Joystick::gimbalControlValue, _activeVehicle, &Vehicle::gimbalControlValue);
-            disconnect(this, &Joystick::nighthawkStreamSwitch, _activeVehicle, &Vehicle::nighthawkStreamSwitch);
-            disconnect(this, &Joystick::nightHawktrackOnPosition, _activeVehicle, &Vehicle::nightHawktrackOnPosition);
-            disconnect(this, &Joystick::nighthawksetMode, _activeVehicle, &Vehicle::nighthawksetMode);
+            disconnect(this, &Joystick::nextVisionStreamSwitch, _activeVehicle, &Vehicle::nextVisionStreamSwitch);
+            disconnect(this, &Joystick::nextVisionTrackOnPosition, _activeVehicle, &Vehicle::nextVisionTrackOnPosition);
+            disconnect(this, &Joystick::nextVisionsetMode, _activeVehicle, &Vehicle::nextVisionsetMode);
 
-            disconnect(this, &Joystick::nightHawkStillCapture, _activeVehicle, &Vehicle::nightHawkStillCapture);
-            disconnect(this, &Joystick::nightHawkRecordChange, _activeVehicle, &Vehicle::nightHawkRecordChange);
+            disconnect(this, &Joystick::nextVisionStillCapture, _activeVehicle, &Vehicle::nextVisionStillCapture);
+            disconnect(this, &Joystick::nextVisionRecordChange, _activeVehicle, &Vehicle::nextVisionRecordChange);
             disconnect(this, &Joystick::emergencyStop,      _activeVehicle, &Vehicle::emergencyStop);
         }
         // Always set up the new vehicle
@@ -752,11 +753,11 @@ void Joystick::startPolling(Vehicle* vehicle)
             connect(this, &Joystick::gimbalYawStep,      _activeVehicle, &Vehicle::gimbalYawStep);
             connect(this, &Joystick::centerGimbal,       _activeVehicle, &Vehicle::centerGimbal);
             connect(this, &Joystick::gimbalControlValue, _activeVehicle, &Vehicle::gimbalControlValue);
-            connect(this, &Joystick::nightHawktrackOnPosition, _activeVehicle, &Vehicle::nightHawktrackOnPosition);
-            connect(this, &Joystick::nighthawkStreamSwitch, _activeVehicle, &Vehicle::nighthawkStreamSwitch);
-            connect(this, &Joystick::nighthawksetMode, _activeVehicle, &Vehicle::nighthawksetMode);
-            connect(this, &Joystick::nightHawkRecordChange, _activeVehicle, &Vehicle::nightHawkRecordChange);
-            connect(this, &Joystick::nightHawkStillCapture, _activeVehicle, &Vehicle::nightHawkStillCapture);
+            connect(this, &Joystick::nextVisionTrackOnPosition, _activeVehicle, &Vehicle::nextVisionTrackOnPosition);
+            connect(this, &Joystick::nextVisionStreamSwitch, _activeVehicle, &Vehicle::nextVisionStreamSwitch);
+            connect(this, &Joystick::nextVisionsetMode, _activeVehicle, &Vehicle::nextVisionsetMode);
+            connect(this, &Joystick::nextVisionRecordChange, _activeVehicle, &Vehicle::nextVisionRecordChange);
+            connect(this, &Joystick::nextVisionStillCapture, _activeVehicle, &Vehicle::nextVisionStillCapture);
             connect(this, &Joystick::emergencyStop,      _activeVehicle, &Vehicle::emergencyStop);
         }
     }
@@ -776,11 +777,11 @@ void Joystick::stopPolling(void)
             disconnect(this, &Joystick::gimbalPitchStep,    _activeVehicle, &Vehicle::gimbalPitchStep);
             disconnect(this, &Joystick::gimbalYawStep,      _activeVehicle, &Vehicle::gimbalYawStep);
             disconnect(this, &Joystick::centerGimbal,       _activeVehicle, &Vehicle::centerGimbal);
-            disconnect(this, &Joystick::nighthawkStreamSwitch, _activeVehicle, &Vehicle::nighthawkStreamSwitch);
-            disconnect(this, &Joystick::nightHawktrackOnPosition, _activeVehicle, &Vehicle::nightHawktrackOnPosition);
-            disconnect(this, &Joystick::nighthawksetMode, _activeVehicle, &Vehicle::nighthawksetMode);
-            disconnect(this, &Joystick::nightHawkRecordChange, _activeVehicle, &Vehicle::nightHawkRecordChange);
-            disconnect(this, &Joystick::nightHawkStillCapture, _activeVehicle, &Vehicle::nightHawkStillCapture);
+            disconnect(this, &Joystick::nextVisionStreamSwitch, _activeVehicle, &Vehicle::nextVisionStreamSwitch);
+            disconnect(this, &Joystick::nextVisionTrackOnPosition, _activeVehicle, &Vehicle::nextVisionTrackOnPosition);
+            disconnect(this, &Joystick::nextVisionsetMode, _activeVehicle, &Vehicle::nextVisionsetMode);
+            disconnect(this, &Joystick::nextVisionRecordChange, _activeVehicle, &Vehicle::nextVisionRecordChange);
+            disconnect(this, &Joystick::nextVisionStillCapture, _activeVehicle, &Vehicle::nextVisionStillCapture);
             disconnect(this, &Joystick::gimbalControlValue, _activeVehicle, &Vehicle::gimbalControlValue);
 
         }
@@ -1062,44 +1063,41 @@ void Joystick::_executeButtonAction(const QString& action, bool buttonDown)
     else if(action == _buttonActionNextCamera || action == _buttonActionPreviousCamera) {
         if (buttonDown) emit stepCamera(action == _buttonActionNextCamera ? 1 : -1);
     }
-    //nighthawk specific commands here
-    else if(action == _buttonActionNighthawkChangeStream) {
-        if (buttonDown) _nightHawkstreamSwitch();
+    //nextVision specific commands here
+    else if(action == _buttonActionnextVisionChangeStream) {
+        if (buttonDown) _nextVisionstreamSwitch();
     }
-    else if(action == _buttonActionNighthawk2dscan) {
-        if (buttonDown) _nightHawksetMode(4); //local position
+    else if(action == _buttonActionnextVisionStow) {
+        if (buttonDown) _nextVisionsetMode(0); //stow
     }
-    else if(action == _buttonActionNighthawknadirscan) {
-        if (buttonDown) _nightHawksetMode(0); //stow
+    else if(action == _buttonActionnextVisionHoldCoordinate) {
+        if (buttonDown) _nextVisionsetMode(2);
     }
-    else if(action == _buttonActionNighthawkHoldRelease) {
-        if (buttonDown) _nightHawkstreamManualHoldSwitch();
+    else if(action == _buttonActionnextVisionGRR) {
+        if (buttonDown) _nextVisionsetMode(6);
     }
-    else if(action == _buttonActionNighthawkTrackCoordinate) {
-        if (buttonDown) _nightHawktrackOnPosition(640,360,0);
+    else if(action == _buttonActionnextVisionnadirscan) {
+        if (buttonDown) _nextVisionsetMode(10);
     }
-    else if(action == _buttonActionNighthawkHoldCoordinate) {
-        if (buttonDown) _nightHawksetMode(2);
+    else if(action == _buttonActionnextVisionAreaTrack) {
+        if (buttonDown) _nextVisionsetMode(14);
     }
-    else if(action == _buttonActionNighthawkGRR) {
-        if (buttonDown) _nightHawksetMode(6);
+    else if(action == _buttonActionnextVisionTrackCoordinate) {
+        if (buttonDown) _nextVisionTrackOnPosition(640,360,0);
     }
-    else if(action == _buttonActionNighthawkObservation) {
-        if (buttonDown) _nightHawksetMode(3);
-    }
-    else if(action == _buttonActionNighthawkRecordStartStop){
-            if (buttonDown) _nightHawkRecordChange();
+    else if(action == _buttonActionnextVisionRecordStartStop){
+            if (buttonDown) _nextVisionRecordChange();
         }
-    else if(action == _buttonActionNighthawkstillcapture) {
-            if (buttonDown) _nightHawkStillCapture();
+    else if(action == _buttonActionnextVisionstillcapture) {
+            if (buttonDown) _nextVisionStillCapture();
         }
-    else if(action == _buttonActionNighthawkZoomIn){
-            if (buttonDown) _nightHawkZoom(1);
-            else{_nightHawkZoom(0);}
+    else if(action == _buttonActionnextVisionZoomIn){
+            if (buttonDown) _nextVisionZoom(1);
+            else{_nextVisionZoom(0);}
         }
-    else if(action == _buttonActionNighthawkZoomOut) {
-            if (buttonDown) _nightHawkZoom(2);
-             else{_nightHawkZoom(0);}
+    else if(action == _buttonActionnextVisionZoomOut) {
+            if (buttonDown) _nextVisionZoom(2);
+             else{_nextVisionZoom(0);}
         }
 
     else if(action == _buttonActionTriggerCamera) {
@@ -1115,7 +1113,7 @@ void Joystick::_executeButtonAction(const QString& action, bool buttonDown)
             if (_localPitch < 0){
                 _localPitch   = 0.0;
             }
-            _pitchStep(.1); }
+            _pitchStep(.2); }
         else {_localPitch = 0.0;
         _pitchStep(0);}
 
@@ -1124,7 +1122,7 @@ void Joystick::_executeButtonAction(const QString& action, bool buttonDown)
             if (_localPitch > 0){
                 _localPitch   = 0.0;
             }
-            _pitchStep(-.1); }
+            _pitchStep(-.2); }
         else {_localPitch   = 0.0;
         _pitchStep(0);}
 
@@ -1133,7 +1131,7 @@ void Joystick::_executeButtonAction(const QString& action, bool buttonDown)
             if (_localYaw < 0){
                 _localYaw   = 0.0;
             }
-            _yawStep(.1); }
+            _yawStep(.2); }
         else {_localYaw   = 0.0;
         _yawStep(0);}
     } else if(action == _buttonActionGimbalRight) {
@@ -1141,7 +1139,7 @@ void Joystick::_executeButtonAction(const QString& action, bool buttonDown)
             if (_localYaw > 0){
                 _localYaw   = 0.0;
             }
-            _yawStep(-.1); }
+            _yawStep(-.2); }
         else {_localYaw   = 0.0;
         _yawStep(0);}
     } else if(action == _buttonActionGimbalCenter) {
@@ -1180,41 +1178,35 @@ void Joystick::_yawStep(double direction)
     if(_localPitch >  1) _localPitch =  1;
     emit gimbalControlValue(_localPitch, _localYaw,_localZoom);
 }
-void Joystick::_nightHawksetMode(double mode)
+void Joystick::_nextVisionsetMode(double mode)
 {
-    emit nighthawksetMode(mode);
+    emit nextVisionsetMode(mode);
 }
 
-void Joystick::_nightHawktrackOnPosition(float posX,float posY, int chan)
+void Joystick::_nextVisionTrackOnPosition(float posX,float posY, int chan)
 {
-        emit nightHawktrackOnPosition(posX,posY,chan);
+        emit nextVisionTrackOnPosition(posX,posY,chan);
 }
 
-void Joystick::_nightHawkstreamManualHoldSwitch()
+void Joystick::_nextVisionstreamSwitch()
 {
-    emit nighthawksetMode(_lastknownmode);
-    if (_lastknownmode == 3){ _lastknownmode = 2;}
-    else _lastknownmode = 3;
-}
-void Joystick::_nightHawkstreamSwitch()
-{
-    emit nighthawkStreamSwitch(_lastknownStream);
+    emit nextVisionStreamSwitch(_lastknownStream);
     if (_lastknownStream == 0){ _lastknownStream = 1;}
     else _lastknownStream = 0;
 }
-void Joystick::_nightHawkRecordChange()
+void Joystick::_nextVisionRecordChange()
 {
-    emit nightHawkRecordChange(_lastRecordingState);
+    emit nextVisionRecordChange(_lastRecordingState);
     if (_lastRecordingState == 0){ _lastRecordingState = 1; qgcApp()->toolbox()->videoManager()->stopRecording();}
     else{ _lastRecordingState = 0;
     qgcApp()->toolbox()->videoManager()->startRecording();
     }
 }
-void Joystick::_nightHawkStillCapture()
+void Joystick::_nextVisionStillCapture()
 {
-    emit nightHawkStillCapture();
+    emit nextVisionStillCapture();
 }
-void Joystick::_nightHawkZoom(double state)
+void Joystick::_nextVisionZoom(double state)
 {
     _localZoom = state;
     emit gimbalControlValue(_localPitch, _localYaw,_localZoom);
@@ -1275,25 +1267,30 @@ void Joystick::_buildActionList(Vehicle* activeVehicle)
    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStepZoomOut, true));
    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNextStream));
 
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkChangeStream));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkRecordStartStop));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkstillcapture));
 
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkZoomIn));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkZoomOut));
-    //nighthawk modes
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkHoldRelease));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkObservation));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkTrackCoordinate));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkGRR));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawkHoldCoordinate));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawk2dscan));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNighthawknadirscan));
-    //gimbal button keys
+
+    //nextVision camera modes
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionStow));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionHoldCoordinate));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionGRR));
+
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionTrackCoordinate));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionnadirscan));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionAreaTrack));
+
+    //nextVision actions
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionZoomIn));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionZoomOut));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionChangeStream));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionRecordStartStop));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionstillcapture));
+
+    //gimbal button keys for PC control
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalDown,    true));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalUp,      true));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalLeft,    true));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalRight,   true));
+
     //_assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalCenter));
     //_assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionEmergencyStop));
     // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionPreviousStream));

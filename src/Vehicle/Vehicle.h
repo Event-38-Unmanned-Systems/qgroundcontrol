@@ -390,7 +390,7 @@ public:
     Q_INVOKABLE void guidedModeROI(const QGeoCoordinate& centerCoord);
     Q_INVOKABLE void stopGuidedModeROI();
 
-    Q_INVOKABLE void nighthawkGimbalROI(const QGeoCoordinate& centerCoord);
+    Q_INVOKABLE void nextVisionGimbalROI(const QGeoCoordinate& centerCoord);
 
     /// Command vehicle to pause at current location. If vehicle supports guide mode, vehicle will be left
     /// in guided mode after pause.
@@ -441,16 +441,16 @@ public:
     Q_INVOKABLE void setPIDTuningTelemetryMode(PIDTuningTelemetryMode mode);
 
     Q_INVOKABLE void gimbalControlValue (double pitch, double yaw, double zoom);
-    Q_INVOKABLE void nighthawkStreamSwitch (double stream);
-    Q_INVOKABLE void nighthawksetMode(double mode);
-    Q_INVOKABLE void nightHawkStillCapture ();
-    Q_INVOKABLE void nightHawksetPallet (int Pallet);
-    Q_INVOKABLE void nightHawkInvertPallet ();
+    Q_INVOKABLE void nextVisionStreamSwitch (double stream);
+    Q_INVOKABLE void nextVisionsetMode(double mode);
+    Q_INVOKABLE void nextVisionStillCapture ();
+    Q_INVOKABLE void nextVisionsetPallet (int Pallet);
+    Q_INVOKABLE void nextVisionInvertPallet ();
 
-    Q_INVOKABLE void nightHawkfccCalibration ();
+    Q_INVOKABLE void nextVisionfccCalibration ();
 
-    Q_INVOKABLE void nightHawkRecordChange (double stream);
-    Q_INVOKABLE void nightHawktrackOnPosition(float posX,float posY, int chan);
+    Q_INVOKABLE void nextVisionRecordChange (double stream);
+    Q_INVOKABLE void nextVisionTrackOnPosition(float posX,float posY, int chan);
 
     Q_INVOKABLE void gimbalPitchStep    (int direction);
     Q_INVOKABLE void gimbalYawStep      (int direction);
