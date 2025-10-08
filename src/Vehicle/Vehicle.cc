@@ -3971,7 +3971,7 @@ const QVariantList& Vehicle::toolIndicators()
             Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/IrisIndicator.qml")));
         }
         if (_haveGimbalData){
-            Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/nextVisionIndicator.qml")));
+            Indicator.append(QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/NextVisionIndicator.qml")));
         }
         return Indicator;
     }
