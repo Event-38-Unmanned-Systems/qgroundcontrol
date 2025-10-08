@@ -158,6 +158,7 @@ Item {
         item2:                  QGroundControl.videoManager.streaming ? videoControl : videoControl
         fullZOrder:             _fullItemZorder
         pipZOrder:              _pipItemZorder
+        visible:                QGroundControl.videoManager.streaming && (videoControl.pipState.state === videoControl.pipState.pipState || mapControl.pipState.state === mapControl.pipState.pipState)
         show:                   !QGroundControl.videoManager.fullScreen &&
                                     (videoControl.pipState.state === videoControl.pipState.pipState || mapControl.pipState.state === mapControl.pipState.pipState)
     }

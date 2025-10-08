@@ -16,7 +16,7 @@ import QGroundControl.ScreenTools   1.0
 
 Item {
     id:         _root
-    visible:    QGroundControl.videoManager.streaming
+    visible:    QGroundControl.videoManager.hasVideo
 
     property Item pipState: videoPipState
     QGCPipState {
@@ -74,7 +74,7 @@ Item {
     MouseArea {
         id: flyViewVideoMouseArea
         anchors.fill:       parent
-        enabled:            pipState.state === pipState.fullState
+        enabled:            pipState.state === pipState.fullState || pipState.state === pipState.windowState
         hoverEnabled: true
         onDoubleClicked:    {QGroundControl.videoManager.fullScreen = !QGroundControl.videoManager.fullScreen}
 

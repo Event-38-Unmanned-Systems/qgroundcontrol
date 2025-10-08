@@ -60,6 +60,11 @@ Item {
     }
 
     function _initForItems() {
+
+        if(_pipOrWindowItem){
+            if(_pipOrWindowItem.pipState.state === _pipOrWindowItem.pipState.windowState)
+            return
+        }
         var item1IsFull = true
         if (item1 && item2) {
             item1.pipState.state = item1IsFull ? item1.pipState.fullState : item1.pipState.pipState
@@ -69,6 +74,7 @@ Item {
         }
         QGroundControl.saveBoolGlobalSetting(item1IsFullSettingsKey, item1IsFull)
         _setPipIsExpanded(QGroundControl.loadBoolGlobalSetting(_pipExpandedSettingsKey, true))
+
     }
 
     function _swapPip() {
@@ -216,7 +222,7 @@ Item {
         fillMode:       Image.PreserveAspectFit
         anchors.left:   parent.left
         anchors.top:    parent.top
-        visible:        _isExpanded && !ScreenTools.isMobile && pipMouseArea.containsMouse
+        visible:        _isExpanded && !ScreenTools.isMobile && pipMouseArea.containsMouse && (item2.pipState.state === item2.pipState.pipState)
         height:         ScreenTools.defaultFontPixelHeight * 2.5
         width:          ScreenTools.defaultFontPixelHeight * 2.5
         sourceSize.height:  height
