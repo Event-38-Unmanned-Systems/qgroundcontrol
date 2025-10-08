@@ -244,7 +244,7 @@ Item {
                         }
                     }
                     else if (_activeVehicle.gimbalData){
-                        name = "NightHawk"
+                        name = "Gimbal"
                     }
                     else {name = "Payload"}
                 }
