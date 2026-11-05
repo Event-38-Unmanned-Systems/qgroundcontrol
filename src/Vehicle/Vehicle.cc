@@ -4367,7 +4367,6 @@ void Vehicle::nextVisionTrackOnPosition(float posX,float posY, int chan)
                 0,   // MAVLink Roll,Pitch,Yaw
                 true);
 }
-
 void Vehicle::nextVisionStillCapture()
 {
     sendMavCommand(
@@ -4382,6 +4381,24 @@ void Vehicle::nextVisionStillCapture()
                 0,
                 0,
                 true);
+}
+
+//Captures -1 to take forever 0 to stop
+void Vehicle::nextVisionIntervalCapture(int milliseconds, int channel,int Captures)
+{
+    sendMavCommand(
+                MAV_COMP_ID_GIMBAL,
+                MAV_CMD_DO_DIGICAM_CONTROL,
+                false,
+                28,
+                milliseconds,
+                Captures,
+                channel,
+                0,
+                0,
+                0,
+                true);
+  qDebug() << "interval";
 }
 void Vehicle::nextVisionsetPallet(int pallet)
 {           sendMavCommand(

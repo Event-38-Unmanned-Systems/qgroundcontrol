@@ -364,8 +364,11 @@ private:
     static const char* _buttonActionNextStream;
     static const char* _buttonActionnextVisionChangeStream;
     static const char* _buttonActionnextVisionTrackCoordinate;
+    static const char* _buttonActionnextVisionObservation;
     static const char* _buttonActionnextVisionGRR;
     static const char* _buttonActionnextVisionHoldCoordinate;
+    static const char* _buttonActionnextVisionLocalPosition;
+    static const char* _buttonActionnextVisionGlobalPosition;
     static const char* _buttonActionnextVisionnadirscan;
     static const char* _buttonActionnextVisionAreaTrack;
     static const char* _buttonActionnextVisionStow;

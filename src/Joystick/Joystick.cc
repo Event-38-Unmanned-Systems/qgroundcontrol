@@ -57,7 +57,11 @@ const char* Joystick::_buttonActionNextStream =         QT_TR_NOOP("Next Video S
 
 const char* Joystick::_buttonActionnextVisionChangeStream = QT_TR_NOOP("Switch Stream");
 const char* Joystick::_buttonActionnextVisionTrackCoordinate = QT_TR_NOOP("Track Center");
+
 const char* Joystick::_buttonActionnextVisionHoldCoordinate = QT_TR_NOOP("Hold Coordinate");
+const char* Joystick::_buttonActionnextVisionObservation = QT_TR_NOOP("Observation");
+const char* Joystick::_buttonActionnextVisionLocalPosition = QT_TR_NOOP("Local Position");
+const char* Joystick::_buttonActionnextVisionGlobalPosition = QT_TR_NOOP("Global Position");
 const char* Joystick::_buttonActionnextVisionGRR = QT_TR_NOOP("GRR");
 const char* Joystick::_buttonActionnextVisionStow = QT_TR_NOOP("Stow");
 const char* Joystick::_buttonActionnextVisionnadirscan = QT_TR_NOOP("Nadir Scan");
@@ -1073,6 +1077,15 @@ void Joystick::_executeButtonAction(const QString& action, bool buttonDown)
     else if(action == _buttonActionnextVisionHoldCoordinate) {
         if (buttonDown) _nextVisionsetMode(2);
     }
+    else if(action == _buttonActionnextVisionObservation) {
+        if (buttonDown) _nextVisionsetMode(3);
+    }
+    else if(action == _buttonActionnextVisionLocalPosition) {
+        if (buttonDown) _nextVisionsetMode(4);
+    }
+    else if(action == _buttonActionnextVisionGlobalPosition) {
+        if (buttonDown) _nextVisionsetMode(5);
+    }
     else if(action == _buttonActionnextVisionGRR) {
         if (buttonDown) _nextVisionsetMode(6);
     }
@@ -1272,11 +1285,16 @@ void Joystick::_buildActionList(Vehicle* activeVehicle)
     //nextVision camera modes
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionStow));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionHoldCoordinate));
+    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionObservation));
+    //_assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionLocalPosition));
+    //_assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionGlobalPosition));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionGRR));
 
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionTrackCoordinate));
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionnadirscan));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionAreaTrack));
+
+    //Not implemented?
+    //_assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionAreaTrack));
 
     //nextVision actions
     _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionnextVisionZoomIn));

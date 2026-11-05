@@ -72,7 +72,7 @@ Slider {
             property real _radius: Math.round(_root.implicitHeight / 2)
 
             Label {
-                text:               _root.value.toFixed( _root.maximumValue <= 1 ? 1 : 0)
+                text:               _root.value.toFixed( _root.stepSize <= 1 ? 1 : 0)
                 visible:            _root.displayValue
                 anchors.centerIn:   parent
                 font.family:        ScreenTools.normalFontFamily

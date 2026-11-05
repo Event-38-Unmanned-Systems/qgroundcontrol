@@ -24,11 +24,11 @@ import QGroundControl.FactSystem        1.0
 import QGroundControl.FactControls      1.0
 
 Rectangle {
-    height:     mainLayout.height + (_margins * 2)
+    height:     mainLayout.height + settingsCog.height + (_margins * 2)
     color:      qgcPal.globalTheme === QGCPalette.Light ? "#FFFFFFFF" : "#FF212529"
     radius:     _margins
     visible:    ((_mavlinkCamera ||  _simpleCameraAvailable) && multiVehiclePanelSelector.showSingleVehiclePanel) || _nvCameraAvailable
-    property real   _margins:                                   ScreenTools.defaultFontPixelHeight / 2
+    property real   _margins:                                   ScreenTools.defaultFontPixelHeight / 4
     property var    _activeVehicle:                             QGroundControl.multiVehicleManager.activeVehicle
     property var    _activeJoystick:                    joystickManager.activeJoystick
 
@@ -52,6 +52,8 @@ Rectangle {
 
     // The following properties relate to next vision interface
     property int   _nvCameraMode: 1
+    property int   _nvPhotoMode: 0
+    property real  _nvPhotoLapse: 1.5
     property bool  _nvCameraAvailable: (_activeVehicle ? (_activeVehicle.gimbalData) : false) || QGroundControl.videoManager.streaming
 
     // The following properties relate to a mavlink protocol camera
@@ -126,7 +128,13 @@ Rectangle {
             }  
             if (_nvCameraMode == 2){
                 _simplePhotoCaptureIsIdle = false
+                if (_nvPhotoMode === 0){
                _activeVehicle.nextVisionStillCapture()
+                }
+                if(_nvPhotoMode === 1){
+                 _activeVehicle.nextVisionIntervalCapture(_nvPhotoLapse*1000,0,-1)
+                }
+
                 simplePhotoCaptureTimer.start()
             }       
         }
@@ -170,9 +178,10 @@ Rectangle {
     QGCPalette { id: qgcPal; colorGroupEnabled: enabled }
 
     QGCColoredImage {
-        anchors.margins:    _margins
-        anchors.top:        parent.top
-        anchors.right:      parent.right
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.rightMargin: _margins/2
+        anchors.topMargin: _margins/2
         source:             "/res/gear-black.svg"
         mipmap:             true
         height:             ScreenTools.defaultFontPixelHeight
@@ -180,8 +189,8 @@ Rectangle {
         sourceSize.height:  height
         color:              qgcPal.text
         fillMode:           Image.PreserveAspectFit
-        visible:            !_onlySimpleCameraAvailable && !_nvCameraAvailable
-
+        visible:            !_onlySimpleCameraAvailable || _nvCameraAvailable
+        id: settingsCog
         QGCMouseArea {
             fillItem:   parent
             onClicked:  mainWindow.showPopupDialogFromComponent(settingsDialogComponent)
@@ -190,15 +199,16 @@ Rectangle {
 
     ColumnLayout {
         id:                         mainLayout
-        anchors.margins:            _margins
-        anchors.top:                parent.top
         anchors.horizontalCenter:   parent.horizontalCenter
+        anchors.margins:            _margins
         spacing:                    ScreenTools.defaultFontPixelHeight / 2
+        anchors.top:                settingsCog.bottom
 
         RowLayout{
+            Layout.alignment:   horizontalCenter
             spacing: 2
             visible: _nvCameraAvailable
-            id: layout
+            id: layoutas
 
                 QGCButton {
                             Layout.fillWidth:   true
@@ -210,6 +220,7 @@ Rectangle {
                             text:               qsTr("IR ")
                             onClicked:          _activeVehicle.nextVisionStreamSwitch(1)
                 }
+
 
         }
 
@@ -376,7 +387,7 @@ Rectangle {
                     flow:   GridLayout.TopToBottom
                     rows:   dynamicRows + (_mavlinkCamera ? _mavlinkCamera.activeSettings.length : 0)
 
-                    property int dynamicRows: 10
+                    property int dynamicRows: 8
 
                     // First column
                     QGCLabel {
@@ -420,11 +431,11 @@ Rectangle {
 
                     QGCLabel {
                         text:               qsTr("Photo Interval (seconds)")
-                        visible:            _mavlinkCameraInPhotoMode && _mavlinkCamera.photoMode === QGCCameraControl.PHOTO_CAPTURE_TIMELAPSE
+                        visible:            (_mavlinkCameraInPhotoMode && _mavlinkCamera.photoMode === QGCCameraControl.PHOTO_CAPTURE_TIMELAPSE) || _nvCameraAvailable
                         onVisibleChanged:   gridLayout.dynamicRows += visible ? 1 : -1
                     }
 
-                    QGCLabel {
+                    /*QGCLabel {
                         text:               qsTr("Video Grid Lines")
                         visible:            _anyVideoStreamAvailable
                         onVisibleChanged:   gridLayout.dynamicRows += visible ? 1 : -1
@@ -434,7 +445,7 @@ Rectangle {
                         text:               qsTr("Video Screen Fit")
                         visible:            _anyVideoStreamAvailable
                         onVisibleChanged:   gridLayout.dynamicRows += visible ? 1 : -1
-                    }
+                    }*/
 
                     QGCLabel {
                         text:               qsTr("Reset Camera Defaults")
@@ -545,28 +556,35 @@ Rectangle {
                         Layout.fillWidth:   true
                         sizeToContents:     true
                         model:              [ qsTr("Single"), qsTr("Time Lapse") ]
-                        currentIndex:       _mavlinkCamera ? _mavlinkCamera.photoMode : 0
-                        visible:            _mavlinkCameraHasModes
-                        onActivated:        _mavlinkCamera.photoMode = index
+                        currentIndex:       _mavlinkCamera ? _mavlinkCamera.photoMode : _nvPhotoMode ? _nvPhotoMode : 0
+                        visible:            _mavlinkCameraHasModes || _nvCameraAvailable
+                        onActivated:        { if (_mavlinkCamera){_mavlinkCamera.photoMode = index}
+                                             _nvPhotoMode = index
+                                            }
+                        id:                 photoModeBox
                     }
 
                     QGCSlider {
                         Layout.fillWidth:           true
-                        maximumValue:               60
-                        minimumValue:               1
-                        stepSize:                   1
-                        value:                      _mavlinkCamera ? _mavlinkCamera.photoLapse : 5
+                        maximumValue:               5
+                        minimumValue:               0
+                        stepSize:                   0.1
+                        value:                      _mavlinkCamera ? _mavlinkCamera.photoLapse : _nvCameraAvailable ? _nvPhotoLapse : 1.5
                         displayValue:               true
                         updateValueWhileDragging:   true
-                        visible:                    _mavlinkCameraInPhotoMode && _mavlinkCamera.photoMode === QGCCameraControl.PHOTO_CAPTURE_TIMELAPSE
+                        visible:                    (_mavlinkCameraInPhotoMode && _mavlinkCamera.photoMode === QGCCameraControl.PHOTO_CAPTURE_TIMELAPSE) || (_nvCameraAvailable && photoModeBox.currentIndex === 1)
                         onValueChanged: {
                             if (_mavlinkCamera) {
                                 _mavlinkCamera.photoLapse = value
                             }
+                            else if(_nvCameraAvailable){
+                                _nvPhotoLapse = value
+                            }
+
                         }
                     }
 
-                    QGCSwitch {
+                    /*QGCSwitch {
                         checked:            _videoStreamSettings.gridLines.rawValue
                         visible:            _anyVideoStreamAvailable
                         onClicked:          _videoStreamSettings.gridLines.rawValue = checked ? 1 : 0
@@ -578,7 +596,7 @@ Rectangle {
                         fact:               _videoStreamSettings.videoFit
                         indexModel:         false
                         visible:            _anyVideoStreamAvailable
-                    }
+                    }*/
 
                     QGCButton {
                         Layout.fillWidth:   true

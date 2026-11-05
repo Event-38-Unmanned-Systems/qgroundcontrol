@@ -235,7 +235,7 @@ Item {
 
             //-- ASL ALT
             QGCLabel {
-                text:                   "AREL"
+                text:                   "AGL"
                 color:                  qgcPal.text
                 font.pointSize:         ScreenTools.smallFontPointSize
                 Layout.fillWidth:       true

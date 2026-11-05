@@ -444,6 +444,7 @@ public:
     Q_INVOKABLE void nextVisionStreamSwitch (double stream);
     Q_INVOKABLE void nextVisionsetMode(double mode);
     Q_INVOKABLE void nextVisionStillCapture ();
+    Q_INVOKABLE void nextVisionIntervalCapture (int milliseconds, int channel,int captures);
     Q_INVOKABLE void nextVisionsetPallet (int Pallet);
     Q_INVOKABLE void nextVisionInvertPallet ();
 
